@@ -1,4 +1,4 @@
-
+@import url('https://fonts.googleapis.com/css2?family=Pirata+One&display=swap');
 @font-face {
     font-family: 'YoonChoWooSan';
     src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408@1.0/YoonChildfundkoreaManSeh.woff2') format('woff2');
@@ -150,6 +150,8 @@ body {
 
     opacity: 0;
     animation: fadeUp 1.2s ease forwards;
+    font-family: 'Pirata One', serif;
+    letter-spacing: 4px;
 }
 
 /* 메인 제목 */
