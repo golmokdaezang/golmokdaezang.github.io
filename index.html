@@ -5,39 +5,50 @@ layout: null
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grand Security Line</title>
-
-    <link rel="stylesheet"
-          href="{{ '/voyage/style.css' | relative_url }}">
-
-    <script defer
-            src="{{ '/voyage/script.js' | relative_url }}"></script>
+    <link rel="stylesheet" href="{{ '/voyage/style.css' | relative_url }}">
+    <script defer src="{{ '/voyage/script.js' | relative_url }}"></script>
 </head>
 <body>
-    <!-- 움직이는 배경 -->
     <div class="ocean-background" aria-hidden="true"></div>
-
-    <!-- 햇빛 효과 -->
     <div class="sunlight" aria-hidden="true"></div>
-
-    <!-- 바람 입자 -->
     <div class="wind-particles" aria-hidden="true"></div>
 
-    <!-- 시작 화면 -->
     <main class="welcome">
         <p class="subtitle">THE GRAND SECURITY LINE</p>
 
-        <h1>항해할 준비가 되셨나요?</h1>
+        <section id="start-screen">
+            <h1>항해할 준비가 되셨나요?</h1>
+            <button class="start-button" type="button">
+                항해 시작하기 →
+            </button>
+        </section>
 
-        <p class="description">
-            미지의 보안 세계를 향한 항해가 시작됩니다.
-        </p>
+        <section id="name-screen" hidden>
+            <h1>항해자님의 이름은?</h1>
 
-        <button class="start-button" type="button">
-            항해 시작하기 →
-        </button>
+            <form id="name-form">
+                <input
+                    id="visitor-name"
+                    type="text"
+                    placeholder="이름 또는 닉네임"
+                    maxlength="20"
+                    autocomplete="nickname"
+                    required
+                >
+                <p class="privacy-notice">
+                    현재는 이름이 서버에 저장되지 않습니다.
+                </p>
+                <button class="start-button" type="submit">
+                    항해 시작 →
+                </button>
+            </form>
+        </section>
+
+        <section id="greeting-screen" hidden>
+            <h1 id="greeting-message"></h1>
+        </section>
     </main>
 </body>
 </html>

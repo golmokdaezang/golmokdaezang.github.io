@@ -1,22 +1,40 @@
 
-const startButton = document.querySelector(".start-button");
+const startButton = document.querySelector("#start-screen .start-button");
+const startScreen = document.getElementById("start-screen");
+const nameScreen = document.getElementById("name-screen");
+const greetingScreen = document.getElementById("greeting-screen");
+const nameForm = document.getElementById("name-form");
+const nameInput = document.getElementById("visitor-name");
+const greetingMessage = document.getElementById("greeting-message");
 
 startButton.addEventListener("click", () => {
-    // 중복 클릭 방지
-    startButton.disabled = true;
+    startScreen.hidden = true;
+    nameScreen.hidden = false;
+    nameInput.focus();
+});
 
-    // 항해 애니메이션 시작
-    document.body.classList.add("sailing");
+nameForm.addEventListener("submit", (event) => {
+    event.preventDefault();
 
-    // 움직임 최소화 설정 확인
-    const reducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-    ).matches;
+    const name = nameInput.value.trim();
 
-    const delay = reducedMotion ? 0 : 2000;
+    if (!name) return;
 
-    // 애니메이션 종료 후 다음 페이지로 이동
+    const greeting =
+        name.toLowerCase() === "golmokdaezang"
+            ? "항해자님, 반가워요!"
+            : `${name}님, 반가워요!`;
+
+    greetingMessage.textContent = greeting;
+
+    nameScreen.hidden = true;
+    greetingScreen.hidden = false;
+
     setTimeout(() => {
-        window.location.href = "/blog/";
-    }, delay);
+        document.body.classList.add("sailing");
+
+        setTimeout(() => {
+            window.location.href = "/blog/";
+        }, 2000);
+    }, 1500);
 });
