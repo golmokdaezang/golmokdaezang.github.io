@@ -1,3 +1,9 @@
+@font-face {
+    font-family: 'YoonChoWooSan';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408@1.0/YoonChildfundkoreaManSeh.woff2') format('woff2');
+    font-weight: normal;
+    font-display: swap;
+}
 
 /* 기본 설정 */
 * {
@@ -303,4 +309,31 @@ body.sailing .welcome {
 /* 환영 메시지 */
 #greeting-screen h1 {
     animation: fadeUp 0.8s ease both;
+}
+
+
+
+/* Grand Security Line 손글씨 폰트 */
+
+/* 항해할 준비가 되셨나요? */
+.welcome h1 {
+    font-family: 'YoonChoWooSan', sans-serif;
+    font-weight: normal;
+}
+
+/* 항해 시작하기 버튼 */
+.start-button {
+    font-family: 'YoonChoWooSan', sans-serif;
+    font-weight: normal;
+}
+
+/* 닉네임 입력창 */
+#visitor-name {
+    font-family: 'YoonChoWooSan', sans-serif;
+    font-size: 22px;
+}
+
+/* 환영 메시지 */
+#greeting-screen h1 {
+    font-family: 'YoonChoWooSan', sans-serif;
 }
