@@ -1,0 +1,73 @@
+
+/* 전체 화면 기본 설정 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    font-family: Georgia, serif;
+    color: #fff4d8;
+
+    background:
+        linear-gradient(
+            rgba(0, 30, 65, 0.15),
+            rgba(0, 30, 65, 0.35)
+        ),
+        url("ocean-bg.png") center / cover no-repeat;
+
+    background-color: #145b8d;
+}
+
+/* 중앙 콘텐츠 */
+.welcome {
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    padding: 24px;
+}
+
+/* 영문 부제목 */
+.subtitle {
+    font-size: 18px;
+    letter-spacing: 4px;
+    margin-bottom: 25px;
+    text-shadow: 1px 2px 8px #173957;
+}
+
+/* 메인 제목 */
+h1 {
+    font-size: clamp(32px, 5vw, 70px);
+    margin-bottom: 35px;
+    text-shadow: 2px 4px 12px #163a60;
+}
+
+/* 항해 시작 버튼 */
+.start-button {
+    padding: 17px 38px;
+
+    background: #f3dfb2;
+    color: #49351c;
+
+    border: 3px solid #94703d;
+    border-radius: 8px;
+
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+
+    transition: transform 0.3s, background 0.3s;
+}
+
+/* 마우스를 올렸을 때 */
+.start-button:hover {
+    transform: scale(1.07);
+    background: #fff0cc;
+}
