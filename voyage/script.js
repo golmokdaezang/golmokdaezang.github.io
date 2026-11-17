@@ -1,40 +1,172 @@
 
-const startButton = document.querySelector("#start-screen .start-button");
-const startScreen = document.getElementById("start-screen");
-const nameScreen = document.getElementById("name-screen");
-const greetingScreen = document.getElementById("greeting-screen");
-const nameForm = document.getElementById("name-form");
-const nameInput = document.getElementById("visitor-name");
-const greetingMessage = document.getElementById("greeting-message");
+/* =========================
+   Grand Security Line
+   방문자 입장 및 기록 저장
+========================= */
+
+const startButton =
+  document.querySelector("#start-screen .start-button");
+
+const startScreen =
+  document.getElementById("start-screen");
+
+const nameScreen =
+  document.getElementById("name-screen");
+
+const greetingScreen =
+  document.getElementById("greeting-screen");
+
+const nameForm =
+  document.getElementById("name-form");
+
+const nameInput =
+  document.getElementById("visitor-name");
+
+const greetingMessage =
+  document.getElementById("greeting-message");
+
+const visitConsent =
+  document.getElementById("visit-consent");
+
+const leaderboardConsent =
+  document.getElementById("leaderboard-consent");
+
+const saveStatus =
+  document.getElementById("save-status");
+
+const enterButton =
+  document.getElementById("enter-button");
+
+/* Supabase 방문 기록 저장 함수 */
+
+const VISIT_API =
+  "https://zdgopdrehbphshdptjjr.supabase.co/functions/v1/clever-handler";
+
+/* =========================
+   첫 화면 → 닉네임 입력
+========================= */
 
 startButton.addEventListener("click", () => {
-    startScreen.hidden = true;
-    nameScreen.hidden = false;
-    nameInput.focus();
+  startScreen.hidden = true;
+  nameScreen.hidden = false;
+  nameInput.focus();
 });
 
-nameForm.addEventListener("submit", (event) => {
-    event.preventDefault();
+/* =========================
+   체크박스 연결
+========================= */
 
-    const name = nameInput.value.trim();
+visitConsent.addEventListener("change", () => {
+  if (visitConsent.checked) {
+    leaderboardConsent.disabled = false;
+  } else {
+    leaderboardConsent.checked = false;
+    leaderboardConsent.disabled = true;
+  }
+});
 
-    if (!name) return;
+/* =========================
+   방문 기록 저장
+========================= */
 
-    const greeting =
-        name.toLowerCase() === "golmokdaezang"
-            ? "항해자님, 반가워요!"
-            : `${name}님, 반가워요!`;
+async function saveVisit(name, publicConsent) {
+  const response = await fetch(VISIT_API, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    body: JSON.stringify({
+      nickname: name,
+      consent: true,
+      leaderboard_consent: publicConsent
+    })
+  });
 
-    greetingMessage.textContent = greeting;
+  if (!response.ok) {
+    throw new Error(
+      "방문 기록 저장 실패: HTTP " + response.status
+    );
+  }
 
-    nameScreen.hidden = true;
-    greetingScreen.hidden = false;
+  return response;
+}
+
+/* =========================
+   환영 화면 및 이동
+========================= */
+
+function enterBlog(name) {
+  const greeting =
+    name.toLowerCase() === "golmokdaezang"
+      ? "항해자님, 반가워요!"
+      : `${name}님, 반가워요!`;
+
+  greetingMessage.textContent = greeting;
+
+  nameScreen.hidden = true;
+  greetingScreen.hidden = false;
+
+  setTimeout(() => {
+    document.body.classList.add("sailing");
 
     setTimeout(() => {
-        document.body.classList.add("sailing");
+      window.location.href = "/blog/";
+    }, 2000);
+  }, 1500);
+}
 
-        setTimeout(() => {
-            window.location.href = "/blog/";
-        }, 2000);
-    }, 1500);
+/* =========================
+   항해 시작 버튼
+========================= */
+
+nameForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const name = nameInput.value.trim();
+
+  if (!name) {
+    nameInput.focus();
+    return;
+  }
+
+  if (enterButton.disabled) {
+    return;
+  }
+
+  enterButton.disabled = true;
+
+  const wantsToSave = visitConsent.checked;
+  const wantsToPublish =
+    wantsToSave && leaderboardConsent.checked;
+
+  /* 방문 기록 저장 동의하지 않은 경우 */
+  if (!wantsToSave) {
+    enterBlog(name);
+    return;
+  }
+
+  /* 방문 기록 저장 동의한 경우 */
+  saveStatus.textContent =
+    "항해 기록을 저장하는 중입니다...";
+
+  try {
+    await saveVisit(name, wantsToPublish);
+
+    saveStatus.textContent =
+      "항해 기록이 저장되었습니다!";
+
+    enterBlog(name);
+
+  } catch (error) {
+    console.error("방문 기록 저장 오류:", error);
+
+    saveStatus.textContent =
+      "방문 기록을 저장하지 못했습니다. 블로그 입장은 가능합니다.";
+
+    enterButton.disabled = false;
+
+    // 저장 실패를 숨기지 않고 화면에 표시.
+    // 다시 항해 시작을 누르면 저장을 재시도할 수 있음.
+  }
 });
