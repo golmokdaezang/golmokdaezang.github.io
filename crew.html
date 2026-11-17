@@ -1,0 +1,138 @@
+
+---
+layout: page
+title: "TOP 10 CREW"
+permalink: /crew/
+---
+
+<div class="crew-board">
+  <p class="crew-subtitle">GRAND SECURITY LINE</p>
+  <h2>🏴‍☠️ 명예의 항해자 TOP 10</h2>
+  <p>가장 많이 항해한 방문자들의 기록입니다.</p>
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>순위</th>
+          <th>닉네임</th>
+          <th>방문 횟수</th>
+        </tr>
+      </thead>
+      <tbody id="crew-ranking">
+        <tr>
+          <td colspan="3">항해자 명부를 불러오는 중...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p id="crew-status" role="status"></p>
+</div>
+
+<style>
+.crew-board {
+  max-width: 760px;
+  margin: 30px auto;
+  text-align: center;
+}
+
+.crew-subtitle {
+  letter-spacing: 3px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.crew-board h2 {
+  margin: 18px 0;
+}
+
+.crew-board table {
+  margin-top: 30px;
+  text-align: left;
+}
+
+.crew-board th,
+.crew-board td {
+  padding: 15px;
+}
+
+.crew-board th:first-child,
+.crew-board td:first-child {
+  width: 90px;
+}
+
+.crew-board th:last-child,
+.crew-board td:last-child {
+  text-align: right;
+}
+
+#crew-status {
+  margin-top: 20px;
+  opacity: 0.75;
+}
+</style>
+
+<script>
+(async function loadCrewLeaderboard() {
+  const tbody = document.getElementById("crew-ranking");
+  const status = document.getElementById("crew-status");
+
+  const url =
+    "https://zdgopdrehbphshdptjjr.supabase.co/functions/v1/quick-responder";
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Accept": "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("HTTP " + response.status);
+    }
+
+    const result = await response.json();
+    const leaderboard = result.leaderboard;
+
+    if (!Array.isArray(leaderboard)) {
+      throw new Error("잘못된 응답 형식");
+    }
+
+    tbody.replaceChildren();
+
+    if (leaderboard.length === 0) {
+      const row = tbody.insertRow();
+      const cell = row.insertCell();
+      cell.colSpan = 3;
+      cell.textContent = "아직 등록된 항해자가 없습니다.";
+      return;
+    }
+
+    leaderboard.slice(0, 10).forEach((visitor, index) => {
+      const row = tbody.insertRow();
+
+      const rank = row.insertCell();
+      const nickname = row.insertCell();
+      const count = row.insertCell();
+
+      rank.textContent = String(index + 1).padStart(2, "0");
+      nickname.textContent = visitor.nickname;
+      count.textContent = `${visitor.visit_count}회`;
+    });
+
+    status.textContent = "방문 횟수 기준 · 동점 시 최근 방문자 우선";
+  } catch (error) {
+    console.error("TOP 10 조회 실패:", error);
+
+    tbody.replaceChildren();
+
+    const row = tbody.insertRow();
+    const cell = row.insertCell();
+
+    cell.colSpan = 3;
+    cell.textContent = "항해자 명부를 불러오지 못했습니다.";
+  }
+})();
+</script>
