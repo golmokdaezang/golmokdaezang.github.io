@@ -81,7 +81,6 @@
       inset: 0;
       z-index: 2;
       pointer-events: none;
-
       background: rgba(3, 8, 20, 0);
       transition: background 1.5s ease-in-out;
     }
@@ -159,7 +158,6 @@
 
       width: var(--size);
       height: var(--size);
-
       border-radius: 50%;
 
       background: rgba(255, 235, 185, 0.9);
@@ -262,63 +260,26 @@
     }
 
     /* =========================
-       8. 문 클릭 영역
+       8. 오른쪽 문 클릭 영역
     ========================= */
 
     .cabin-door {
       position: absolute;
       z-index: 11;
 
-      /* 오른쪽 나무 문 */
       left: 89%;
       top: 18%;
       width: 11%;
       height: 75%;
 
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
+      display: block;
+      background: transparent;
+      border: none;
       text-decoration: none;
       cursor: pointer;
     }
 
-    /* 문 위에 마우스를 올리면 나타나는 금색 글씨 */
-    .door-tooltip {
-      font-family: 'YoonChoWooSan', sans-serif;
-      font-size: clamp(20px, 2.2vw, 30px);
-      font-weight: normal;
-      white-space: nowrap;
-
-      color: #f3d18b;
-
-      /* 배경과 테두리 없음 */
-      background: transparent;
-      border: none;
-      padding: 0;
-
-      /* 은은한 금빛 */
-      text-shadow:
-        0 0 8px rgba(255, 200, 100, 0.65),
-        0 0 20px rgba(255, 170, 60, 0.35),
-        1px 2px 5px rgba(0, 0, 0, 0.8);
-
-      opacity: 0;
-      transform: translateY(10px);
-
-      transition:
-        opacity 0.4s ease,
-        transform 0.4s ease;
-
-      pointer-events: none;
-    }
-
-    .cabin-door:hover .door-tooltip,
-    .cabin-door:focus-visible .door-tooltip {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
+    /* 마우스로 올렸을 때는 아무것도 표시하지 않음 */
     .cabin-door:focus-visible {
       outline: 2px solid #f3d18b;
       outline-offset: 3px;
@@ -365,7 +326,7 @@
       animation: titleAppear 2.5s ease-in-out forwards;
     }
 
-    /* 글씨 위아래 금색 가로선 */
+    /* 선장실 글씨 위아래 금색 가로선 */
     .entrance-title::before,
     .entrance-title::after {
       content: "";
@@ -420,7 +381,111 @@
     }
 
     /* =========================
-       10. 모바일 / 접근성
+       10. 갑판 이동 애니메이션
+    ========================= */
+
+    .deck-transition {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      background: #100e0b;
+
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .deck-transition.active {
+      visibility: visible;
+      animation: deckBackground 2.8s ease forwards;
+    }
+
+    .deck-title {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+
+      /* 선장실과 동일한 한국어 폰트 */
+      font-family: 'YoonChoWooSan', sans-serif;
+      font-size: clamp(28px, 3vw, 42px);
+      font-weight: normal;
+
+      color: #f3d18b;
+      letter-spacing: 0.45em;
+      padding-left: 0.45em;
+
+      text-shadow:
+        0 0 10px rgba(255, 199, 91, 0.45),
+        0 0 25px rgba(220, 145, 40, 0.2);
+
+      opacity: 0;
+    }
+
+    /* 갑판 글씨 위아래 금색 가로선 */
+    .deck-title::before,
+    .deck-title::after {
+      content: "";
+      display: block;
+
+      width: clamp(230px, 30vw, 380px);
+      height: 1px;
+
+      background: linear-gradient(
+        90deg,
+        transparent,
+        #d8ae62 20%,
+        #f3d18b 50%,
+        #d8ae62 80%,
+        transparent
+      );
+
+      box-shadow: 0 0 8px rgba(255, 195, 90, 0.35);
+    }
+
+    .deck-transition.active .deck-title {
+      animation: deckTitleAppear 2.5s ease-in-out forwards;
+    }
+
+    @keyframes deckBackground {
+      0% {
+        opacity: 0;
+      }
+
+      30%,
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes deckTitleAppear {
+      0% {
+        opacity: 0;
+        transform: translateY(15px);
+        filter: blur(5px);
+      }
+
+      35%,
+      70% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-8px);
+        filter: blur(3px);
+      }
+    }
+
+    /* =========================
+       11. 모바일 / 접근성
     ========================= */
 
     @media (hover: none) {
@@ -511,18 +576,28 @@
       aria-pressed="false"
     ></button>
 
-    <!-- 오른쪽 문 클릭 → 방명록 -->
+    <!-- 오른쪽 문 클릭: 문구 없음 -->
     <a
       class="cabin-door"
       href="/crew.html"
       aria-label="갑판으로 나가기"
-    >
-      <span class="door-tooltip">
-        갑판으로 나가기
-      </span>
-    </a>
+    ></a>
 
   </main>
+
+  <!-- =========================
+       갑판 이동 화면
+  ========================= -->
+
+  <div
+    class="deck-transition"
+    id="deck-transition"
+    aria-hidden="true"
+  >
+    <div class="deck-title">
+      갑판
+    </div>
+  </div>
 
   <script>
     /* =========================
@@ -648,7 +723,43 @@
     }
 
     /* =========================
-       4. 실행
+       4. 갑판 이동 애니메이션
+    ========================= */
+
+    const cabinDoor =
+      document.querySelector(".cabin-door");
+
+    const deckTransition =
+      document.getElementById("deck-transition");
+
+    let isLeaving = false;
+
+    cabinDoor.addEventListener("click", (event) => {
+      event.preventDefault();
+
+      if (isLeaving) return;
+      isLeaving = true;
+
+      const destination = cabinDoor.href;
+
+      if (
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches
+      ) {
+        window.location.href = destination;
+        return;
+      }
+
+      deckTransition.classList.add("active");
+
+      setTimeout(() => {
+        window.location.href = destination;
+      }, 2800);
+    });
+
+    /* =========================
+       5. 실행
     ========================= */
 
     createDust();
