@@ -52,18 +52,30 @@ startButton.addEventListener("click", () => {
   nameInput.focus();
 });
 
+
 /* =========================
    체크박스 연결
 ========================= */
 
-visitConsent.addEventListener("change", () => {
-  if (visitConsent.checked) {
-    leaderboardConsent.disabled = false;
-  } else {
+function updateConsentState() {
+  const enabled = visitConsent.checked;
+
+  leaderboardConsent.disabled = !enabled;
+
+  if (!enabled) {
     leaderboardConsent.checked = false;
-    leaderboardConsent.disabled = true;
   }
-});
+}
+
+/* 첫 번째 체크박스를 변경했을 때 */
+visitConsent.addEventListener("change", updateConsentState);
+
+/* 페이지가 처음 열릴 때도 상태 확인 */
+updateConsentState();
+
+/* 브라우저 뒤로 가기로 돌아왔을 때도 확인 */
+window.addEventListener("pageshow", updateConsentState);
+
 
 /* =========================
    방문 기록 저장
