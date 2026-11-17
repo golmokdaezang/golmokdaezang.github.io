@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Grand Security Line | 지도</title>
 
   <link rel="stylesheet" href="./style.css">
@@ -13,28 +14,31 @@
 
   <main class="map-page">
 
-    <!-- 드래그할 수 있는 지도 -->
     <div class="map-viewport" id="mapViewport">
-      <div class="map-track" id="mapTrack">
+
+      <div class="map-track">
 
         <div class="map-content" id="mapContent">
+
           <img
             id="mapImage"
             class="map-image"
             src="./security-map.png"
-            alt="보안 분야별 섬이 그려진 해적 지도"
+            alt="Grand Security Line 해적 지도"
             draggable="false"
           >
-          <!-- 섬 클릭 영역은 JS로 생성 -->
+
+          <!-- 섬 클릭 영역은 JavaScript에서 생성 -->
+
         </div>
 
       </div>
+
     </div>
 
-    <!-- 선장실로 돌아가기 -->
     <a
-      class="back-link"
       href="/cabin/"
+      class="back-link"
       aria-label="선장실로 돌아가기"
       title="선장실로 돌아가기"
     >←</a>

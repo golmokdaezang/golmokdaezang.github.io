@@ -4,13 +4,10 @@
 /*
   섬 설정
 
-  x, y: 이미지 왼쪽 위 기준 좌표 (%)
+  x, y: 이미지 기준 위치 (%)
   width, height: 클릭 영역 크기 (%)
 
-  href: 이동할 페이지 주소
-
-  나중에 섬 위치를 수정하고 싶으면
-  이 배열의 숫자만 변경하면 됩니다.
+  href: 클릭 시 이동할 페이지
 */
 
 const ISLANDS = [
@@ -107,6 +104,7 @@ function createIslands() {
 
     link.className = "island";
     link.href = island.href;
+
     link.setAttribute("aria-label", island.name);
 
     link.style.left = island.x + "%";
@@ -123,14 +121,16 @@ function createIslands() {
   });
 }
 
-/* 지도 드래그 */
+/* 드래그 상태 */
 let dragging = false;
-let startX = 0;
-let startScroll = 0;
 let moved = false;
-let activePointerId = null;
 let suppressClick = false;
 
+let activePointerId = null;
+let startX = 0;
+let startScroll = 0;
+
+/* 마우스 누르기 */
 viewport.addEventListener("pointerdown", (event) => {
   if (event.pointerType === "mouse" && event.button !== 0) {
     return;
@@ -147,6 +147,7 @@ viewport.addEventListener("pointerdown", (event) => {
   viewport.setPointerCapture(event.pointerId);
 });
 
+/* 마우스 이동 */
 viewport.addEventListener("pointermove", (event) => {
   if (!dragging || event.pointerId !== activePointerId) {
     return;
@@ -164,12 +165,14 @@ viewport.addEventListener("pointermove", (event) => {
   }
 });
 
+/* 드래그 종료 */
 function finishDrag(event) {
   if (!dragging || event.pointerId !== activePointerId) {
     return;
   }
 
   dragging = false;
+
   viewport.classList.remove("dragging");
 
   suppressClick = moved;
@@ -184,7 +187,7 @@ function finishDrag(event) {
 viewport.addEventListener("pointerup", finishDrag);
 viewport.addEventListener("pointercancel", finishDrag);
 
-/* 드래그 직후 섬이 클릭되지 않도록 방지 */
+/* 드래그한 경우 클릭 취소 */
 viewport.addEventListener("click", (event) => {
   if (!suppressClick) return;
 
@@ -194,7 +197,7 @@ viewport.addEventListener("click", (event) => {
   suppressClick = false;
 }, true);
 
-/* 지도 로딩 후 중앙에서 시작 */
+/* 지도를 처음에 가운데 표시 */
 function centerMap() {
   const maxScroll =
     viewport.scrollWidth - viewport.clientWidth;
@@ -202,6 +205,7 @@ function centerMap() {
   viewport.scrollLeft = Math.max(0, maxScroll / 2);
 }
 
+/* 실행 */
 createIslands();
 
 if (mapImage.complete && mapImage.naturalWidth > 0) {
