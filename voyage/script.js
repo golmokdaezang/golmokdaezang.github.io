@@ -123,7 +123,7 @@ function enterBlog(name) {
     document.body.classList.add("sailing");
 
     setTimeout(() => {
-      window.location.href = "/blog/";
+      window.location.href = "/cabin/";
     }, 2000);
   }, 1500);
 }
