@@ -6,8 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>WANTED | Grand Security Line</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
@@ -16,59 +14,56 @@
     body {
       margin: 0;
       min-height: 100vh;
-      padding: 24px 12px;
+      padding: 25px 12px;
       background: #24170f;
       font-family: "Noto Serif KR", serif;
-      color: #382015;
+      color: #3e2618;
     }
 
     .poster {
       position: relative;
-      isolation: isolate;
       width: min(100%, 1150px);
-      min-height: 720px;
+      min-height: 750px;
       margin: auto;
-      padding: 155px 13% 125px;
-      background-image: url("/voyage/wanted-bg.png");
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: 100% 100%;
+      padding: 125px 13% 130px;
+      background: url("/voyage/wanted-bg.png")
+                  center / 100% 100% no-repeat;
       text-align: center;
+      isolation: isolate;
     }
 
-    .poster-content {
+    .content {
       position: relative;
       z-index: 2;
+      animation: appear 1.2s ease-out both;
     }
 
     .wanted {
       margin: 0;
-      color: #68291c;
-      font-family: "Pirata One", serif;
-      font-size: clamp(58px, 9vw, 100px);
-      line-height: 1.1;
+      font-family: "Pirata One", Georgia, serif;
+      font-size: clamp(54px, 8vw, 92px);
+      font-weight: 400;
       letter-spacing: 3px;
+      line-height: 1.1;
+      color: #632f20;
     }
 
     .brand {
-      margin: 8px 0 28px;
-      font-size: 13px;
+      margin: 10px 0 25px;
+      font-size: 12px;
       font-weight: 700;
       letter-spacing: 3px;
     }
 
     .description {
       margin: 0 0 28px;
-      font-size: clamp(14px, 2vw, 19px);
+      font-size: clamp(14px, 2vw, 18px);
       font-weight: 700;
     }
 
     .ranking {
-      width: 100%;
-      border: 2px solid #704a2e;
-      border-radius: 4px;
-      overflow: hidden;
-      background: rgba(238, 213, 174, .13);
+      border: 1px solid rgba(85, 49, 27, .6);
+      background: rgba(238, 210, 166, .08);
     }
 
     table {
@@ -79,91 +74,173 @@
 
     th, td {
       padding: 15px 8px;
-      border-bottom: 1px solid rgba(85, 51, 27, .35);
+      border-bottom: 1px solid rgba(85, 49, 27, .28);
       overflow-wrap: anywhere;
     }
 
     th {
-      background: rgba(100, 62, 32, .12);
-      font-weight: 700;
+      background: rgba(99, 58, 30, .13);
+      font-size: 15px;
     }
 
-    th:first-child { width: 20%; }
-    th:last-child { width: 25%; }
+    td { font-size: 15px; }
+
+    th:first-child { width: 19%; }
+    th:last-child { width: 26%; }
 
     tbody tr:last-child td {
       border-bottom: none;
     }
 
+    tbody tr:first-child:not(:only-child) {
+      font-weight: 700;
+    }
+
     .note {
       margin: 25px 0 0;
       font-size: 12px;
-      color: #65482f;
+      opacity: .8;
     }
 
     .back {
       display: inline-block;
       margin-top: 30px;
-      padding: 12px 26px;
-      border: 2px solid #68452c;
+      padding: 11px 25px;
+      border: 1px solid #68452c;
+      background: rgba(230, 196, 148, .3);
       color: #422817;
-      background: rgba(224, 190, 142, .55);
       text-decoration: none;
       font-weight: 700;
       transition: background .2s;
     }
 
     .back:hover {
-      background: #d0a876;
+      background: rgba(113, 69, 38, .2);
     }
 
-    /* 오른쪽에서 날아와 꽂히는 칼 */
-    .sword {
+    /* 종이 아래쪽의 미세한 바람 그림자 */
+    .paper-shadow {
       position: absolute;
-      z-index: 3;
-      top: 25%;
-      right: 4%;
-      width: clamp(130px, 22vw, 245px);
-      height: auto;
+      z-index: 1;
+      left: 12%;
+      right: 12%;
+      bottom: 3%;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, .3);
+      filter: blur(16px);
       pointer-events: none;
-      filter: drop-shadow(5px 8px 4px rgba(0,0,0,.35));
-      transform-origin: center;
-      animation: sword-arrive 1.15s cubic-bezier(.2,.7,.25,1) both;
-      animation-delay: .3s;
+      animation: paper-breeze 7s ease-in-out infinite;
     }
 
-    @keyframes sword-arrive {
-      0% {
+    @keyframes paper-breeze {
+      0%, 35%, 100% {
+        transform: scaleY(.7) translateY(0);
+        opacity: .3;
+      }
+      50% {
+        transform: scaleY(1.15) translateY(-3px);
+        opacity: .5;
+      }
+      65% {
+        transform: scaleY(.8) translateY(0);
+        opacity: .3;
+      }
+    }
+
+    /* 먼지 입자 */
+    .dust {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .particle {
+      position: absolute;
+      bottom: 5%;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #f5e0b5;
+      box-shadow: 0 0 5px rgba(255, 223, 165, .6);
+      opacity: 0;
+      animation: float-dust 9s ease-in-out infinite;
+    }
+
+    .particle:nth-child(1) {
+      left: 16%;
+      animation-delay: 0s;
+    }
+
+    .particle:nth-child(2) {
+      left: 30%;
+      animation-delay: 2s;
+      width: 2px;
+      height: 2px;
+    }
+
+    .particle:nth-child(3) {
+      left: 57%;
+      animation-delay: 4s;
+    }
+
+    .particle:nth-child(4) {
+      left: 76%;
+      animation-delay: 1.5s;
+      width: 2px;
+      height: 2px;
+    }
+
+    .particle:nth-child(5) {
+      left: 87%;
+      animation-delay: 5s;
+    }
+
+    @keyframes float-dust {
+      0%, 20%, 100% {
         opacity: 0;
-        transform: translate(125vw, -90px) rotate(22deg);
+        transform: translate(0, 0);
+      }
+      35% {
+        opacity: .55;
       }
       70% {
-        opacity: 1;
-        transform: translate(-15px, 6px) rotate(-5deg);
+        opacity: .25;
+        transform: translate(22px, -90px);
       }
-      84% {
-        transform: translate(5px, -3px) rotate(3deg);
+      85% {
+        opacity: 0;
+        transform: translate(35px, -120px);
       }
-      100% {
+    }
+
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
         opacity: 1;
-        transform: translate(0, 0) rotate(0);
+        transform: translateY(0);
       }
     }
 
     @media (max-width: 650px) {
-      body { padding: 10px 4px; }
+      body { padding: 8px 3px; }
 
       .poster {
         min-height: 620px;
-        padding: 115px 9% 110px;
+        padding: 100px 9% 100px;
       }
 
       .wanted {
-        font-size: clamp(48px, 13vw, 72px);
+        font-size: clamp(46px, 12vw, 68px);
       }
 
       .brand {
-        font-size: 10px;
+        font-size: 9px;
         letter-spacing: 2px;
       }
 
@@ -172,17 +249,13 @@
         font-size: 12px;
       }
 
-      .sword {
-        top: 19%;
-        right: 0;
-        width: 115px;
-      }
-
       .note { font-size: 11px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .sword {
+      .content,
+      .paper-shadow,
+      .particle {
         animation: none;
       }
     }
@@ -192,15 +265,19 @@
 <body>
   <main class="poster">
 
-    <img
-      class="sword"
-      src="/voyage/sword.png"
-      alt=""
-      aria-hidden="true"
-    >
+    <div class="paper-shadow" aria-hidden="true"></div>
 
-    <div class="poster-content">
+    <div class="dust" aria-hidden="true">
+      <span class="particle"></span>
+      <span class="particle"></span>
+      <span class="particle"></span>
+      <span class="particle"></span>
+      <span class="particle"></span>
+    </div>
+
+    <div class="content">
       <h1 class="wanted">WANTED</h1>
+
       <p class="brand">GRAND SECURITY LINE</p>
 
       <p class="description">
@@ -218,9 +295,7 @@
           </thead>
           <tbody id="crew-ranking">
             <tr>
-              <td colspan="3">
-                항해자 명부를 불러오는 중...
-              </td>
+              <td colspan="3">항해자 명부를 불러오는 중...</td>
             </tr>
           </tbody>
         </table>
@@ -246,15 +321,20 @@
 
       function showMessage(message) {
         tbody.replaceChildren();
+
         const row = tbody.insertRow();
         const cell = row.insertCell();
+
         cell.colSpan = 3;
         cell.textContent = message;
       }
 
       try {
         const response = await fetch(url, {
-          headers: { "Accept": "application/json" }
+          method: "GET",
+          headers: {
+            "Accept": "application/json"
+          }
         });
 
         if (!response.ok) {
@@ -264,7 +344,7 @@
         const data = await response.json();
 
         if (!Array.isArray(data.leaderboard)) {
-          throw new Error("Invalid leaderboard");
+          throw new Error("Invalid leaderboard response");
         }
 
         const visitors = data.leaderboard.slice(0, 10);
@@ -291,6 +371,7 @@
 
       } catch (error) {
         console.error("Leaderboard error:", error);
+
         showMessage("항해자 명부를 불러오지 못했습니다.");
         status.textContent = "잠시 후 다시 시도해 주세요.";
       }
