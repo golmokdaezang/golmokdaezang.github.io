@@ -23,14 +23,22 @@
       margin: 0;
       min-height: 100vh;
       padding: 30px 12px;
-      background: #392519 url("/voyage/background.png")
-        center / cover fixed no-repeat;
+      overflow-x: hidden;
+
+      background-color: #392519;
+      background-image: url("/voyage/background.png");
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+
       font-family: "Noto Serif KR", serif;
       color: #402719;
-      overflow-x: hidden;
     }
 
-    /* ===== 양피지 ===== */
+    /* =========================
+       양피지 전체 영역
+    ========================= */
 
     .scene {
       position: relative;
@@ -50,15 +58,20 @@
     }
 
     /*
-      양피지 이미지를 위쪽/아래쪽으로 분리.
-      위쪽 75%는 고정하고 아래쪽 25%만 움직임.
+       양피지 위쪽은 고정.
+       못도 원본 이미지에 포함되어 있으므로 움직이지 않음.
     */
+
     .paper-top,
     .paper-bottom {
       position: absolute;
       inset: 0;
-      background: url("/voyage/parchment.png")
-        center / 100% 100% no-repeat;
+
+      background-image: url("/voyage/parchment.png");
+      background-position: center;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+
       pointer-events: none;
     }
 
@@ -67,61 +80,70 @@
       clip-path: inset(0 0 24.5% 0);
     }
 
+    /*
+       아래쪽 25%만 강하게 펄럭임.
+    */
+
     .paper-bottom {
       z-index: 1;
       clip-path: inset(75% 0 0 0);
+
       transform-origin: center 75%;
-      animation: strongFlutter 3.8s ease-in-out infinite;
+      animation: strongFlutter 2.2s ease-in-out infinite;
+
       will-change: transform;
     }
 
-    /*
-      종이 아래쪽 펄럭임을 이전보다 강하게.
-      rotateX + 좌우 이동을 섞어 바람 효과 표현.
-    */
     @keyframes strongFlutter {
       0%, 100% {
         transform:
-          perspective(900px)
+          perspective(650px)
           rotateX(0deg)
+          rotateZ(0deg)
           translateX(0);
       }
 
-      22% {
+      20% {
         transform:
-          perspective(900px)
-          rotateX(7deg)
-          translateX(5px);
+          perspective(650px)
+          rotateX(22deg)
+          rotateZ(2deg)
+          translateX(14px);
       }
 
-      43% {
+      40% {
         transform:
-          perspective(900px)
-          rotateX(-4deg)
-          translateX(-4px);
+          perspective(650px)
+          rotateX(-13deg)
+          rotateZ(-1.5deg)
+          translateX(-12px);
       }
 
-      65% {
+      60% {
         transform:
-          perspective(900px)
-          rotateX(9deg)
-          translateX(7px);
+          perspective(650px)
+          rotateX(27deg)
+          rotateZ(2.5deg)
+          translateX(18px);
       }
 
-      82% {
+      80% {
         transform:
-          perspective(900px)
-          rotateX(-2deg)
-          translateX(-2px);
+          perspective(650px)
+          rotateX(-10deg)
+          rotateZ(-1deg)
+          translateX(-8px);
       }
     }
+
+    /* =========================
+       양피지 안쪽 내용
+    ========================= */
 
     .content {
       position: relative;
       z-index: 2;
     }
-
-    /* ===== 제목 ===== */
 
     .wanted {
       margin: 0;
@@ -146,7 +168,9 @@
       font-weight: 700;
     }
 
-    /* ===== 순위표 ===== */
+    /* =========================
+       방문자 순위표
+    ========================= */
 
     .ranking {
       width: 100%;
@@ -160,7 +184,8 @@
       table-layout: fixed;
     }
 
-    th, td {
+    th,
+    td {
       padding: 13px 7px;
       border-bottom: 1px solid rgba(83,48,26,.3);
       overflow-wrap: anywhere;
@@ -192,25 +217,28 @@
       font-weight: 700;
     }
 
-    /* ===== 안내 문구 ===== */
-
     .note {
       margin: 23px 0 0;
       font-size: 12px;
       opacity: .8;
     }
 
-    /* ===== 돌아가기 ===== */
+    /* =========================
+       돌아가기 버튼
+    ========================= */
 
     .back {
       display: inline-block;
       margin-top: 28px;
       padding: 11px 25px;
+
       border: 1px solid #654028;
       background: rgba(225,185,132,.25);
+
       color: #422817;
       text-decoration: none;
       font-weight: 700;
+
       transition: background .2s;
     }
 
@@ -218,26 +246,39 @@
       background: rgba(130,80,42,.2);
     }
 
-    /* ===== 화면 전체 먼지 ===== */
+    /* =========================
+       화면 전체 먼지 효과
+    ========================= */
 
     .dust {
       position: fixed;
       inset: 0;
-      z-index: 20;
-      pointer-events: none;
+
+      width: 100vw;
+      height: 100vh;
+
       overflow: hidden;
+      pointer-events: none;
+
+      z-index: 9999;
     }
 
     .particle {
       position: absolute;
+
       left: var(--x);
       top: var(--y);
+
       width: var(--size);
       height: var(--size);
+
       border-radius: 50%;
-      background: rgba(219,197,160,.65);
-      filter: blur(.6px);
+
+      background: rgba(255,231,180,.95);
+      box-shadow: 0 0 6px rgba(255,220,150,.6);
+
       opacity: 0;
+
       animation: dustFloat var(--duration) linear infinite;
       animation-delay: var(--delay);
     }
@@ -245,24 +286,31 @@
     @keyframes dustFloat {
       0% {
         opacity: 0;
-        transform: translate3d(0,25px,0);
+        transform: translate3d(0,30px,0);
       }
 
       15% {
-        opacity: .45;
+        opacity: .9;
       }
 
-      70% {
-        opacity: .3;
+      50% {
+        opacity: .75;
+        transform: translate3d(70px,-60px,0);
+      }
+
+      85% {
+        opacity: .8;
       }
 
       100% {
         opacity: 0;
-        transform: translate3d(75px,-100px,0);
+        transform: translate3d(140px,-160px,0);
       }
     }
 
-    /* ===== 모바일 ===== */
+    /* =========================
+       모바일 화면
+    ========================= */
 
     @media (max-width: 650px) {
       body {
@@ -289,7 +337,8 @@
         font-size: 13px;
       }
 
-      th, td {
+      th,
+      td {
         padding: 10px 4px;
         font-size: 12px;
       }
@@ -304,6 +353,8 @@
       }
     }
 
+    /* 움직임 최소화 설정 */
+
     @media (prefers-reduced-motion: reduce) {
       .paper-bottom,
       .particle {
@@ -315,28 +366,34 @@
 
 <body>
 
+  <!-- WANTED 순위표 -->
+
   <main class="scene">
 
     <section class="poster" aria-label="항해자 순위표">
 
-      <!-- 위쪽 75%는 고정 -->
+      <!-- 고정된 양피지 위쪽 -->
       <div class="paper-top" aria-hidden="true"></div>
 
-      <!-- 아래쪽 25%는 바람에 펄럭임 -->
+      <!-- 강하게 펄럭이는 양피지 아래쪽 -->
       <div class="paper-bottom" aria-hidden="true"></div>
 
       <div class="content">
 
         <h1 class="wanted">WANTED</h1>
 
-        <p class="brand">GRAND SECURITY LINE</p>
+        <p class="brand">
+          GRAND SECURITY LINE
+        </p>
 
         <p class="description">
           가장 많이 항해한 방문자들의 기록입니다.
         </p>
 
         <div class="ranking">
+
           <table>
+
             <thead>
               <tr>
                 <th scope="col">순위</th>
@@ -352,10 +409,16 @@
                 </td>
               </tr>
             </tbody>
+
           </table>
+
         </div>
 
-        <p class="note" id="crew-status" role="status">
+        <p
+          class="note"
+          id="crew-status"
+          role="status"
+        >
           방문 횟수 기준 · 동점 시 최근 방문자 우선
         </p>
 
@@ -370,27 +433,42 @@
   </main>
 
   <!-- 화면 전체 먼지 -->
-  <div class="dust" id="dust" aria-hidden="true"></div>
+  <div
+    class="dust"
+    id="dust"
+    aria-hidden="true"
+  ></div>
 
   <script>
-    /* ===== Supabase 순위표 ===== */
+
+    /* =========================
+       Supabase 방문자 순위표
+    ========================= */
 
     async function loadCrew() {
-      const tbody = document.getElementById("crew-ranking");
-      const status = document.getElementById("crew-status");
+
+      const tbody =
+        document.getElementById("crew-ranking");
+
+      const status =
+        document.getElementById("crew-status");
 
       const url =
         "https://zdgopdrehbphshdptjjr.supabase.co/functions/v1/quick-responder";
 
       function showMessage(message) {
+
         tbody.replaceChildren();
+
         const row = tbody.insertRow();
         const cell = row.insertCell();
+
         cell.colSpan = 3;
         cell.textContent = message;
       }
 
       try {
+
         const response = await fetch(url, {
           method: "GET",
           headers: {
@@ -408,16 +486,22 @@
           throw new Error("잘못된 순위표 응답");
         }
 
-        const visitors = data.leaderboard.slice(0, 10);
+        const visitors =
+          data.leaderboard.slice(0, 10);
 
         if (visitors.length === 0) {
-          showMessage("아직 등록된 항해자가 없습니다.");
+
+          showMessage(
+            "아직 등록된 항해자가 없습니다."
+          );
+
           return;
         }
 
         tbody.replaceChildren();
 
         visitors.forEach((visitor, index) => {
+
           const row = tbody.insertRow();
 
           row.insertCell().textContent =
@@ -428,55 +512,95 @@
 
           row.insertCell().textContent =
             String(visitor.visit_count ?? 0) + "회";
+
         });
 
       } catch (error) {
+
         console.error("Leaderboard error:", error);
-        showMessage("항해자 명부를 불러오지 못했습니다.");
-        status.textContent = "잠시 후 다시 시도해 주세요.";
+
+        showMessage(
+          "항해자 명부를 불러오지 못했습니다."
+        );
+
+        status.textContent =
+          "잠시 후 다시 시도해 주세요.";
       }
     }
 
-    /* ===== 화면 전체 먼지 생성 ===== */
+    /* =========================
+       먼지 90개 생성
+    ========================= */
 
     function createDust() {
-      const dustContainer = document.getElementById("dust");
-      const dustCount = 45;
 
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const dustContainer =
+        document.getElementById("dust");
+
+      if (!dustContainer) {
+        return;
+      }
+
+      dustContainer.replaceChildren();
+
+      const dustCount = 90;
+
+      const reduceMotion =
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+      if (reduceMotion) {
         return;
       }
 
       for (let i = 0; i < dustCount; i++) {
-        const particle = document.createElement("span");
+
+        const particle =
+          document.createElement("span");
+
         particle.className = "particle";
 
+        /* 화면 전체에 무작위 배치 */
         particle.style.setProperty(
-          "--x", Math.random() * 100 + "%"
+          "--x",
+          Math.random() * 100 + "%"
         );
 
         particle.style.setProperty(
-          "--y", Math.random() * 100 + "%"
+          "--y",
+          Math.random() * 100 + "%"
         );
 
+        /* 먼지 크기: 2~5px */
         particle.style.setProperty(
-          "--size", (Math.random() * 2.5 + 1) + "px"
+          "--size",
+          (Math.random() * 3 + 2) + "px"
         );
 
+        /* 이동 시간: 6~13초 */
         particle.style.setProperty(
-          "--duration", (Math.random() * 9 + 9) + "s"
+          "--duration",
+          (Math.random() * 7 + 6) + "s"
         );
 
+        /* 처음부터 먼지가 흩날리도록 설정 */
         particle.style.setProperty(
-          "--delay", (-Math.random() * 18) + "s"
+          "--delay",
+          (-Math.random() * 13) + "s"
         );
 
         dustContainer.appendChild(particle);
       }
     }
 
+    /* =========================
+       페이지 시작
+    ========================= */
+
     loadCrew();
     createDust();
+
   </script>
 
 </body>
