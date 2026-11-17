@@ -1,0 +1,438 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Grand Security Line | 선장실</title>
+
+  <style>
+    /* 기본 설정 */
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: #100b08;
+    }
+
+    body {
+      overflow: hidden;
+    }
+
+    .cabin {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    /* 낮 / 밤 이미지 */
+    .scene-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .day {
+      z-index: 0;
+    }
+
+    .night {
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 1.5s ease-in-out;
+    }
+
+    .cabin.dark .night {
+      opacity: 1;
+    }
+
+    /* 밤 화면을 아주 살짝 어둡게 */
+    .darkness {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+
+      background: rgba(3, 8, 20, 0);
+      transition: background 1.5s ease-in-out;
+    }
+
+    .cabin.dark .darkness {
+      background: rgba(3, 8, 20, 0.08);
+    }
+
+    /* 랜턴 주변의 따뜻한 불빛 */
+    .lantern-glow {
+      position: absolute;
+      z-index: 3;
+
+      left: 48%;
+      top: -14%;
+      width: 40%;
+      height: 70%;
+
+      border-radius: 50%;
+      pointer-events: none;
+
+      background: radial-gradient(
+        ellipse at 50% 40%,
+        rgba(255, 195, 105, 0.28) 0%,
+        rgba(255, 165, 65, 0.12) 30%,
+        rgba(255, 130, 30, 0.03) 60%,
+        transparent 75%
+      );
+
+      opacity: 0;
+      mix-blend-mode: screen;
+      transition: opacity 1.5s ease-in-out;
+    }
+
+    .cabin.dark .lantern-glow {
+      opacity: 1;
+      animation: lanternFlicker 4s ease-in-out infinite;
+    }
+
+    @keyframes lanternFlicker {
+      0%, 100% {
+        opacity: 0.85;
+      }
+
+      35% {
+        opacity: 1;
+      }
+
+      65% {
+        opacity: 0.9;
+      }
+    }
+
+    /* 선장실 먼지 효과 */
+    .dust-container {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .dust-particle {
+      position: absolute;
+
+      left: var(--x);
+      top: var(--y);
+
+      width: var(--size);
+      height: var(--size);
+
+      border-radius: 50%;
+
+      background: rgba(255, 235, 185, 0.9);
+      box-shadow: 0 0 7px rgba(255, 216, 143, 0.6);
+
+      opacity: 0;
+
+      animation: dustFloat var(--duration) ease-in-out infinite;
+      animation-delay: var(--delay);
+    }
+
+    @keyframes dustFloat {
+      0% {
+        transform: translate3d(0, 25px, 0);
+        opacity: 0;
+      }
+
+      20% {
+        opacity: 0.7;
+      }
+
+      50% {
+        transform: translate3d(35px, -25px, 0);
+        opacity: 0.85;
+      }
+
+      80% {
+        opacity: 0.5;
+      }
+
+      100% {
+        transform: translate3d(-15px, -75px, 0);
+        opacity: 0;
+      }
+    }
+
+    /* 밤에는 먼지를 은은한 황금색으로 */
+    .cabin.dark .dust-particle {
+      background: rgba(255, 195, 110, 0.8);
+      box-shadow: 0 0 9px rgba(255, 160, 60, 0.5);
+    }
+
+    /* 마우스 주변 후광 */
+    .cursor-glow {
+      position: absolute;
+      left: 0;
+      top: 0;
+
+      width: 190px;
+      height: 190px;
+
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 6;
+
+      background: radial-gradient(
+        circle,
+        rgba(255, 217, 125, 0.23) 0%,
+        rgba(255, 177, 64, 0.11) 30%,
+        rgba(255, 153, 50, 0.04) 55%,
+        transparent 75%
+      );
+
+      opacity: 0;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.5s ease;
+      will-change: transform;
+    }
+
+    .cabin.dark .cursor-glow.active {
+      opacity: 1;
+    }
+
+    /* 천장 랜턴 클릭 영역 */
+    .lantern {
+      position: absolute;
+      z-index: 10;
+
+      left: 61.8%;
+      top: 0.2%;
+      width: 8.2%;
+      height: 25%;
+
+      padding: 0;
+      border: none;
+      border-radius: 45%;
+      background: transparent;
+
+      cursor: pointer;
+    }
+
+    .lantern:focus-visible {
+      outline: 2px solid #f6d28b;
+      outline-offset: 3px;
+    }
+
+    /* 모바일 */
+    @media (hover: none) {
+      .cursor-glow {
+        display: none;
+      }
+    }
+
+    /* 움직임 최소화 설정 */
+    @media (prefers-reduced-motion: reduce) {
+      .night,
+      .darkness,
+      .lantern-glow {
+        transition: none;
+      }
+
+      .lantern-glow,
+      .dust-particle {
+        animation: none;
+      }
+
+      .dust-particle,
+      .cursor-glow {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="cabin" id="cabin">
+
+    <!-- 낮 이미지 -->
+    <img
+      class="scene-image day"
+      src="./captain-day.webp"
+      alt="햇빛이 들어오는 낮의 선장실"
+    >
+
+    <!-- 밤 이미지 -->
+    <img
+      class="scene-image night"
+      src="./captain-night.webp"
+      alt="달빛과 랜턴 불빛이 비치는 밤의 선장실"
+    >
+
+    <!-- 밤 조명 -->
+    <div class="darkness" aria-hidden="true"></div>
+
+    <!-- 랜턴 빛 -->
+    <div class="lantern-glow" aria-hidden="true"></div>
+
+    <!-- 먼지 -->
+    <div
+      class="dust-container"
+      id="dust-container"
+      aria-hidden="true"
+    ></div>
+
+    <!-- 마우스 후광 -->
+    <div
+      class="cursor-glow"
+      id="cursor-glow"
+      aria-hidden="true"
+    ></div>
+
+    <!-- 랜턴 자체를 클릭하는 투명 영역 -->
+    <button
+      class="lantern"
+      id="lantern"
+      type="button"
+      aria-label="랜턴 켜기 또는 끄기"
+      aria-pressed="false"
+    ></button>
+
+  </main>
+
+  <script>
+    /* 낮 / 밤 전환 */
+    const cabin = document.getElementById("cabin");
+    const lantern = document.getElementById("lantern");
+
+    let isDark = false;
+
+    lantern.addEventListener("click", () => {
+      isDark = !isDark;
+
+      cabin.classList.toggle("dark", isDark);
+
+      lantern.setAttribute(
+        "aria-pressed",
+        String(isDark)
+      );
+    });
+
+    /* 먼지 생성 */
+    function createDust() {
+      const container =
+        document.getElementById("dust-container");
+
+      if (!container) return;
+
+      if (
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches
+      ) {
+        return;
+      }
+
+      const dustCount = 75;
+
+      for (let i = 0; i < dustCount; i++) {
+        const dust = document.createElement("span");
+
+        dust.className = "dust-particle";
+
+        dust.style.setProperty(
+          "--x",
+          Math.random() * 100 + "%"
+        );
+
+        dust.style.setProperty(
+          "--y",
+          Math.random() * 100 + "%"
+        );
+
+        dust.style.setProperty(
+          "--size",
+          (Math.random() * 2.5 + 1) + "px"
+        );
+
+        dust.style.setProperty(
+          "--duration",
+          (Math.random() * 10 + 9) + "s"
+        );
+
+        dust.style.setProperty(
+          "--delay",
+          (-Math.random() * 20) + "s"
+        );
+
+        container.appendChild(dust);
+      }
+    }
+
+    /* 마우스 후광 */
+    const cursorGlow =
+      document.getElementById("cursor-glow");
+
+    let mouseX = 0;
+    let mouseY = 0;
+    let glowX = 0;
+    let glowY = 0;
+    let glowStarted = false;
+
+    cabin.addEventListener("pointermove", (event) => {
+      if (event.pointerType !== "mouse") return;
+
+      const rect = cabin.getBoundingClientRect();
+
+      mouseX = event.clientX - rect.left;
+      mouseY = event.clientY - rect.top;
+
+      if (!glowStarted) {
+        glowX = mouseX;
+        glowY = mouseY;
+        glowStarted = true;
+      }
+
+      cursorGlow.classList.add("active");
+    });
+
+    cabin.addEventListener("pointerleave", () => {
+      cursorGlow.classList.remove("active");
+    });
+
+    function animateGlow() {
+      if (glowStarted) {
+        /* 기존 0.12 → 0.45 : 더 빠르게 따라옴 */
+        glowX += (mouseX - glowX) * 0.45;
+        glowY += (mouseY - glowY) * 0.45;
+
+        cursorGlow.style.transform =
+          `translate(${glowX - 95}px, ${glowY - 95}px)`;
+      }
+
+      requestAnimationFrame(animateGlow);
+    }
+
+    /* 페이지 실행 */
+    createDust();
+
+    if (
+      window.matchMedia(
+        "(hover: hover) and (prefers-reduced-motion: no-preference)"
+      ).matches
+    ) {
+      animateGlow();
+    }
+  </script>
+
+</body>
+</html>
