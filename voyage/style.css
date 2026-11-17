@@ -1,13 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Pirata+One&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap');
+
 @font-face {
     font-family: 'YoonChoWooSan';
     src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408@1.0/YoonChildfundkoreaManSeh.woff2') format('woff2');
     font-weight: normal;
     font-display: swap;
 }
-
- 
-
 
 /* 기본 설정 */
 * {
@@ -25,7 +24,7 @@ body {
     min-height: 100dvh;
     overflow: hidden;
     background: #0879b5;
-    font-family: "Segoe UI", sans-serif;
+    font-family: 'YoonChoWooSan', sans-serif;
     color: white;
 }
 
@@ -43,7 +42,6 @@ body {
     will-change: transform;
 }
 
-/* 배 위에서 흔들리는 카메라 효과 */
 @keyframes oceanMove {
     0% {
         transform: scale(1.04)
@@ -141,22 +139,27 @@ body {
     );
 }
 
-/* 작은 제목 */
+/* 영어 제목: Caveat 손글씨 */
 .subtitle {
-    font-size: clamp(16px, 2vw, 25px);
+    margin: 0;
+
+    font-family: 'Caveat', cursive;
+    font-size: clamp(28px, 3.5vw, 44px);
     font-weight: 700;
-    letter-spacing: 5px;
+    letter-spacing: 2px;
+
     text-shadow: 0 3px 12px #002b4e;
 
     opacity: 0;
     animation: fadeUp 1.2s ease forwards;
-    font-family: 'Pirata One', serif;
-    letter-spacing: 4px;
 }
 
-/* 메인 제목 */
+/* 한글 메인 제목 */
 .welcome h1 {
+    font-family: 'YoonChoWooSan', sans-serif;
     font-size: clamp(32px, 5vw, 65px);
+    font-weight: normal;
+
     margin: 15px 0;
     text-shadow: 0 5px 18px #002b4e;
 
@@ -166,6 +169,7 @@ body {
 
 /* 설명 */
 .description {
+    font-family: 'YoonChoWooSan', sans-serif;
     font-size: clamp(14px, 1.6vw, 20px);
     text-shadow: 0 2px 10px #002b4e;
 
@@ -197,8 +201,10 @@ body {
     background: rgba(0, 66, 110, 0.65);
     color: white;
 
-    font-size: 18px;
-    font-weight: 700;
+    font-family: 'YoonChoWooSan', sans-serif;
+    font-size: 22px;
+    font-weight: normal;
+
     cursor: pointer;
 
     box-shadow: 0 5px 25px #002b4e80;
@@ -213,7 +219,6 @@ body {
         scale 0.3s;
 }
 
-/* 마우스를 올렸을 때 */
 .start-button:hover {
     background: rgba(0, 137, 196, 0.9);
     box-shadow: 0 0 30px #a9efff;
@@ -254,23 +259,6 @@ body.sailing .welcome {
     }
 }
 
-/* 움직임 최소화 설정을 사용하는 사람을 위한 처리 */
-@media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-
-    .subtitle,
-    .welcome h1,
-    .description,
-    .start-button {
-        opacity: 1;
-    }
-}
-
-
 /* 화면 전환 */
 #start-screen[hidden],
 #name-screen[hidden],
@@ -290,12 +278,17 @@ body.sailing .welcome {
 #visitor-name {
     width: min(320px, 85vw);
     padding: 15px 20px;
+
     border: 2px solid rgba(255, 255, 255, 0.7);
     border-radius: 12px;
+
     background: rgba(0, 35, 65, 0.55);
     color: white;
-    font-size: 18px;
+
+    font-family: 'YoonChoWooSan', sans-serif;
+    font-size: 22px;
     text-align: center;
+
     outline: none;
 }
 
@@ -308,38 +301,29 @@ body.sailing .welcome {
 }
 
 .privacy-notice {
+    font-family: 'YoonChoWooSan', sans-serif;
     font-size: 13px;
     color: rgba(255, 255, 255, 0.85);
 }
 
 /* 환영 메시지 */
 #greeting-screen h1 {
+    font-family: 'YoonChoWooSan', sans-serif;
     animation: fadeUp 0.8s ease both;
 }
 
+/* 움직임 최소화 설정 */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 
-
-/* Grand Security Line 손글씨 폰트 */
-
-/* 항해할 준비가 되셨나요? */
-.welcome h1 {
-    font-family: 'YoonChoWooSan', sans-serif;
-    font-weight: normal;
-}
-
-/* 항해 시작하기 버튼 */
-.start-button {
-    font-family: 'YoonChoWooSan', sans-serif;
-    font-weight: normal;
-}
-
-/* 닉네임 입력창 */
-#visitor-name {
-    font-family: 'YoonChoWooSan', sans-serif;
-    font-size: 22px;
-}
-
-/* 환영 메시지 */
-#greeting-screen h1 {
-    font-family: 'YoonChoWooSan', sans-serif;
+    .subtitle,
+    .welcome h1,
+    .description,
+    .start-button {
+        opacity: 1;
+    }
 }

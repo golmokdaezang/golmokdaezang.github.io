@@ -9,30 +9,21 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
   <link
-    href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap"
     rel="stylesheet"
   >
 
   <style>
-    /* =========================
-       시작 화면과 동일한 손글씨 폰트
-    ========================= */
-
+    /* 한글 손글씨 */
     @font-face {
       font-family: "YoonChoWooSan";
-      src: url(
-        "https://cdn.jsdelivr.net/gh/projectnoonnu/2408@1.0/YoonChildfundkoreaManSeh.woff2"
-      ) format("woff2");
+      src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408@1.0/YoonChildfundkoreaManSeh.woff2") format("woff2");
       font-weight: normal;
       font-display: swap;
     }
 
-    /* =========================
-       기본 설정
-    ========================= */
-
+    /* 기본 설정 */
     * {
       box-sizing: border-box;
     }
@@ -58,10 +49,7 @@
       color: #402719;
     }
 
-    /* =========================
-       양피지 전체 영역
-    ========================= */
-
+    /* 양피지 */
     .scene {
       position: relative;
       width: min(100%, 1120px);
@@ -82,10 +70,7 @@
       );
     }
 
-    /* =========================
-       양피지 이미지
-    ========================= */
-
+    /* 양피지 이미지 */
     .paper-top,
     .paper-bottom {
       position: absolute;
@@ -99,27 +84,19 @@
       pointer-events: none;
     }
 
-    /*
-       윗부분은 고정.
-       못도 움직이지 않음.
-    */
-
+    /* 위쪽과 못은 고정 */
     .paper-top {
       z-index: 0;
       clip-path: inset(0 0 24.5% 0);
     }
 
-    /*
-       아래쪽 25%만 펄럭임.
-       최대 10도 / 4초 주기
-    */
-
+    /* 아래쪽 25%만 최대 5도 펄럭임 */
     .paper-bottom {
       z-index: 1;
       clip-path: inset(75% 0 0 0);
 
       transform-origin: center 75%;
-      animation: strongFlutter 4s ease-in-out infinite;
+      animation: strongFlutter 4.5s ease-in-out infinite;
 
       will-change: transform;
     }
@@ -127,87 +104,76 @@
     @keyframes strongFlutter {
       0%, 100% {
         transform:
-          perspective(750px)
+          perspective(850px)
           rotateX(0deg)
           rotateZ(0deg)
           translateX(0);
       }
 
-      20% {
+      25% {
         transform:
-          perspective(750px)
-          rotateX(8deg)
-          rotateZ(0.5deg)
-          translateX(4px);
+          perspective(850px)
+          rotateX(4deg)
+          rotateZ(0.2deg)
+          translateX(2px);
       }
 
-      40% {
+      50% {
         transform:
-          perspective(750px)
-          rotateX(-4deg)
-          rotateZ(-0.3deg)
-          translateX(-3px);
+          perspective(850px)
+          rotateX(-2deg)
+          rotateZ(-0.1deg)
+          translateX(-1px);
       }
 
-      60% {
+      75% {
         transform:
-          perspective(750px)
-          rotateX(10deg)
-          rotateZ(0.6deg)
-          translateX(5px);
-      }
-
-      80% {
-        transform:
-          perspective(750px)
-          rotateX(-3deg)
-          rotateZ(-0.2deg)
-          translateX(-2px);
+          perspective(850px)
+          rotateX(5deg)
+          rotateZ(0.2deg)
+          translateX(2px);
       }
     }
 
-    /* =========================
-       양피지 내용
-    ========================= */
-
+    /* 양피지 내용 */
     .content {
       position: relative;
       z-index: 2;
     }
 
-    /* WANTED는 기존 해적 폰트 */
-
+    /* WANTED: 영어 손글씨 */
     .wanted {
       margin: 0;
 
-      font-family: "Pirata One", Georgia, serif;
-      font-size: clamp(55px, 8vw, 92px);
-      font-weight: 400;
+      font-family: "Caveat", cursive;
+      font-size: clamp(75px, 10vw, 115px);
+      font-weight: 700;
       line-height: 1.1;
       letter-spacing: 2px;
 
       color: #642d1d;
     }
 
+    /* GRAND SECURITY LINE */
     .brand {
-      margin: 10px 0 26px;
+      margin: 8px 0 26px;
 
-      font-size: 19px;
+      font-family: "Caveat", cursive;
+      font-size: clamp(24px, 3vw, 34px);
+      font-weight: 700;
       letter-spacing: 2px;
     }
 
+    /* 한글 설명 */
     .description {
       margin: 0 0 27px;
+      font-family: "YoonChoWooSan", sans-serif;
       font-size: clamp(20px, 2.3vw, 27px);
     }
 
-    /* =========================
-       방문자 순위표
-    ========================= */
-
+    /* 방문자 순위표 */
     .ranking {
       width: 100%;
-
       border: 1px solid rgba(91, 52, 28, 0.65);
       background: rgba(235, 201, 151, 0.08);
     }
@@ -221,10 +187,7 @@
     th,
     td {
       padding: 13px 7px;
-
-      border-bottom:
-        1px solid rgba(83, 48, 26, 0.3);
-
+      border-bottom: 1px solid rgba(83, 48, 26, 0.3);
       overflow-wrap: anywhere;
     }
 
@@ -250,20 +213,14 @@
       border-bottom: none;
     }
 
-    /* =========================
-       안내 문구
-    ========================= */
-
+    /* 안내 문구 */
     .note {
       margin: 23px 0 0;
       font-size: 18px;
       opacity: 0.8;
     }
 
-    /* =========================
-       블로그 돌아가기
-    ========================= */
-
+    /* 돌아가기 버튼 */
     .back {
       display: inline-block;
       margin-top: 28px;
@@ -274,6 +231,7 @@
 
       color: #422817;
       text-decoration: none;
+      font-family: "YoonChoWooSan", sans-serif;
       font-size: 21px;
 
       transition: background 0.2s;
@@ -283,10 +241,7 @@
       background: rgba(130, 80, 42, 0.2);
     }
 
-    /* =========================
-       화면 전체 먼지 효과
-    ========================= */
-
+    /* 화면 전체 먼지 */
     .dust {
       position: fixed;
       inset: 0;
@@ -312,15 +267,11 @@
       border-radius: 50%;
 
       background: rgba(255, 231, 180, 0.95);
-
-      box-shadow:
-        0 0 6px rgba(255, 220, 150, 0.6);
+      box-shadow: 0 0 6px rgba(255, 220, 150, 0.6);
 
       opacity: 0;
 
-      animation:
-        dustFloat var(--duration) linear infinite;
-
+      animation: dustFloat var(--duration) linear infinite;
       animation-delay: var(--delay);
     }
 
@@ -349,10 +300,7 @@
       }
     }
 
-    /* =========================
-       모바일 화면
-    ========================= */
-
+    /* 모바일 */
     @media (max-width: 650px) {
       body {
         padding: 10px 4px;
@@ -366,11 +314,11 @@
       }
 
       .wanted {
-        font-size: clamp(45px, 12vw, 68px);
+        font-size: clamp(65px, 13vw, 90px);
       }
 
       .brand {
-        font-size: 14px;
+        font-size: 23px;
         letter-spacing: 1px;
       }
 
@@ -395,7 +343,6 @@
     }
 
     /* 움직임 최소화 설정 */
-
     @media (prefers-reduced-motion: reduce) {
       .paper-bottom,
       .particle {
@@ -406,10 +353,6 @@
 </head>
 
 <body>
-
-  <!-- =========================
-       WANTED 순위표
-  ========================= -->
 
   <main class="scene">
 
@@ -495,10 +438,7 @@
   ></div>
 
   <script>
-    /* =========================
-       Supabase 방문자 순위표
-    ========================= */
-
+    /* Supabase 방문자 순위표 */
     async function loadCrew() {
       const tbody =
         document.getElementById("crew-ranking");
@@ -563,10 +503,7 @@
         });
 
       } catch (error) {
-        console.error(
-          "Leaderboard error:",
-          error
-        );
+        console.error("Leaderboard error:", error);
 
         showMessage(
           "항해자 명부를 불러오지 못했습니다."
@@ -577,10 +514,7 @@
       }
     }
 
-    /* =========================
-       화면 전체 먼지 90개
-    ========================= */
-
+    /* 화면 전체 먼지 90개 */
     function createDust() {
       const dustContainer =
         document.getElementById("dust");
@@ -633,8 +567,6 @@
         dustContainer.appendChild(particle);
       }
     }
-
-    /* 페이지 시작 */
 
     loadCrew();
     createDust();
