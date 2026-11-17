@@ -4,11 +4,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Grand Security Line | 선장실</title>
 
   <style>
-    /* 기본 설정 */
+    /* 시작 화면과 동일한 한국어 폰트 */
+    @font-face {
+      font-family: 'YoonChoWooSan';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408@1.0/YoonChildfundkoreaManSeh.woff2') format('woff2');
+      font-weight: normal;
+      font-display: swap;
+    }
+
     * {
       box-sizing: border-box;
     }
@@ -24,6 +30,7 @@
       overflow: hidden;
     }
 
+    /* 선장실 */
     .cabin {
       position: relative;
       width: 100vw;
@@ -33,7 +40,7 @@
       isolation: isolate;
     }
 
-    /* 낮 / 밤 이미지 */
+    /* 낮과 밤 배경 */
     .scene-image {
       position: absolute;
       inset: 0;
@@ -58,14 +65,13 @@
       opacity: 1;
     }
 
-    /* 밤 화면을 아주 살짝 어둡게 */
+    /* 밤의 은은한 어둠 */
     .darkness {
       position: absolute;
       inset: 0;
       z-index: 2;
       pointer-events: none;
-
-      background: rgba(3, 8, 20, 0);
+      background: transparent;
       transition: background 1.5s ease-in-out;
     }
 
@@ -73,16 +79,14 @@
       background: rgba(3, 8, 20, 0.08);
     }
 
-    /* 랜턴 주변의 따뜻한 불빛 */
+    /* 랜턴 불빛 */
     .lantern-glow {
       position: absolute;
       z-index: 3;
-
       left: 48%;
       top: -14%;
       width: 40%;
       height: 70%;
-
       border-radius: 50%;
       pointer-events: none;
 
@@ -105,20 +109,12 @@
     }
 
     @keyframes lanternFlicker {
-      0%, 100% {
-        opacity: 0.85;
-      }
-
-      35% {
-        opacity: 1;
-      }
-
-      65% {
-        opacity: 0.9;
-      }
+      0%, 100% { opacity: 0.85; }
+      35% { opacity: 1; }
+      65% { opacity: 0.9; }
     }
 
-    /* 선장실 먼지 효과 */
+    /* 먼지 */
     .dust-container {
       position: absolute;
       inset: 0;
@@ -129,18 +125,14 @@
 
     .dust-particle {
       position: absolute;
-
       left: var(--x);
       top: var(--y);
-
       width: var(--size);
       height: var(--size);
-
       border-radius: 50%;
 
       background: rgba(255, 235, 185, 0.9);
       box-shadow: 0 0 7px rgba(255, 216, 143, 0.6);
-
       opacity: 0;
 
       animation: dustFloat var(--duration) ease-in-out infinite;
@@ -152,41 +144,34 @@
         transform: translate3d(0, 25px, 0);
         opacity: 0;
       }
-
       20% {
         opacity: 0.7;
       }
-
       50% {
         transform: translate3d(35px, -25px, 0);
         opacity: 0.85;
       }
-
       80% {
         opacity: 0.5;
       }
-
       100% {
         transform: translate3d(-15px, -75px, 0);
         opacity: 0;
       }
     }
 
-    /* 밤에는 먼지를 은은한 황금색으로 */
     .cabin.dark .dust-particle {
       background: rgba(255, 195, 110, 0.8);
       box-shadow: 0 0 9px rgba(255, 160, 60, 0.5);
     }
 
-    /* 마우스 주변 후광 */
+    /* 밤에 마우스를 따라오는 후광 */
     .cursor-glow {
       position: absolute;
       left: 0;
       top: 0;
-
       width: 190px;
       height: 190px;
-
       border-radius: 50%;
       pointer-events: none;
       z-index: 6;
@@ -209,21 +194,18 @@
       opacity: 1;
     }
 
-    /* 천장 랜턴 클릭 영역 */
+    /* 실제 그림 속 랜턴을 클릭 */
     .lantern {
       position: absolute;
       z-index: 10;
-
       left: 61.8%;
       top: 0.2%;
       width: 8.2%;
       height: 25%;
-
       padding: 0;
       border: none;
       border-radius: 45%;
       background: transparent;
-
       cursor: pointer;
     }
 
@@ -232,14 +214,106 @@
       outline-offset: 3px;
     }
 
-    /* 모바일 */
+    /* =========================
+       선장실 입장 애니메이션
+    ========================= */
+
+    .entrance {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      background: #100e0b;
+      pointer-events: none;
+
+      animation: entranceFade 3.4s ease-in-out forwards;
+    }
+
+    .entrance-title {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+
+      /* 시작 화면과 같은 손글씨 */
+      font-family: 'YoonChoWooSan', sans-serif;
+      font-size: clamp(28px, 3vw, 42px);
+      font-weight: normal;
+
+      color: #f3d18b;
+      letter-spacing: 0.45em;
+      padding-left: 0.45em;
+
+      text-shadow:
+        0 0 10px rgba(255, 199, 91, 0.45),
+        0 0 25px rgba(220, 145, 40, 0.2);
+
+      opacity: 0;
+      animation: titleAppear 2.5s ease-in-out forwards;
+    }
+
+    /* 위아래로 길게 뻗은 금색 선 */
+    .entrance-title::before,
+    .entrance-title::after {
+      content: "";
+      display: block;
+
+      width: clamp(230px, 30vw, 380px);
+      height: 1px;
+
+      background: linear-gradient(
+        90deg,
+        transparent,
+        #d8ae62 20%,
+        #f3d18b 50%,
+        #d8ae62 80%,
+        transparent
+      );
+
+      box-shadow: 0 0 8px rgba(255, 195, 90, 0.35);
+    }
+
+    @keyframes titleAppear {
+      0% {
+        opacity: 0;
+        transform: translateY(15px);
+        filter: blur(5px);
+      }
+
+      35%, 70% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-8px);
+        filter: blur(3px);
+      }
+    }
+
+    @keyframes entranceFade {
+      0%, 65% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
     @media (hover: none) {
       .cursor-glow {
         display: none;
       }
     }
 
-    /* 움직임 최소화 설정 */
     @media (prefers-reduced-motion: reduce) {
       .night,
       .darkness,
@@ -253,7 +327,8 @@
       }
 
       .dust-particle,
-      .cursor-glow {
+      .cursor-glow,
+      .entrance {
         display: none;
       }
     }
@@ -262,43 +337,41 @@
 
 <body>
 
+  <!-- 입장 연출 -->
+  <div class="entrance" aria-hidden="true">
+    <div class="entrance-title">선장실</div>
+  </div>
+
+  <!-- 선장실 -->
   <main class="cabin" id="cabin">
 
-    <!-- 낮 이미지 -->
     <img
       class="scene-image day"
       src="./captain-day.webp"
       alt="햇빛이 들어오는 낮의 선장실"
     >
 
-    <!-- 밤 이미지 -->
     <img
       class="scene-image night"
       src="./captain-night.webp"
-      alt="달빛과 랜턴 불빛이 비치는 밤의 선장실"
+      alt="랜턴 불빛이 비치는 밤의 선장실"
     >
 
-    <!-- 밤 조명 -->
     <div class="darkness" aria-hidden="true"></div>
-
-    <!-- 랜턴 빛 -->
     <div class="lantern-glow" aria-hidden="true"></div>
 
-    <!-- 먼지 -->
     <div
       class="dust-container"
       id="dust-container"
       aria-hidden="true"
     ></div>
 
-    <!-- 마우스 후광 -->
     <div
       class="cursor-glow"
       id="cursor-glow"
       aria-hidden="true"
     ></div>
 
-    <!-- 랜턴 자체를 클릭하는 투명 영역 -->
     <button
       class="lantern"
       id="lantern"
@@ -310,7 +383,7 @@
   </main>
 
   <script>
-    /* 낮 / 밤 전환 */
+    /* 랜턴 클릭 */
     const cabin = document.getElementById("cabin");
     const lantern = document.getElementById("lantern");
 
@@ -318,57 +391,34 @@
 
     lantern.addEventListener("click", () => {
       isDark = !isDark;
-
       cabin.classList.toggle("dark", isDark);
-
-      lantern.setAttribute(
-        "aria-pressed",
-        String(isDark)
-      );
+      lantern.setAttribute("aria-pressed", String(isDark));
     });
 
     /* 먼지 생성 */
     function createDust() {
-      const container =
-        document.getElementById("dust-container");
+      const container = document.getElementById("dust-container");
 
       if (!container) return;
 
-      if (
-        window.matchMedia(
-          "(prefers-reduced-motion: reduce)"
-        ).matches
-      ) {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         return;
       }
 
-      const dustCount = 75;
-
-      for (let i = 0; i < dustCount; i++) {
+      for (let i = 0; i < 75; i++) {
         const dust = document.createElement("span");
-
         dust.className = "dust-particle";
 
-        dust.style.setProperty(
-          "--x",
-          Math.random() * 100 + "%"
-        );
-
-        dust.style.setProperty(
-          "--y",
-          Math.random() * 100 + "%"
-        );
-
+        dust.style.setProperty("--x", Math.random() * 100 + "%");
+        dust.style.setProperty("--y", Math.random() * 100 + "%");
         dust.style.setProperty(
           "--size",
           (Math.random() * 2.5 + 1) + "px"
         );
-
         dust.style.setProperty(
           "--duration",
           (Math.random() * 10 + 9) + "s"
         );
-
         dust.style.setProperty(
           "--delay",
           (-Math.random() * 20) + "s"
@@ -379,8 +429,7 @@
     }
 
     /* 마우스 후광 */
-    const cursorGlow =
-      document.getElementById("cursor-glow");
+    const cursorGlow = document.getElementById("cursor-glow");
 
     let mouseX = 0;
     let mouseY = 0;
@@ -411,7 +460,6 @@
 
     function animateGlow() {
       if (glowStarted) {
-        /* 기존 0.12 → 0.45 : 더 빠르게 따라옴 */
         glowX += (mouseX - glowX) * 0.45;
         glowY += (mouseY - glowY) * 0.45;
 
@@ -422,7 +470,7 @@
       requestAnimationFrame(animateGlow);
     }
 
-    /* 페이지 실행 */
+    /* 실행 */
     createDust();
 
     if (
