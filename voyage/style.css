@@ -139,12 +139,14 @@ body {
     );
 }
 
+
+
 /* 영어 제목: Caveat 손글씨 */
 .subtitle {
     margin: 0;
 
     font-family: 'Caveat', cursive;
-    font-size: clamp(28px, 3.5vw, 44px);
+    font-size: clamp(20px, 2.3vw, 30px);
     font-weight: 700;
     letter-spacing: 2px;
 
@@ -153,6 +155,8 @@ body {
     opacity: 0;
     animation: fadeUp 1.2s ease forwards;
 }
+
+
 
 /* 한글 메인 제목 */
 .welcome h1 {
