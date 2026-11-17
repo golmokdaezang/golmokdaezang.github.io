@@ -422,7 +422,7 @@
       background: #100e0b;
       opacity: 1;
 
-      transition: opacity 0.5s ease;
+      transition: opacity 0.2s ease;
     }
 
     .deck-title {
@@ -430,7 +430,7 @@
     }
 
     .deck-transition.active .deck-title {
-      animation: titleAppear 1.5s ease-in-out forwards;
+      animation: titleAppear 0.5s ease-in-out forwards;
     }
 
     .deck-transition.show-images .deck-intro {
@@ -463,8 +463,8 @@
       transform: scale(1);
 
       transition:
-        opacity 0.45s ease-in-out,
-        transform 1.5s ease-out;
+        opacity 0.2s ease-in-out,
+        transform 0.6s ease-out;
 
       will-change: opacity, transform;
     }
@@ -494,7 +494,7 @@
       opacity: 0;
       pointer-events: none;
 
-      transition: opacity 0.8s ease-in-out;
+      transition: opacity 0.35s ease-in-out;
     }
 
     .deck-transition.blackout .deck-blackout {
@@ -571,7 +571,7 @@
     <!-- 랜턴 불빛 -->
     <div class="lantern-glow" aria-hidden="true"></div>
 
-    <!-- 떠다니는 먼지 -->
+    <!-- 먼지 -->
     <div
       class="dust-container"
       id="dust-container"
@@ -613,7 +613,7 @@
     aria-hidden="true"
   >
 
-    <!-- 이미지 2장 -->
+    <!-- 이미지 2장만 사용 -->
     <div class="deck-images">
 
       <img
@@ -767,6 +767,7 @@
 
     /* =========================
        4. 갑판 이동 애니메이션
+       전체 1.8초
     ========================= */
 
     const cabinDoor =
@@ -802,31 +803,31 @@
       deckTransition.classList.add("active");
       deckTransition.setAttribute("aria-hidden", "false");
 
-      /* 첫 번째 이미지 미리 준비 */
+      /* 첫 번째 이미지 준비 */
       deckImages[0].classList.add("visible");
 
-      /* 1.5초: 첫 번째 이미지 등장 */
+      /* 0.5초: 첫 번째 이미지 등장 */
       setTimeout(() => {
         deckTransition.classList.add("show-images");
-      }, 1500);
+      }, 500);
 
-      /* 2.6초: 두 번째 이미지 등장 */
+      /* 0.9초: 두 번째 이미지 등장 */
       setTimeout(() => {
         deckImages[0].classList.remove("visible");
         deckImages[0].classList.add("past");
 
         deckImages[1].classList.add("visible");
-      }, 2600);
+      }, 900);
 
-      /* 3.7초: 화면 암전 */
+      /* 1.4초: 암전 */
       setTimeout(() => {
         deckTransition.classList.add("blackout");
-      }, 3700);
+      }, 1400);
 
-      /* 4.5초: 방명록으로 이동 */
+      /* 1.8초: 방명록 이동 */
       setTimeout(() => {
         window.location.href = destination;
-      }, 4500);
+      }, 1800);
     });
 
     /* =========================
