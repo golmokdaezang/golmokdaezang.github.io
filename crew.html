@@ -4,13 +4,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>WANTED | Grand Security Line</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap"
+    rel="stylesheet"
+  >
 
   <style>
+    /* =========================
+       시작 화면과 동일한 손글씨 폰트
+    ========================= */
+
+    @font-face {
+      font-family: "YoonChoWooSan";
+      src: url(
+        "https://cdn.jsdelivr.net/gh/projectnoonnu/2408@1.0/YoonChildfundkoreaManSeh.woff2"
+      ) format("woff2");
+      font-weight: normal;
+      font-display: swap;
+    }
+
+    /* =========================
+       기본 설정
+    ========================= */
+
     * {
       box-sizing: border-box;
     }
@@ -32,12 +54,12 @@
       background-repeat: no-repeat;
       background-attachment: fixed;
 
-      font-family: "Noto Serif KR", serif;
+      font-family: "YoonChoWooSan", sans-serif;
       color: #402719;
     }
 
     /* =========================
-       양피지
+       양피지 전체 영역
     ========================= */
 
     .scene {
@@ -60,10 +82,9 @@
       );
     }
 
-    /*
-       위쪽 양피지와 못은 고정.
-       아래쪽 25%만 펄럭임.
-    */
+    /* =========================
+       양피지 이미지
+    ========================= */
 
     .paper-top,
     .paper-bottom {
@@ -78,22 +99,30 @@
       pointer-events: none;
     }
 
+    /*
+       윗부분은 고정.
+       못도 움직이지 않음.
+    */
+
     .paper-top {
       z-index: 0;
       clip-path: inset(0 0 24.5% 0);
     }
+
+    /*
+       아래쪽 25%만 펄럭임.
+       최대 10도 / 4초 주기
+    */
 
     .paper-bottom {
       z-index: 1;
       clip-path: inset(75% 0 0 0);
 
       transform-origin: center 75%;
-      animation: strongFlutter 3s ease-in-out infinite;
+      animation: strongFlutter 4s ease-in-out infinite;
 
       will-change: transform;
     }
-
-    /* 적당히 강한 펄럭임 */
 
     @keyframes strongFlutter {
       0%, 100% {
@@ -107,33 +136,33 @@
       20% {
         transform:
           perspective(750px)
-          rotateX(14deg)
-          rotateZ(1deg)
-          translateX(8px);
+          rotateX(8deg)
+          rotateZ(0.5deg)
+          translateX(4px);
       }
 
       40% {
         transform:
           perspective(750px)
-          rotateX(-7deg)
-          rotateZ(-0.8deg)
-          translateX(-6px);
+          rotateX(-4deg)
+          rotateZ(-0.3deg)
+          translateX(-3px);
       }
 
       60% {
         transform:
           perspective(750px)
-          rotateX(17deg)
-          rotateZ(1.3deg)
-          translateX(10px);
+          rotateX(10deg)
+          rotateZ(0.6deg)
+          translateX(5px);
       }
 
       80% {
         transform:
           perspective(750px)
-          rotateX(-5deg)
-          rotateZ(-0.5deg)
-          translateX(-4px);
+          rotateX(-3deg)
+          rotateZ(-0.2deg)
+          translateX(-2px);
       }
     }
 
@@ -146,27 +175,30 @@
       z-index: 2;
     }
 
+    /* WANTED는 기존 해적 폰트 */
+
     .wanted {
       margin: 0;
+
       font-family: "Pirata One", Georgia, serif;
       font-size: clamp(55px, 8vw, 92px);
       font-weight: 400;
       line-height: 1.1;
       letter-spacing: 2px;
+
       color: #642d1d;
     }
 
     .brand {
       margin: 10px 0 26px;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 3px;
+
+      font-size: 19px;
+      letter-spacing: 2px;
     }
 
     .description {
       margin: 0 0 27px;
-      font-size: clamp(14px, 1.8vw, 18px);
-      font-weight: 700;
+      font-size: clamp(20px, 2.3vw, 27px);
     }
 
     /* =========================
@@ -175,6 +207,7 @@
 
     .ranking {
       width: 100%;
+
       border: 1px solid rgba(91, 52, 28, 0.65);
       background: rgba(235, 201, 151, 0.08);
     }
@@ -188,19 +221,21 @@
     th,
     td {
       padding: 13px 7px;
+
       border-bottom:
         1px solid rgba(83, 48, 26, 0.3);
+
       overflow-wrap: anywhere;
     }
 
     th {
       background: rgba(102, 59, 30, 0.12);
-      font-size: 15px;
-      font-weight: 700;
+      font-size: 23px;
+      font-weight: normal;
     }
 
     td {
-      font-size: 15px;
+      font-size: 23px;
     }
 
     th:first-child {
@@ -215,22 +250,18 @@
       border-bottom: none;
     }
 
-    tbody tr:first-child:not(:only-child) {
-      font-weight: 700;
-    }
-
     /* =========================
        안내 문구
     ========================= */
 
     .note {
       margin: 23px 0 0;
-      font-size: 12px;
+      font-size: 18px;
       opacity: 0.8;
     }
 
     /* =========================
-       돌아가기 버튼
+       블로그 돌아가기
     ========================= */
 
     .back {
@@ -243,7 +274,7 @@
 
       color: #422817;
       text-decoration: none;
-      font-weight: 700;
+      font-size: 21px;
 
       transition: background 0.2s;
     }
@@ -281,6 +312,7 @@
       border-radius: 50%;
 
       background: rgba(255, 231, 180, 0.95);
+
       box-shadow:
         0 0 6px rgba(255, 220, 150, 0.6);
 
@@ -318,7 +350,7 @@
     }
 
     /* =========================
-       모바일
+       모바일 화면
     ========================= */
 
     @media (max-width: 650px) {
@@ -338,29 +370,31 @@
       }
 
       .brand {
-        font-size: 9px;
-        letter-spacing: 2px;
+        font-size: 14px;
+        letter-spacing: 1px;
       }
 
       .description {
-        font-size: 13px;
+        font-size: 19px;
       }
 
       th,
       td {
         padding: 10px 4px;
-        font-size: 12px;
+        font-size: 18px;
       }
 
       .note {
-        font-size: 11px;
+        font-size: 15px;
       }
 
       .back {
-        font-size: 12px;
+        font-size: 18px;
         padding: 9px 15px;
       }
     }
+
+    /* 움직임 최소화 설정 */
 
     @media (prefers-reduced-motion: reduce) {
       .paper-bottom,
@@ -373,6 +407,10 @@
 
 <body>
 
+  <!-- =========================
+       WANTED 순위표
+  ========================= -->
+
   <main class="scene">
 
     <section
@@ -380,7 +418,7 @@
       aria-label="항해자 순위표"
     >
 
-      <!-- 고정된 양피지 윗부분 -->
+      <!-- 고정된 양피지 위쪽 -->
       <div
         class="paper-top"
         aria-hidden="true"
@@ -394,7 +432,9 @@
 
       <div class="content">
 
-        <h1 class="wanted">WANTED</h1>
+        <h1 class="wanted">
+          WANTED
+        </h1>
 
         <p class="brand">
           GRAND SECURITY LINE
@@ -594,7 +634,8 @@
       }
     }
 
-    /* 페이지 실행 */
+    /* 페이지 시작 */
+
     loadCrew();
     createDust();
   </script>
