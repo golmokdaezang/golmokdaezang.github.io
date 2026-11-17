@@ -1,15 +1,11 @@
 
-/* 윤초우산체 */
 @font-face {
   font-family: "YoonChoWooSan";
   src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408@1.0/YoonChildfundkoreaManSeh.woff2")
     format("woff2");
-  font-weight: normal;
-  font-style: normal;
   font-display: swap;
 }
 
-/* 기본 설정 */
 * {
   box-sizing: border-box;
 }
@@ -22,127 +18,134 @@ body {
   overflow: hidden;
 }
 
-/* 나무 탁자 배경 */
 body {
-  background-color: #2b190f;
+  background-color: #28180e;
   background-image: url("./wood-table.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-/* 전체 지도 페이지 */
 .map-page {
   position: relative;
-  width: 100vw;
+  width: 100%;
   height: 100dvh;
   overflow: hidden;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  /* 지도 주변에 탁자가 보이는 여백 */
-  padding: 7vh 6vw;
-}
-
-/* 탁자 위에 놓인 지도 */
-.map-frame {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  min-height: 0;
-
-  border-radius: 8px;
-
-  box-shadow:
-    0 8px 12px rgba(12, 6, 3, 0.35),
-    0 18px 30px rgba(12, 6, 3, 0.55),
-    0 35px 55px rgba(12, 6, 3, 0.25);
 }
 
 /* 지도 드래그 영역 */
 .map-viewport {
-  position: relative;
-  width: 100%;
-  height: 100%;
-
+  position: absolute;
+  inset: 0;
   overflow-x: auto;
   overflow-y: hidden;
 
   cursor: grab;
-  touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
 
+  touch-action: pan-y;
   scrollbar-width: none;
   overscroll-behavior-x: contain;
-
-  border-radius: inherit;
 }
 
 .map-viewport::-webkit-scrollbar {
   display: none;
 }
 
-.map-viewport.dragging,
-.map-viewport.dragging .island {
+.map-viewport.dragging {
   cursor: grabbing;
 }
 
-/* 지도 이미지와 섬 영역의 기준 */
-.map-content {
-  position: relative;
-  display: block;
+/* 화면이 넓으면 가운데 정렬,
+   지도가 더 길면 좌우 스크롤 가능 */
+.map-track {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  width: max-content;
   min-width: 100%;
+  width: max-content;
   height: 100%;
 
-  user-select: none;
-  -webkit-user-select: none;
+  padding: 0 5vw;
 }
 
-/* 기존 손그림 지도 */
+/* 지도 이미지와 클릭 영역을 함께 관리 */
+.map-content {
+  position: relative;
+  flex: none;
+  width: max-content;
+  line-height: 0;
+}
+
+/* 지도 이미지 */
 .map-image {
   display: block;
-
-  height: 100%;
   width: auto;
+  height: 78dvh;
   max-width: none;
 
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
+
+  filter:
+    drop-shadow(0 12px 12px rgba(18, 9, 3, 0.55))
+    drop-shadow(0 24px 22px rgba(18, 9, 3, 0.25));
 }
 
-/* 섬 클릭 영역: 평소에는 보이지 않음 */
+/* 섬 클릭 영역 */
 .island {
   position: absolute;
   z-index: 5;
 
   display: block;
-  border: none;
+  border: 0;
   background: transparent;
+
   text-decoration: none;
-
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
 }
 
-/* 섬 위에 나타나는 황금색 한글 */
+/* 섬 이름 */
 .island-tooltip {
-  font-family: "YoonChoWooSan", cursive;
-  font-size: 20px;
-  font-weight: normal;
-  color: #24180f;
-  letter-spacing: 0.02em;
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 4px);
 
-  text-shadow: 0 1px 2px rgba(255, 245, 220, 0.8);
+  transform: translate(-50%, 5px);
+
+  font-family: "YoonChoWooSan", "Malgun Gothic", sans-serif;
+  font-size: clamp(20px, 1.7vw, 27px);
+  font-weight: 600;
+
+  color: #1a120c;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  line-height: 1.4;
+
+  /* 밝은 테두리로 글씨 가독성 향상 */
+  -webkit-text-stroke: 0.7px #fff0ce;
+  paint-order: stroke fill;
+
+  text-shadow:
+    1px 1px 0 #fff0ce,
+    -1px -1px 0 #fff0ce,
+    1px -1px 0 #fff0ce,
+    -1px 1px 0 #fff0ce,
+    0 2px 5px rgba(0, 0, 0, 0.3);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
 }
 
-/* 마우스를 올리면 섬 이름 표시 */
+/* 커서를 올리거나 키보드로 선택하면 표시 */
 .island:hover .island-tooltip,
 .island:focus-visible .island-tooltip {
   opacity: 1;
@@ -150,166 +153,69 @@ body {
   transform: translate(-50%, 0);
 }
 
-/* 드래그하는 동안 섬 이름 숨김 */
+/* 드래그 중에는 이름 숨김 */
 .map-viewport.dragging .island-tooltip {
   opacity: 0;
   visibility: hidden;
 }
 
-/* 키보드 접근성 */
 .island:focus-visible {
-  outline: 2px dashed #eac77f;
+  outline: 2px dashed #24180f;
   outline-offset: 3px;
 }
 
-/* 선장실로 돌아가기 */
+/* 선장실 복귀 버튼 */
 .back-link {
   position: fixed;
   z-index: 20;
-
-  top: 20px;
+  top: 22px;
   left: 24px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
 
-  border: 1px solid rgba(230, 190, 118, 0.55);
   border-radius: 50%;
+  border: 1px solid rgba(230, 190, 120, 0.6);
 
-  background: rgba(25, 17, 12, 0.75);
-  color: #eac77f;
+  background: rgba(35, 23, 14, 0.8);
+  color: #f1d194;
 
-  font-size: 26px;
+  font-size: 27px;
   text-decoration: none;
 
   transition: background 0.2s ease;
 }
 
 .back-link:hover {
-  background: rgba(75, 48, 26, 0.9);
+  background: rgba(90, 58, 30, 0.95);
 }
 
-/* 지도 입장 화면 */
-.map-entrance {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: #100e0b;
-  pointer-events: auto;
-
-  animation: entranceFade 2.7s ease-in-out forwards;
-}
-
-/* 지도 입장 글씨 */
-.map-entrance-title {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 22px;
-
-  font-family: "YoonChoWooSan", cursive;
-  font-size: clamp(28px, 3vw, 42px);
-  font-weight: normal;
-
-  color: #f3d18b;
-  letter-spacing: 0.45em;
-  padding-left: 0.45em;
-
-  text-shadow:
-    0 0 10px rgba(255, 199, 91, 0.45),
-    0 0 25px rgba(220, 145, 40, 0.2);
-
-  animation: titleAppear 2.5s ease-in-out forwards;
-}
-
-/* 선장실과 동일한 황금색 선 장식 */
-.map-entrance-title::before,
-.map-entrance-title::after {
-  content: "";
-  display: block;
-
-  width: clamp(230px, 30vw, 380px);
-  height: 1px;
-
-  background: linear-gradient(
-    90deg,
-    transparent,
-    #d8ae62 20%,
-    #f3d18b 50%,
-    #d8ae62 80%,
-    transparent
-  );
-
-  box-shadow: 0 0 8px rgba(255, 195, 90, 0.35);
-}
-
-/* 글씨가 빠르게 나타나 잠시 유지됨 */
-@keyframes titleAppear {
-  0% {
-    opacity: 0;
-    transform: translateY(10px);
-    filter: blur(4px);
-  }
-
-  12%, 85% {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
-  }
-
-  100% {
-    opacity: 0;
-    transform: translateY(-6px);
-    filter: blur(2px);
-  }
-}
-
-/* 글씨가 사라진 후 지도 공개 */
-@keyframes entranceFade {
-  0%, 84% {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  100% {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
-
-/* 모바일 화면 */
 @media (max-width: 600px) {
-  .map-page {
-    padding: 8vh 4vw;
+  .map-image {
+    height: 72dvh;
+  }
+
+  .map-track {
+    padding: 0 20px;
+  }
+
+  .island-tooltip {
+    font-size: 20px;
   }
 
   .back-link {
     top: 12px;
     left: 12px;
-    width: 38px;
-    height: 38px;
-  }
-
-  .island-tooltip {
-    font-size: 15px;
+    width: 40px;
+    height: 40px;
   }
 }
 
-/* 움직임 최소화 설정 */
 @media (prefers-reduced-motion: reduce) {
-  .map-entrance {
-    display: none;
-  }
-
   .island-tooltip,
   .back-link {
     transition: none;
