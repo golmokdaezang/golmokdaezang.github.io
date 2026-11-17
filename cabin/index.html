@@ -8,8 +8,9 @@
 
 <style>
 @font-face {
-  font-family: 'YoonChoWooSan';
-  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408@1.0/YoonChildfundkoreaManSeh.woff2') format('woff2');
+  font-family: "YoonChoWooSan";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408@1.0/YoonChildfundkoreaManSeh.woff2")
+    format("woff2");
   font-weight: normal;
   font-display: swap;
 }
@@ -25,7 +26,6 @@ html, body {
 
 body { overflow: hidden; }
 
-/* 선장실 배경 */
 .cabin {
   position: relative;
   width: 100vw;
@@ -34,6 +34,7 @@ body { overflow: hidden; }
   isolation: isolate;
 }
 
+/* 낮과 밤 이미지 */
 .scene-image {
   position: absolute;
   inset: 0;
@@ -54,7 +55,6 @@ body { overflow: hidden; }
 
 .cabin.dark .night { opacity: 1; }
 
-/* 밤 화면 */
 .darkness {
   position: absolute;
   inset: 0;
@@ -68,7 +68,7 @@ body { overflow: hidden; }
   background: rgba(3, 8, 20, 0.08);
 }
 
-/* 랜턴 불빛 */
+/* 랜턴 빛 */
 .lantern-glow {
   position: absolute;
   z-index: 3;
@@ -80,7 +80,7 @@ body { overflow: hidden; }
   pointer-events: none;
   background: radial-gradient(
     ellipse at 50% 40%,
-    rgba(255,195,105,0.28) 0%,
+    rgba(255,195,105,0.28),
     rgba(255,165,65,0.12) 30%,
     rgba(255,130,30,0.03) 60%,
     transparent 75%
@@ -101,7 +101,7 @@ body { overflow: hidden; }
   65% { opacity: 0.9; }
 }
 
-/* 먼지 */
+/* 공기 중 먼지 */
 .dust-container {
   position: absolute;
   inset: 0;
@@ -158,18 +158,20 @@ body { overflow: hidden; }
   z-index: 6;
   background: radial-gradient(
     circle,
-    rgba(255,217,125,0.23) 0%,
+    rgba(255,217,125,0.23),
     rgba(255,177,64,0.11) 30%,
     rgba(255,153,50,0.04) 55%,
     transparent 75%
   );
   opacity: 0;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   transition: opacity 0.5s ease;
   will-change: transform;
 }
 
-.cabin.dark .cursor-glow.active { opacity: 1; }
+.cabin.dark .cursor-glow.active {
+  opacity: 1;
+}
 
 /* 랜턴 클릭 영역 */
 .lantern {
@@ -186,12 +188,7 @@ body { overflow: hidden; }
   cursor: pointer;
 }
 
-.lantern:focus-visible {
-  outline: 2px solid #f6d28b;
-  outline-offset: 3px;
-}
-
-/* 오른쪽 문 클릭 영역 */
+/* 갑판으로 나가는 오른쪽 문 */
 .cabin-door {
   position: absolute;
   z-index: 11;
@@ -201,37 +198,64 @@ body { overflow: hidden; }
   height: 75%;
   display: block;
   background: transparent;
-  border: none;
   text-decoration: none;
   cursor: pointer;
 }
 
-.cabin-door:focus-visible {
+/*
+  지도 클릭 영역
+  현재는 임시 위치입니다.
+  실제 선장실 이미지의 지도 위치에 맞춰
+  아래 숫자 네 개를 조정하세요.
+*/
+.cabin-map {
+  position: absolute;
+  z-index: 12;
+  left: 32%;
+  top: 57%;
+  width: 18%;
+  height: 19%;
+  display: block;
+  background: transparent;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* 평소에는 클릭 영역이 보이지 않음 */
+.lantern:focus-visible,
+.cabin-door:focus-visible,
+.cabin-map:focus-visible {
   outline: 2px solid #f3d18b;
   outline-offset: 3px;
 }
 
-/* 선장실 입장 화면 */
-.entrance {
+/* 입장 및 전환 공통 글씨 */
+.entrance,
+.deck-transition,
+.map-transition {
   position: fixed;
   inset: 0;
+  background: #100e0b;
+}
+
+.entrance {
   z-index: 100;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background: #100e0b;
+  justify-content: center;
   pointer-events: none;
   animation: entranceFade 3.4s ease-in-out forwards;
 }
 
 .entrance-title,
-.deck-title {
+.deck-title,
+.map-title {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 22px;
-  font-family: 'YoonChoWooSan', sans-serif;
-  font-size: clamp(28px,3vw,42px);
+  font-family: "YoonChoWooSan", sans-serif;
+  font-size: clamp(28px, 3vw, 42px);
   font-weight: normal;
   color: #f3d18b;
   letter-spacing: 0.45em;
@@ -241,15 +265,12 @@ body { overflow: hidden; }
     0 0 25px rgba(220,145,40,0.2);
 }
 
-.entrance-title {
-  opacity: 0;
-  animation: titleAppear 2.5s ease-in-out forwards;
-}
-
 .entrance-title::before,
 .entrance-title::after,
 .deck-title::before,
-.deck-title::after {
+.deck-title::after,
+.map-title::before,
+.map-title::after {
   content: "";
   display: block;
   width: clamp(230px,30vw,380px);
@@ -265,21 +286,25 @@ body { overflow: hidden; }
   box-shadow: 0 0 8px rgba(255,195,90,0.35);
 }
 
+.entrance-title {
+  animation: titleAppear 2.5s ease-in-out forwards;
+}
+
 @keyframes titleAppear {
   0% {
     opacity: 0;
-    transform: translateY(15px);
-    filter: blur(5px);
+    transform: translateY(10px);
+    filter: blur(4px);
   }
-  35%, 70% {
+  12%, 85% {
     opacity: 1;
     transform: translateY(0);
     filter: blur(0);
   }
   100% {
     opacity: 0;
-    transform: translateY(-8px);
-    filter: blur(3px);
+    transform: translateY(-6px);
+    filter: blur(2px);
   }
 }
 
@@ -291,12 +316,9 @@ body { overflow: hidden; }
   }
 }
 
-/* 갑판 전환 화면 */
+/* 갑판 전환 */
 .deck-transition {
-  position: fixed;
-  inset: 0;
   z-index: 200;
-  background: #100e0b;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -308,7 +330,6 @@ body { overflow: hidden; }
   pointer-events: auto;
 }
 
-/* 갑판 글씨: 2.5초 */
 .deck-intro {
   position: absolute;
   inset: 0;
@@ -332,12 +353,10 @@ body { overflow: hidden; }
   pointer-events: none;
 }
 
-/* 이미지 2장만 빠르게 전환 */
 .deck-images {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: #100e0b;
 }
 
 .deck-image {
@@ -346,13 +365,11 @@ body { overflow: hidden; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
   opacity: 0;
   transform: scale(1);
   transition:
     opacity 0.2s ease-in-out,
     transform 0.6s ease-out;
-  will-change: opacity, transform;
 }
 
 .deck-image.visible {
@@ -365,14 +382,12 @@ body { overflow: hidden; }
   transform: scale(1.12);
 }
 
-/* 마지막 암전 */
 .deck-blackout {
   position: absolute;
   inset: 0;
   z-index: 5;
   background: #100e0b;
   opacity: 0;
-  pointer-events: none;
   transition: opacity 0.35s ease-in-out;
 }
 
@@ -380,23 +395,48 @@ body { overflow: hidden; }
   opacity: 1;
 }
 
-/* 모바일 및 접근성 */
+/* 지도 전환: 글씨가 나온 뒤 지도 페이지 이동 */
+.map-transition {
+  z-index: 210;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.map-transition.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.map-title { opacity: 0; }
+
+.map-transition.active .map-title {
+  animation: titleAppear 2.5s ease-in-out forwards;
+}
+
 @media (hover: none) {
   .cursor-glow { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .entrance,
+  .dust-particle,
+  .cursor-glow {
+    display: none;
+  }
+
   .night,
   .darkness,
   .lantern-glow,
-  .deck-image { transition: none; }
+  .deck-image {
+    transition: none;
+  }
 
-  .lantern-glow,
-  .dust-particle { animation: none; }
-
-  .dust-particle,
-  .cursor-glow,
-  .entrance { display: none; }
+  .lantern-glow { animation: none; }
 }
 </style>
 </head>
@@ -408,9 +448,7 @@ body { overflow: hidden; }
   <div class="entrance-title">선장실</div>
 </div>
 
-<!-- 선장실 -->
 <main class="cabin" id="cabin">
-
   <img
     class="scene-image day"
     src="./captain-day.webp"
@@ -425,18 +463,8 @@ body { overflow: hidden; }
 
   <div class="darkness" aria-hidden="true"></div>
   <div class="lantern-glow" aria-hidden="true"></div>
-
-  <div
-    class="dust-container"
-    id="dust-container"
-    aria-hidden="true"
-  ></div>
-
-  <div
-    class="cursor-glow"
-    id="cursor-glow"
-    aria-hidden="true"
-  ></div>
+  <div class="dust-container" id="dust-container" aria-hidden="true"></div>
+  <div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
 
   <button
     class="lantern"
@@ -446,37 +474,47 @@ body { overflow: hidden; }
     aria-pressed="false"
   ></button>
 
+  <!-- 기존 갑판 이동 -->
   <a
     class="cabin-door"
     href="/crew.html"
     aria-label="갑판으로 나가기"
   ></a>
 
+  <!-- 새 지도 이동 -->
+  <a
+    class="cabin-map"
+    href="/map/"
+    aria-label="지도 펼치기"
+  ></a>
 </main>
 
-<!-- 갑판 이동 애니메이션 -->
-<div
-  class="deck-transition"
-  id="deck-transition"
-  aria-hidden="true"
->
-
+<!-- 갑판 전환 -->
+<div class="deck-transition" id="deck-transition" aria-hidden="true">
   <div class="deck-images">
     <img class="deck-image" src="./deck-01.png" alt="">
     <img class="deck-image" src="./deck-02.png" alt="">
   </div>
-
   <div class="deck-intro">
     <div class="deck-title">갑판</div>
   </div>
-
   <div class="deck-blackout"></div>
 </div>
 
+<!-- 지도 전환 -->
+<div class="map-transition" id="map-transition" aria-hidden="true">
+  <div class="map-title">지도</div>
+</div>
+
 <script>
+"use strict";
+
 /* 랜턴 */
 const cabin = document.getElementById("cabin");
 const lantern = document.getElementById("lantern");
+const reducedMotion = window.matchMedia(
+  "(prefers-reduced-motion: reduce)"
+);
 
 let isDark = false;
 
@@ -488,12 +526,9 @@ lantern.addEventListener("click", () => {
 
 /* 먼지 */
 function createDust() {
-  const container = document.getElementById("dust-container");
-  if (!container) return;
+  if (reducedMotion.matches) return;
 
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    return;
-  }
+  const container = document.getElementById("dust-container");
 
   for (let i = 0; i < 75; i++) {
     const dust = document.createElement("span");
@@ -522,6 +557,7 @@ cabin.addEventListener("pointermove", (event) => {
   if (event.pointerType !== "mouse") return;
 
   const rect = cabin.getBoundingClientRect();
+
   mouseX = event.clientX - rect.left;
   mouseY = event.clientY - rect.top;
 
@@ -550,54 +586,71 @@ function animateGlow() {
   requestAnimationFrame(animateGlow);
 }
 
-/* 갑판 이동: 글씨 2.5초, 이미지 빠르게 */
+/* 갑판 이동 */
 const cabinDoor = document.querySelector(".cabin-door");
 const deckTransition = document.getElementById("deck-transition");
 const deckImages = document.querySelectorAll(".deck-image");
+
+/* 지도 이동 */
+const cabinMap = document.querySelector(".cabin-map");
+const mapTransition = document.getElementById("map-transition");
 
 let isLeaving = false;
 
 cabinDoor.addEventListener("click", (event) => {
   event.preventDefault();
-
   if (isLeaving) return;
   isLeaving = true;
 
   const destination = cabinDoor.href;
 
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  if (reducedMotion.matches) {
     window.location.href = destination;
     return;
   }
 
-  // 0초: 갑판 글씨
   deckTransition.classList.add("active");
   deckTransition.setAttribute("aria-hidden", "false");
 
-  // 첫 번째 이미지 준비
   deckImages[0].classList.add("visible");
 
-  // 2.5초: 첫 번째 이미지
   setTimeout(() => {
     deckTransition.classList.add("show-images");
   }, 2500);
 
-  // 2.9초: 두 번째 이미지
   setTimeout(() => {
     deckImages[0].classList.remove("visible");
     deckImages[0].classList.add("past");
     deckImages[1].classList.add("visible");
   }, 2900);
 
-  // 3.4초: 암전
   setTimeout(() => {
     deckTransition.classList.add("blackout");
   }, 3400);
 
-  // 3.8초: 방명록 이동
   setTimeout(() => {
     window.location.href = destination;
   }, 3800);
+});
+
+cabinMap.addEventListener("click", (event) => {
+  event.preventDefault();
+  if (isLeaving) return;
+  isLeaving = true;
+
+  const destination = cabinMap.href;
+
+  if (reducedMotion.matches) {
+    window.location.href = destination;
+    return;
+  }
+
+  mapTransition.classList.add("active");
+  mapTransition.setAttribute("aria-hidden", "false");
+
+  setTimeout(() => {
+    window.location.href = destination;
+  }, 2500);
 });
 
 createDust();

@@ -1,0 +1,268 @@
+
+@font-face {
+  font-family: "YoonChoWooSan";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408@1.0/YoonChildfundkoreaManSeh.woff2")
+    format("woff2");
+  font-weight: normal;
+  font-display: swap;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  background: #100e0b;
+}
+
+.map-page {
+  position: relative;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* 마우스로 잡고 이동할 영역 */
+.map-viewport {
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  user-select: none;
+}
+
+.map-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.map-viewport.dragging,
+.map-viewport.dragging .island {
+  cursor: grabbing;
+}
+
+/* 지도 이미지와 섬 영역의 기준 */
+.map-content {
+  position: relative;
+  display: block;
+  width: max-content;
+  min-width: 100%;
+  height: 100%;
+  user-select: none;
+}
+
+.map-image {
+  display: block;
+  height: 100%;
+  width: auto;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* 섬 클릭 영역: 평소에는 완전히 투명 */
+.island {
+  position: absolute;
+  z-index: 5;
+  display: block;
+  background: transparent;
+  border: 0;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 작은 황금색 한글 섬 이름 */
+.island-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 4px);
+  transform: translate(-50%, 7px);
+
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+
+  font-family: "YoonChoWooSan", cursive;
+  font-size: clamp(15px, 1.4vw, 20px);
+  font-weight: normal;
+  color: #f1ce83;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  text-align: center;
+
+  text-shadow:
+    0 2px 3px rgba(24, 14, 7, 0.95),
+    0 0 8px rgba(32, 19, 8, 0.8);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease,
+    visibility 0.22s;
+}
+
+.island:hover .island-tooltip,
+.island:focus-visible .island-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+.island:focus-visible {
+  outline: 2px dashed #eac77f;
+  outline-offset: 3px;
+}
+
+/* 드래그 중에는 이름 숨김 */
+.map-viewport.dragging .island-tooltip {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* 선장실 복귀: 글씨 없이 작은 화살표만 */
+.back-link {
+  position: fixed;
+  z-index: 20;
+  top: 20px;
+  left: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(230, 190, 118, 0.55);
+  border-radius: 50%;
+  background: rgba(25, 17, 12, 0.75);
+
+  color: #eac77f;
+  font-size: 26px;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.back-link:hover {
+  background: rgba(75, 48, 26, 0.9);
+}
+
+/* 지도 입장 화면 */
+.map-entrance {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #100e0b;
+  pointer-events: auto;
+  animation: entranceFade 2.7s ease-in-out forwards;
+}
+
+.map-entrance-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+
+  font-family: "YoonChoWooSan", cursive;
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: normal;
+  color: #f3d18b;
+  letter-spacing: 0.45em;
+  padding-left: 0.45em;
+
+  text-shadow:
+    0 0 10px rgba(255, 199, 91, 0.45),
+    0 0 25px rgba(220, 145, 40, 0.2);
+
+  animation: titleAppear 2.5s ease-in-out forwards;
+}
+
+.map-entrance-title::before,
+.map-entrance-title::after {
+  content: "";
+  display: block;
+  width: clamp(230px, 30vw, 380px);
+  height: 1px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #d8ae62 20%,
+    #f3d18b 50%,
+    #d8ae62 80%,
+    transparent
+  );
+}
+
+@keyframes titleAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(4px);
+  }
+
+  12%, 85% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-6px);
+    filter: blur(2px);
+  }
+}
+
+@keyframes entranceFade {
+  0%, 84% {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@media (max-width: 600px) {
+  .back-link {
+    top: 12px;
+    left: 12px;
+    width: 38px;
+    height: 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-entrance {
+    display: none;
+  }
+
+  .island-tooltip,
+  .back-link {
+    transition: none;
+  }
+}

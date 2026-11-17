@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grand Security Line | 지도</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./script.js" defer></script>
+</head>
+<body>
+  <!-- 지도 입장 애니메이션 -->
+  <div class="map-entrance" id="mapEntrance" aria-hidden="true">
+    <div class="map-entrance-title">지도</div>
+  </div>
+
+  <main class="map-page">
+    <div
+      class="map-viewport"
+      id="mapViewport"
+      aria-label="마우스로 드래그하여 탐험하는 지도"
+    >
+      <div class="map-content" id="mapContent">
+        <img
+          class="map-image"
+          id="mapImage"
+          src="./security-map.png"
+          alt="보안 분야를 상징하는 섬들이 그려진 해적 지도"
+          draggable="false"
+        >
+        <!-- 섬 클릭 영역은 script.js에서 생성 -->
+      </div>
+    </div>
+
+    <!-- 화면에서 글씨가 보이지 않는 접근성용 링크 -->
+    <a class="back-link" href="/cabin/" aria-label="선장실로 돌아가기">
+      <span aria-hidden="true">←</span>
+    </a>
+  </main>
+</body>
+</html>
