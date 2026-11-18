@@ -1,10 +1,5 @@
 
-@font-face {
-  font-family: "YoonChoWooSan";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408@1.0/YoonChildfundkoreaManSeh.woff2")
-    format("woff2");
-  font-display: swap;
-}
+@import url("https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap");
 
 * {
   box-sizing: border-box;
@@ -18,16 +13,14 @@ body {
   overflow: hidden;
 }
 
-/* 나무 탁자 배경 */
 body {
   background-color: #28180e;
   background-image: url("./wood-table.png");
-  background-position: center;
   background-size: cover;
+  background-position: center;
   background-repeat: no-repeat;
 }
 
-/* 전체 지도 페이지 */
 .map-page {
   position: relative;
   width: 100%;
@@ -35,7 +28,7 @@ body {
   overflow: hidden;
 }
 
-/* 지도 드래그 영역 */
+/* 지도 스크롤 영역 */
 .map-viewport {
   position: absolute;
   inset: 0;
@@ -64,18 +57,16 @@ body {
 /* 지도 중앙 정렬 */
 .map-track {
   display: flex;
-
   align-items: center;
   justify-content: center;
 
-  width: max-content;
   min-width: 100%;
+  width: max-content;
   height: 100%;
 
   padding: 0 5vw;
 }
 
-/* 지도와 섬 클릭 영역 */
 .map-content {
   position: relative;
   flex: none;
@@ -96,7 +87,7 @@ body {
   -webkit-user-drag: none;
 
   filter:
-    drop-shadow(0 12px 12px rgba(18, 9, 3, 0.5))
+    drop-shadow(0 12px 12px rgba(18, 9, 3, 0.55))
     drop-shadow(0 24px 22px rgba(18, 9, 3, 0.25));
 }
 
@@ -106,69 +97,145 @@ body {
   z-index: 5;
 
   display: block;
-  border: none;
-  background: transparent;
 
+  background: transparent;
   text-decoration: none;
   cursor: pointer;
 }
 
-/* 섬 이름 */
-.island-tooltip {
+.island:focus-visible {
+  outline: 2px dashed #382415;
+  outline-offset: 3px;
+}
+
+/* ==========================
+   돋보기
+========================== */
+
+.magnifier {
+  position: fixed;
+  z-index: 15;
+
+  left: 0;
+  top: 0;
+
+  width: 250px;
+  height: 250px;
+
+  pointer-events: none;
+  user-select: none;
+
+  opacity: 0;
+
+  /* 마우스 이동 지연 없음 */
+  transition: none;
+
+  will-change: transform;
+}
+
+.magnifier.visible {
+  opacity: 1;
+}
+
+/*
+  돋보기 그림은 정사각형 이미지 기준.
+
+  실제 렌즈 중심:
+  이미지 가로 약 39.5%
+  이미지 세로 약 35.5%
+
+  렌즈 지름: 약 49%
+*/
+.magnifier-frame {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  pointer-events: none;
+}
+
+/* 렌즈 안쪽 확대 화면 */
+.magnifier-lens {
   position: absolute;
 
-  left: 50%;
-  top: 50%;
+  left: 39.5%;
+  top: 35.5%;
+
+  width: 49%;
+  aspect-ratio: 1;
 
   transform: translate(-50%, -50%);
 
-  font-family: "Malgun Gothic", sans-serif;
-  font-size: clamp(19px, 1.5vw, 25px);
-  font-weight: 700;
+  border-radius: 50%;
+  overflow: hidden;
 
-  color: #21160d;
+  pointer-events: none;
+
+  background: transparent;
+}
+
+/* 확대되는 지도 */
+.magnifier-lens img {
+  position: absolute;
+  display: block;
+
+  max-width: none;
+  height: auto;
+
+  pointer-events: none;
+  user-select: none;
+}
+
+/* 지도 밖에서는 렌즈 확대 숨김 */
+.magnifier:not(.over-map) .magnifier-lens {
+  opacity: 0;
+}
+
+/* 섬 이름 */
+.magnifier-label {
+  position: absolute;
+
+  left: 39.5%;
+  top: -13px;
+
+  transform: translateX(-50%);
+
+  padding: 7px 16px;
+
+  border: 2px solid #6e4b27;
+  border-radius: 5px;
+
+  background: #e2c996;
+
+  color: #28190d;
+
+  font-family: "Nanum Myeongjo", serif;
+  font-size: 19px;
+  font-weight: 800;
+
   white-space: nowrap;
-  line-height: 1.4;
 
-  -webkit-text-stroke: 0.8px #fff0d0;
-  paint-order: stroke fill;
-
-  text-shadow:
-    1px 1px 0 #fff0d0,
-    -1px -1px 0 #fff0d0,
-    1px -1px 0 #fff0d0,
-    -1px 1px 0 #fff0d0,
-    0 2px 5px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 
   opacity: 0;
   visibility: hidden;
-  pointer-events: none;
 
-  transition: opacity 0.18s ease;
+  transition: opacity 0.12s ease;
 }
 
-/* 마우스를 올리면 이름 표시 */
-.island:hover .island-tooltip,
-.island:focus-visible .island-tooltip {
+.magnifier-label.show {
   opacity: 1;
   visibility: visible;
 }
 
-/* 드래그 중 이름 숨기기 */
-.map-viewport.dragging .island-tooltip {
-  opacity: 0;
-  visibility: hidden;
-}
-
-.island:focus-visible {
-  outline: 2px dashed #24180f;
-  outline-offset: 3px;
-}
-
-/* 선장실 복귀 버튼 */
+/* 선장실 복귀 */
 .back-link {
   position: fixed;
-  z-index: 20;
+  z-index: 30;
 
   top: 22px;
   left: 24px;
@@ -188,15 +255,12 @@ body {
   color: #f1d194;
   font-size: 27px;
   text-decoration: none;
-
-  transition: background 0.2s ease;
 }
 
 .back-link:hover {
   background: rgba(90, 58, 30, 0.95);
 }
 
-/* 모바일 */
 @media (max-width: 600px) {
   .map-image {
     height: 62dvh;
@@ -206,23 +270,19 @@ body {
     padding: 0 20px;
   }
 
-  .island-tooltip {
-    font-size: 19px;
+  .magnifier {
+    width: 190px;
+    height: 190px;
+  }
+
+  .magnifier-label {
+    font-size: 15px;
   }
 
   .back-link {
     top: 12px;
     left: 12px;
-
     width: 40px;
     height: 40px;
-  }
-}
-
-/* 애니메이션 최소화 설정 */
-@media (prefers-reduced-motion: reduce) {
-  .island-tooltip,
-  .back-link {
-    transition: none;
   }
 }

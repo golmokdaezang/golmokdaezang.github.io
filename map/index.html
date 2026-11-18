@@ -5,19 +5,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Grand Security Line | 지도</title>
+  <title>Grand Security Line | 해적 지도</title>
 
   <link rel="stylesheet" href="./style.css">
   <script src="./script.js" defer></script>
 </head>
-<body>
 
+<body>
   <main class="map-page">
 
     <div class="map-viewport" id="mapViewport">
-
       <div class="map-track">
-
         <div class="map-content" id="mapContent">
 
           <img
@@ -28,14 +26,37 @@
             draggable="false"
           >
 
-          <!-- 섬 클릭 영역은 JavaScript에서 생성 -->
-
         </div>
-
       </div>
+    </div>
+
+    <!-- 돋보기: 마우스를 따라다니는 고정 요소 -->
+    <div class="magnifier" id="magnifier" aria-hidden="true">
+
+      <!-- 확대된 지도 -->
+      <div class="magnifier-lens" id="magnifierLens">
+        <img
+          id="magnifierMap"
+          src="./security-map.png"
+          alt=""
+          draggable="false"
+        >
+      </div>
+
+      <!-- 돋보기 외형 -->
+      <img
+        class="magnifier-frame"
+        src="./magnifier.png"
+        alt=""
+        draggable="false"
+      >
+
+      <!-- 섬 이름 -->
+      <div class="magnifier-label" id="magnifierLabel"></div>
 
     </div>
 
+    <!-- 선장실 돌아가기 -->
     <a
       href="/cabin/"
       class="back-link"
@@ -44,6 +65,5 @@
     >←</a>
 
   </main>
-
 </body>
 </html>

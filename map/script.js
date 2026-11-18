@@ -1,110 +1,88 @@
 
 "use strict";
 
-/*
-  섬 설정
+/* ==========================
+   설정
+========================== */
 
-  x, y: 이미지 기준 위치 (%)
-  width, height: 클릭 영역 크기 (%)
-
-  href: 클릭 시 이동할 페이지
-*/
+const ZOOM = 1.5;
 
 const ISLANDS = [
   {
     name: "웹해킹",
-    x: 4,
-    y: 12,
-    width: 17,
-    height: 35,
+    x: 4, y: 12, width: 17, height: 35,
     href: "/web/"
   },
   {
-    name: "A&D",
-    x: 22,
-    y: 7,
-    width: 17,
-    height: 31,
-    href: "/ad/"
-  },
-  {
     name: "시스템 해킹",
-    x: 3,
-    y: 52,
-    width: 21,
-    height: 34,
+    x: 22, y: 7, width: 17, height: 31,
     href: "/pwn/"
   },
   {
+    name: "A&D",
+    x: 3, y: 52, width: 21, height: 34,
+    href: "/ad/"
+  },
+  {
     name: "디지털 포렌식",
-    x: 30,
-    y: 23,
-    width: 28,
-    height: 51,
+    x: 30, y: 23, width: 28, height: 51,
     href: "/forensics/"
   },
   {
-    name: "기타",
-    x: 49,
-    y: 5,
-    width: 19,
-    height: 30,
-    href: "/other/"
+    name: "리버싱",
+    x: 49, y: 5, width: 19, height: 30,
+    href: "/reversing/"
   },
   {
-    name: "Misc",
-    x: 66,
-    y: 27,
-    width: 18,
-    height: 26,
-    href: "/misc/"
+    name: "암호학",
+    x: 66, y: 27, width: 18, height: 26,
+    href: "/crypto/"
   },
   {
     name: "IoT",
-    x: 81,
-    y: 8,
-    width: 18,
-    height: 29,
+    x: 81, y: 8, width: 18, height: 29,
     href: "/iot/"
   },
   {
-    name: "IoT · 통신",
-    x: 80,
-    y: 42,
-    width: 19,
-    height: 26,
-    href: "/iot/"
+    name: "네트워크",
+    x: 80, y: 42, width: 19, height: 26,
+    href: "/network/"
   },
   {
     name: "임베디드",
-    x: 56,
-    y: 49,
-    width: 18,
-    height: 30,
+    x: 56, y: 49, width: 18, height: 30,
     href: "/embedded/"
   },
   {
-    name: "미지의 섬",
-    x: 70,
-    y: 63,
-    width: 18,
-    height: 25,
-    href: "/other/"
+    name: "Misc",
+    x: 70, y: 63, width: 18, height: 25,
+    href: "/misc/"
   }
 ];
+
+/* ==========================
+   요소
+========================== */
 
 const viewport = document.getElementById("mapViewport");
 const mapContent = document.getElementById("mapContent");
 const mapImage = document.getElementById("mapImage");
 
-/* 섬 클릭 영역 생성 */
+const magnifier = document.getElementById("magnifier");
+const lens = document.getElementById("magnifierLens");
+const zoomImage = document.getElementById("magnifierMap");
+const label = document.getElementById("magnifierLabel");
+
+/* ==========================
+   섬 생성
+========================== */
+
 function createIslands() {
   ISLANDS.forEach((island) => {
     const link = document.createElement("a");
 
     link.className = "island";
     link.href = island.href;
-
     link.setAttribute("aria-label", island.name);
 
     link.style.left = island.x + "%";
@@ -112,25 +90,135 @@ function createIslands() {
     link.style.width = island.width + "%";
     link.style.height = island.height + "%";
 
-    const tooltip = document.createElement("span");
-    tooltip.className = "island-tooltip";
-    tooltip.textContent = island.name;
-
-    link.appendChild(tooltip);
     mapContent.appendChild(link);
   });
 }
 
-/* 드래그 상태 */
+/* ==========================
+   돋보기 위치 추적
+========================== */
+
+let mouseX = 0;
+let mouseY = 0;
+let pointerVisible = false;
+
+function updateMagnifier(x, y) {
+  mouseX = x;
+  mouseY = y;
+
+  const magWidth = magnifier.offsetWidth;
+  const magHeight = magnifier.offsetHeight;
+
+  // 이미지의 렌즈 중심을 마우스에 맞춤
+  const lensCenterX = magWidth * 0.395;
+  const lensCenterY = magHeight * 0.355;
+
+  magnifier.style.transform =
+    `translate3d(${x - lensCenterX}px, ${y - lensCenterY}px, 0)`;
+
+  magnifier.classList.add("visible");
+
+  updateZoom();
+  updateIslandLabel();
+}
+
+/* ==========================
+   렌즈 안 지도 확대
+========================== */
+
+function updateZoom() {
+  const rect = mapImage.getBoundingClientRect();
+  const lensRect = lens.getBoundingClientRect();
+
+  const insideMap =
+    mouseX >= rect.left &&
+    mouseX <= rect.right &&
+    mouseY >= rect.top &&
+    mouseY <= rect.bottom;
+
+  magnifier.classList.toggle("over-map", insideMap);
+
+  if (!insideMap) return;
+
+  const relativeX = mouseX - rect.left;
+  const relativeY = mouseY - rect.top;
+
+  const zoomWidth = rect.width * ZOOM;
+  const zoomHeight = rect.height * ZOOM;
+
+  zoomImage.style.width = zoomWidth + "px";
+  zoomImage.style.height = zoomHeight + "px";
+
+  const offsetX =
+    lensRect.width / 2 - relativeX * ZOOM;
+
+  const offsetY =
+    lensRect.height / 2 - relativeY * ZOOM;
+
+  zoomImage.style.left = offsetX + "px";
+  zoomImage.style.top = offsetY + "px";
+}
+
+/* ==========================
+   섬 이름 감지
+========================== */
+
+function updateIslandLabel() {
+  const rect = mapImage.getBoundingClientRect();
+
+  const x = ((mouseX - rect.left) / rect.width) * 100;
+  const y = ((mouseY - rect.top) / rect.height) * 100;
+
+  const island = ISLANDS.find((item) => {
+    return (
+      x >= item.x &&
+      x <= item.x + item.width &&
+      y >= item.y &&
+      y <= item.y + item.height
+    );
+  });
+
+  if (island) {
+    label.textContent = island.name;
+    label.classList.add("show");
+  } else {
+    label.textContent = "";
+    label.classList.remove("show");
+  }
+}
+
+/* ==========================
+   마우스 이벤트
+========================== */
+
+document.addEventListener("pointermove", (event) => {
+  if (event.pointerType === "touch") return;
+
+  pointerVisible = true;
+  updateMagnifier(event.clientX, event.clientY);
+}, { passive: true });
+
+document.addEventListener("pointerleave", () => {
+  pointerVisible = false;
+  magnifier.classList.remove("visible");
+});
+
+window.addEventListener("blur", () => {
+  pointerVisible = false;
+  magnifier.classList.remove("visible");
+});
+
+/* ==========================
+   지도 드래그
+========================== */
+
 let dragging = false;
 let moved = false;
-let suppressClick = false;
-
 let activePointerId = null;
+
 let startX = 0;
 let startScroll = 0;
 
-/* 마우스 누르기 */
 viewport.addEventListener("pointerdown", (event) => {
   if (event.pointerType === "mouse" && event.button !== 0) {
     return;
@@ -138,16 +226,12 @@ viewport.addEventListener("pointerdown", (event) => {
 
   dragging = true;
   moved = false;
-  suppressClick = false;
 
   activePointerId = event.pointerId;
   startX = event.clientX;
   startScroll = viewport.scrollLeft;
-
-  viewport.setPointerCapture(event.pointerId);
 });
 
-/* 마우스 이동 */
 viewport.addEventListener("pointermove", (event) => {
   if (!dragging || event.pointerId !== activePointerId) {
     return;
@@ -158,24 +242,29 @@ viewport.addEventListener("pointermove", (event) => {
   if (Math.abs(distance) > 6) {
     moved = true;
     viewport.classList.add("dragging");
+
+    if (!viewport.hasPointerCapture(event.pointerId)) {
+      viewport.setPointerCapture(event.pointerId);
+    }
   }
 
   if (moved) {
     viewport.scrollLeft = startScroll - distance;
+
+    if (pointerVisible) {
+      updateZoom();
+      updateIslandLabel();
+    }
   }
 });
 
-/* 드래그 종료 */
 function finishDrag(event) {
   if (!dragging || event.pointerId !== activePointerId) {
     return;
   }
 
   dragging = false;
-
   viewport.classList.remove("dragging");
-
-  suppressClick = moved;
 
   if (viewport.hasPointerCapture(event.pointerId)) {
     viewport.releasePointerCapture(event.pointerId);
@@ -187,25 +276,32 @@ function finishDrag(event) {
 viewport.addEventListener("pointerup", finishDrag);
 viewport.addEventListener("pointercancel", finishDrag);
 
-/* 드래그한 경우 클릭 취소 */
+/* 드래그 후 클릭 방지 */
 viewport.addEventListener("click", (event) => {
-  if (!suppressClick) return;
+  if (!moved) return;
 
   event.preventDefault();
   event.stopPropagation();
 
-  suppressClick = false;
+  moved = false;
 }, true);
 
-/* 지도를 처음에 가운데 표시 */
+/* ==========================
+   지도 초기 위치
+========================== */
+
 function centerMap() {
   const maxScroll =
     viewport.scrollWidth - viewport.clientWidth;
 
   viewport.scrollLeft = Math.max(0, maxScroll / 2);
+
+  if (pointerVisible) {
+    updateZoom();
+    updateIslandLabel();
+  }
 }
 
-/* 실행 */
 createIslands();
 
 if (mapImage.complete && mapImage.naturalWidth > 0) {
@@ -217,3 +313,10 @@ if (mapImage.complete && mapImage.naturalWidth > 0) {
 }
 
 window.addEventListener("resize", centerMap);
+
+viewport.addEventListener("scroll", () => {
+  if (pointerVisible) {
+    updateZoom();
+    updateIslandLabel();
+  }
+}, { passive: true });
