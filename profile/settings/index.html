@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>선장의 기록 | Grand Security Line</title>
+  <title>선장 프로필 | Grand Security Line</title>
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
@@ -378,9 +378,9 @@
           GRAND SECURITY LINE
         </div>
 
-        <h1>⚜ 선장의 기록 ⚜</h1>
+        <h1>⚜ 선장 프로필 ⚜</h1>
 
-        <p>CAPTAIN'S RECORD</p>
+        <p>CAPTAIN PROFILE</p>
       </div>
 
       <div class="ornament">✦</div>
@@ -434,6 +434,20 @@
         </div>
 
         <div class="field">
+          <label for="bounty">현상금 (BOUNTY)</label>
+          <input
+            id="bounty"
+            type="number"
+            min="0"
+            max="9223372036854775807"
+            step="1"
+            value="0"
+            required
+            placeholder="0"
+          >
+        </div>
+
+        <div class="field">
           <label for="bio">항해 기록 · 자기소개</label>
           <textarea
             id="bio"
@@ -456,7 +470,7 @@
           id="saveButton"
           type="submit"
         >
-          ⚜ 선장의 기록 저장
+          ⚜ 선장 프로필 저장
         </button>
 
       </form>
@@ -484,6 +498,7 @@
     const nicknameInput = document.getElementById("nickname");
     const majorInput = document.getElementById("major");
     const bioInput = document.getElementById("bio");
+    const bountyInput = document.getElementById("bounty");
     const githubInput = document.getElementById("github");
 
     const BUCKET = "profile-images";
@@ -512,7 +527,7 @@
       saveButton.disabled = saving;
       saveButton.textContent = saving
         ? "기록 저장 중..."
-        : "⚜ 선장의 기록 저장";
+        : "⚜ 선장 프로필 저장";
     }
 
     function releasePreview() {
@@ -580,7 +595,7 @@
     async function loadProfile() {
       const { data, error } = await client
         .from("profiles")
-        .select("nickname,major,bio,avatar_url,github_url")
+        .select("nickname,major,bio,avatar_url,github_url,bounty")
         .eq("id", currentUser.id)
         .maybeSingle();
 
@@ -589,13 +604,14 @@
       nicknameInput.value = data?.nickname || "골목대장";
       majorInput.value = data?.major || "";
       bioInput.value = data?.bio || "";
+      bountyInput.value = data?.bounty ?? 0;
       githubInput.value = data?.github_url || "";
 
       currentAvatarUrl = data?.avatar_url || "";
       showAvatar(currentAvatarUrl);
 
       form.classList.remove("hidden");
-      showStatus("선장의 기록을 불러왔어.");
+      showStatus("선장 프로필을 불러왔어.");
     }
 
     async function checkLogin() {
@@ -666,7 +682,7 @@
       }
 
       setSaving(true);
-      showStatus("선장의 기록을 저장하고 있어...");
+      showStatus("선장 프로필을 저장하고 있어...");
 
       try {
         const avatarUrl = await uploadAvatar(file);
@@ -675,6 +691,12 @@
 
         if (!nickname) {
           throw new Error("선장의 이름을 입력해 줘.");
+        }
+
+        const bountyText = bountyInput.value.trim();
+        const bountyNumber = Number(bountyText);
+        if (!/^\d+$/.test(bountyText) || !Number.isSafeInteger(bountyNumber) || bountyNumber < 0) {
+          throw new Error("현상금은 0 이상의 정수로 입력해 줘.");
         }
 
         const githubUrl = githubInput.value.trim();
@@ -697,6 +719,7 @@
             nickname: nickname,
             major: majorInput.value.trim(),
             bio: bioInput.value.trim(),
+            bounty: bountyNumber,
             github_url: githubUrl,
             avatar_url: avatarUrl,
             updated_at: new Date().toISOString()
@@ -710,7 +733,7 @@
         avatarFile.value = "";
         showAvatar(currentAvatarUrl);
 
-        showStatus("선장의 기록이 저장됐어!", "success");
+        showStatus("선장 프로필이 저장됐어!", "success");
 
       } catch (error) {
         console.error("프로필 저장 오류:", error);
