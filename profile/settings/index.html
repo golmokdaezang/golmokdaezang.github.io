@@ -4,11 +4,748 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>프로필 설정</title>
+
+  <title>선장의 기록 | Grand Security Line</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
+
+    :root {
+      --gold: #d5a65c;
+      --light-gold: #f5db9c;
+      --dark-gold: #89612e;
+      --text: #f2ddba;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 80px 20px;
+      color: var(--text);
+      font-family: "Gowun Batang", serif;
+
+      background:
+        radial-gradient(
+          ellipse at 50% 10%,
+          rgba(184, 117, 38, 0.24),
+          transparent 55%
+        ),
+        repeating-linear-gradient(
+          0deg,
+          transparent 0 95px,
+          rgba(0, 0, 0, 0.15) 96px 99px
+        ),
+        linear-gradient(
+          110deg,
+          #120c08,
+          #382416 45%,
+          #170f09
+        );
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(
+        ellipse at center,
+        transparent 25%,
+        rgba(0, 0, 0, 0.45) 100%
+      );
+    }
+
+    .topbar {
+      position: fixed;
+      z-index: 10;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 62px;
+      padding: 0 25px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(213, 166, 92, 0.45);
+      background: rgba(22, 13, 7, 0.94);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      color: var(--light-gold);
+      text-decoration: none;
+      letter-spacing: 2px;
+      font-size: 14px;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .top-actions a,
+    .top-actions button {
+      border: 1px solid var(--dark-gold);
+      border-radius: 6px;
+      background: rgba(67, 43, 21, 0.65);
+      color: var(--light-gold);
+      padding: 9px 13px;
+      font: inherit;
+      font-size: 13px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+      margin: 45px auto;
+      animation: appear 0.8s ease both;
+    }
+
+    .record {
+      position: relative;
+      padding: 40px;
+      border: 2px solid var(--gold);
+      border-radius: 12px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(66, 42, 22, 0.96),
+          rgba(27, 17, 10, 0.98)
+        );
+
+      box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.65),
+        inset 0 0 40px rgba(202, 142, 53, 0.09);
+    }
+
+    .record::before {
+      content: "";
+      position: absolute;
+      inset: 9px;
+      border: 1px solid rgba(213, 166, 92, 0.3);
+      border-radius: 6px;
+      pointer-events: none;
+    }
+
+    .heading {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      color: #c3a16c;
+      font-size: 12px;
+      letter-spacing: 3px;
+    }
+
+    h1 {
+      color: var(--light-gold);
+      font-size: clamp(28px, 5vw, 40px);
+      margin: 10px 0;
+      font-weight: 700;
+    }
+
+    .heading p {
+      color: #b69a73;
+      font-size: 13px;
+      letter-spacing: 2px;
+    }
+
+    .ornament {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--gold);
+      margin: 26px 0;
+    }
+
+    .ornament::before,
+    .ornament::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        var(--gold)
+      );
+    }
+
+    .ornament::after {
+      transform: rotate(180deg);
+    }
+
+    .avatar-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 32px;
+    }
+
+    .avatar-frame {
+      width: 155px;
+      height: 155px;
+      padding: 7px;
+      border: 3px ridge var(--gold);
+      border-radius: 50%;
+      background: linear-gradient(
+        135deg,
+        #f7d99b,
+        #78501f,
+        #d4a45c
+      );
+      box-shadow:
+        0 0 0 5px rgba(114, 76, 30, 0.45),
+        0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .avatar-frame img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #281b10;
+    }
+
+    .photo-button {
+      display: inline-block;
+      padding: 10px 20px;
+      border: 1px solid var(--gold);
+      border-radius: 6px;
+      color: var(--light-gold);
+      background: rgba(107, 72, 30, 0.5);
+      cursor: pointer;
+    }
+
+    .photo-button:hover {
+      background: rgba(151, 100, 38, 0.65);
+    }
+
+    .photo-note {
+      color: #bda681;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .field {
+      margin-bottom: 22px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 9px;
+      color: #ebca8c;
+      font-size: 15px;
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      padding: 13px 15px;
+      border: 1px solid #82613c;
+      border-radius: 6px;
+      background: rgba(20, 13, 8, 0.8);
+      color: #f5e5c6;
+      font: inherit;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .field textarea {
+      min-height: 130px;
+      resize: vertical;
+      line-height: 1.7;
+    }
+
+    .field input:focus,
+    .field textarea:focus {
+      border-color: var(--light-gold);
+      box-shadow: 0 0 0 2px rgba(213, 166, 92, 0.15);
+    }
+
+    .save-button {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      margin-top: 30px;
+      border: 1px solid #f5d69a;
+      border-radius: 7px;
+      background: linear-gradient(
+        135deg,
+        #d7ab67,
+        #a47134 55%,
+        #7c4e20
+      );
+      color: #241608;
+      font: inherit;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .save-button:hover {
+      filter: brightness(1.12);
+    }
+
+    .save-button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .status {
+      min-height: 25px;
+      margin-top: 20px;
+      text-align: center;
+      color: #eac89c;
+      overflow-wrap: anywhere;
+    }
+
+    .status.error {
+      color: #ffb5a6;
+    }
+
+    .status.success {
+      color: #c7e6ac;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 70px 12px 30px;
+      }
+
+      .topbar {
+        padding: 0 12px;
+      }
+
+      .brand {
+        font-size: 11px;
+        letter-spacing: 1px;
+      }
+
+      .record {
+        padding: 30px 22px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <h1>프로필 설정 페이지</h1>
-  <p>로그인 기능 테스트용 임시 페이지입니다.</p>
-  <a href="/cabin/">선장실로 돌아가기</a>
+
+  <header class="topbar">
+    <a class="brand" href="/cabin/">
+      ⚓ GRAND SECURITY LINE
+    </a>
+
+    <div class="top-actions">
+      <a href="/cabin/">선장실</a>
+      <button id="logoutButton" type="button">
+        로그아웃
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="record">
+
+      <div class="heading">
+        <div class="eyebrow">
+          GRAND SECURITY LINE
+        </div>
+
+        <h1>⚜ 선장의 기록 ⚜</h1>
+
+        <p>CAPTAIN'S RECORD</p>
+      </div>
+
+      <div class="ornament">✦</div>
+
+      <form id="profileForm" class="hidden">
+
+        <div class="avatar-area">
+          <div class="avatar-frame">
+            <img
+              id="avatarPreview"
+              alt="프로필 사진 미리보기"
+              src=""
+            >
+          </div>
+
+          <label class="photo-button" for="avatarFile">
+            📷 초상화 변경
+          </label>
+
+          <input
+            id="avatarFile"
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            class="hidden"
+          >
+
+          <div class="photo-note">
+            JPG · PNG · WEBP / 최대 5MB
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="nickname">선장의 이름</label>
+          <input
+            id="nickname"
+            type="text"
+            maxlength="60"
+            required
+            placeholder="닉네임"
+          >
+        </div>
+
+        <div class="field">
+          <label for="major">소속 · 전공</label>
+          <input
+            id="major"
+            type="text"
+            maxlength="120"
+            placeholder="컴퓨터공학과"
+          >
+        </div>
+
+        <div class="field">
+          <label for="bio">항해 기록 · 자기소개</label>
+          <textarea
+            id="bio"
+            maxlength="1000"
+            placeholder="자기소개를 작성해 줘."
+          ></textarea>
+        </div>
+
+        <div class="field">
+          <label for="github">GitHub 주소</label>
+          <input
+            id="github"
+            type="url"
+            placeholder="https://github.com/..."
+          >
+        </div>
+
+        <button
+          class="save-button"
+          id="saveButton"
+          type="submit"
+        >
+          ⚜ 선장의 기록 저장
+        </button>
+
+      </form>
+
+      <p class="status" id="status" role="status">
+        관리자 계정 확인 중...
+      </p>
+
+    </section>
+  </main>
+
+  <script src="/assets/js/supabase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <script>
+    "use strict";
+
+    const form = document.getElementById("profileForm");
+    const statusBox = document.getElementById("status");
+    const saveButton = document.getElementById("saveButton");
+    const logoutButton = document.getElementById("logoutButton");
+    const avatarFile = document.getElementById("avatarFile");
+    const avatarPreview = document.getElementById("avatarPreview");
+
+    const nicknameInput = document.getElementById("nickname");
+    const majorInput = document.getElementById("major");
+    const bioInput = document.getElementById("bio");
+    const githubInput = document.getElementById("github");
+
+    const BUCKET = "profile-images";
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
+    const ALLOWED_TYPES = [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ];
+
+    const FALLBACK_AVATAR =
+      "data:image/svg+xml;charset=UTF-8," +
+      encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">' +
+        '<rect width="200" height="200" fill="#342318"/>' +
+        '<circle cx="100" cy="77" r="34" fill="#d8b477"/>' +
+        '<path d="M35 185c0-48 30-72 65-72s65 24 65 72" fill="#d8b477"/>' +
+        '</svg>'
+      );
+
+    avatarPreview.src = FALLBACK_AVATAR;
+
+    let client = null;
+    let currentUser = null;
+    let currentAvatarUrl = "";
+    let previewObjectUrl = null;
+
+    function showStatus(text, type = "") {
+      statusBox.textContent = text;
+      statusBox.className = "status " + type;
+    }
+
+    function setSaving(saving) {
+      saveButton.disabled = saving;
+      saveButton.textContent = saving
+        ? "기록 저장 중..."
+        : "⚜ 선장의 기록 저장";
+    }
+
+    function releasePreview() {
+      if (previewObjectUrl) {
+        URL.revokeObjectURL(previewObjectUrl);
+        previewObjectUrl = null;
+      }
+    }
+
+    function showAvatar(url) {
+      releasePreview();
+      avatarPreview.src = url || FALLBACK_AVATAR;
+    }
+
+    avatarFile.addEventListener("change", () => {
+      const file = avatarFile.files[0];
+
+      if (!file) return;
+
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        showStatus("JPG, PNG, WEBP 사진만 선택할 수 있어.", "error");
+        avatarFile.value = "";
+        return;
+      }
+
+      if (file.size > MAX_FILE_SIZE) {
+        showStatus("사진은 최대 5MB까지 업로드할 수 있어.", "error");
+        avatarFile.value = "";
+        return;
+      }
+
+      releasePreview();
+      previewObjectUrl = URL.createObjectURL(file);
+      avatarPreview.src = previewObjectUrl;
+
+      showStatus("사진을 선택했어. 저장 버튼을 눌러 반영해 줘.");
+    });
+
+    function initializeSupabase() {
+      if (
+        !window.SUPABASE_URL ||
+        !window.SUPABASE_PUBLISHABLE_KEY ||
+        !window.supabase
+      ) {
+        showStatus(
+          "Supabase 연결 설정을 확인해 줘.",
+          "error"
+        );
+        return false;
+      }
+
+      try {
+        client = window.supabase.createClient(
+          window.SUPABASE_URL,
+          window.SUPABASE_PUBLISHABLE_KEY
+        );
+        return true;
+      } catch (error) {
+        console.error(error);
+        showStatus("Supabase 연결 실패: " + error.message, "error");
+        return false;
+      }
+    }
+
+    async function loadProfile() {
+      const { data, error } = await client
+        .from("profiles")
+        .select("nickname,major,bio,avatar_url,github_url")
+        .eq("id", currentUser.id)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      nicknameInput.value = data?.nickname || "골목대장";
+      majorInput.value = data?.major || "";
+      bioInput.value = data?.bio || "";
+      githubInput.value = data?.github_url || "";
+
+      currentAvatarUrl = data?.avatar_url || "";
+      showAvatar(currentAvatarUrl);
+
+      form.classList.remove("hidden");
+      showStatus("선장의 기록을 불러왔어.");
+    }
+
+    async function checkLogin() {
+      if (!initializeSupabase()) return;
+
+      try {
+        const { data, error } = await client.auth.getUser();
+
+        if (error || !data?.user) {
+          window.location.replace("/login/");
+          return;
+        }
+
+        currentUser = data.user;
+
+        await loadProfile();
+
+      } catch (error) {
+        console.error("프로필 불러오기 오류:", error);
+        showStatus(
+          "프로필을 불러오지 못했어: " + error.message,
+          "error"
+        );
+      }
+    }
+
+    async function uploadAvatar(file) {
+      if (!file) return currentAvatarUrl;
+
+      const extension = {
+        "image/jpeg": "jpg",
+        "image/png": "png",
+        "image/webp": "webp"
+      }[file.type];
+
+      const path =
+        currentUser.id + "/avatar-" + crypto.randomUUID() + "." + extension;
+
+      const { error } = await client.storage
+        .from(BUCKET)
+        .upload(path, file, {
+          contentType: file.type,
+          upsert: false
+        });
+
+      if (error) throw error;
+
+      const { data } = client.storage
+        .from(BUCKET)
+        .getPublicUrl(path);
+
+      return data.publicUrl;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      if (!client || !currentUser) return;
+
+      const file = avatarFile.files[0];
+
+      if (file && (
+        !ALLOWED_TYPES.includes(file.type) ||
+        file.size > MAX_FILE_SIZE
+      )) {
+        showStatus("선택한 사진의 형식이나 크기를 확인해 줘.", "error");
+        return;
+      }
+
+      setSaving(true);
+      showStatus("선장의 기록을 저장하고 있어...");
+
+      try {
+        const avatarUrl = await uploadAvatar(file);
+
+        const nickname = nicknameInput.value.trim();
+
+        if (!nickname) {
+          throw new Error("선장의 이름을 입력해 줘.");
+        }
+
+        const githubUrl = githubInput.value.trim();
+
+        if (githubUrl) {
+          const parsed = new URL(githubUrl);
+
+          if (
+            parsed.protocol !== "https:" ||
+            parsed.hostname !== "github.com"
+          ) {
+            throw new Error("GitHub 주소는 https://github.com/ 형식이어야 해.");
+          }
+        }
+
+        const { error } = await client
+          .from("profiles")
+          .upsert({
+            id: currentUser.id,
+            nickname: nickname,
+            major: majorInput.value.trim(),
+            bio: bioInput.value.trim(),
+            github_url: githubUrl,
+            avatar_url: avatarUrl,
+            updated_at: new Date().toISOString()
+          }, {
+            onConflict: "id"
+          });
+
+        if (error) throw error;
+
+        currentAvatarUrl = avatarUrl;
+        avatarFile.value = "";
+        showAvatar(currentAvatarUrl);
+
+        showStatus("선장의 기록이 저장됐어!", "success");
+
+      } catch (error) {
+        console.error("프로필 저장 오류:", error);
+        showStatus("저장 실패: " + error.message, "error");
+
+      } finally {
+        setSaving(false);
+      }
+    });
+
+    logoutButton.addEventListener("click", async () => {
+      if (!client) return;
+
+      const { error } = await client.auth.signOut();
+
+      if (error) {
+        showStatus("로그아웃 실패: " + error.message, "error");
+        return;
+      }
+
+      window.location.replace("/login/");
+    });
+
+    window.addEventListener("pagehide", releasePreview);
+
+    checkLogin();
+  </script>
+
 </body>
 </html>
