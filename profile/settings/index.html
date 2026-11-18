@@ -392,7 +392,7 @@
             <img
               id="avatarPreview"
               alt="프로필 사진 미리보기"
-              src=""
+              src="/assets/images/default-avatar.png"
             >
           </div>
 
@@ -494,15 +494,7 @@
       "image/webp"
     ];
 
-    const FALLBACK_AVATAR =
-      "data:image/svg+xml;charset=UTF-8," +
-      encodeURIComponent(
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">' +
-        '<rect width="200" height="200" fill="#342318"/>' +
-        '<circle cx="100" cy="77" r="34" fill="#d8b477"/>' +
-        '<path d="M35 185c0-48 30-72 65-72s65 24 65 72" fill="#d8b477"/>' +
-        '</svg>'
-      );
+    const FALLBACK_AVATAR = "/assets/images/default-avatar.png";
 
     avatarPreview.src = FALLBACK_AVATAR;
 
