@@ -387,25 +387,44 @@ body { overflow: hidden; }
   .lantern-glow { animation: none; }
 }
 
-/* 선장 프로필과 로그인: 기존 선장실 위에 표시 */
-.captain-ui { position: absolute; inset: 0; z-index: 30; pointer-events: none; font-family: Georgia, "Malgun Gothic", serif; color: #f4dfb3; }
-.captain-ui button, .captain-ui a, .captain-profile { pointer-events: auto; }
-.captain-topbar { position: absolute; top: 14px; left: 18px; right: 18px; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
-.captain-auth { padding: 9px 17px; border: 1px solid #c9a464; border-radius: 7px; background: rgba(31,20,13,.85); color: #f2d69c; text-decoration: none; cursor: pointer; font: inherit; font-size: 13px; box-shadow: 0 3px 15px rgba(0,0,0,.3); }
-.captain-auth:hover, .captain-edit:hover { background: rgba(105,70,30,.9); }
-.captain-profile { position: absolute; top: 64px; left: 20px; width: min(310px, calc(100vw - 40px)); border: 1px solid rgba(221,178,99,.85); border-radius: 12px; background: rgba(27,18,12,.86); box-shadow: 0 12px 35px rgba(0,0,0,.45), inset 0 0 25px rgba(180,122,51,.09); backdrop-filter: blur(8px); overflow: hidden; }
-.captain-profile-toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 14px 16px; border: 0; background: rgba(130,88,37,.18); color: #f5d99c; font: inherit; font-size: 15px; letter-spacing: .04em; cursor: pointer; }
-.captain-profile-toggle:hover { background: rgba(170,119,50,.22); }
-.captain-profile-content { padding: 15px 18px 18px; text-align: center; border-top: 1px solid rgba(205,161,90,.3); }
-.captain-profile.is-collapsed .captain-profile-content { display: none; }
-.captain-avatar { display: block; width: 94px; height: 94px; margin: 2px auto 12px; border: 2px solid #d6b270; border-radius: 50%; object-fit: cover; background: #3b2818; }
-.captain-nickname { margin: 0; font-size: 21px; color: #f8dfa9; }
-.captain-major { margin: 7px 0 0; font-size: 13px; color: #d6b986; }
-.captain-bio { margin: 14px 0; font-size: 13px; line-height: 1.75; color: #e4cfab; white-space: pre-wrap; overflow-wrap: anywhere; }
-.captain-profile-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; }
-.captain-edit, .captain-github { display: inline-block; padding: 7px 12px; border: 1px solid rgba(211,169,98,.7); border-radius: 6px; color: #f1d59d; text-decoration: none; font-size: 12px; background: rgba(92,62,32,.45); }
-.captain-status { margin: 10px 0 0; font-size: 11px; color: #c6a981; }
-@media (max-width: 600px) { .captain-topbar { top: 10px; right: 12px; } .captain-profile { top: 58px; left: 12px; width: min(270px, calc(100vw - 24px)); } .captain-profile-content { padding: 12px; } .captain-avatar { width: 72px; height: 72px; } }
+/* 선장실 UI: 기존 배경 및 클릭 영역은 유지 */
+.captain-ui { position:absolute; inset:0; z-index:30; pointer-events:none; font-family:"YoonChoWooSan", "Malgun Gothic", sans-serif; color:#f4dfb3; }
+.captain-ui button, .captain-ui a, .captain-profile { pointer-events:auto; }
+.captain-ui [hidden] { display:none !important; }
+.captain-topbar { position:absolute; top:10px; left:18px; right:18px; min-height:43px; display:flex; align-items:center; justify-content:flex-end; gap:12px; padding:4px 8px; border:1px solid rgba(214,176,110,.38); border-radius:8px; background:rgba(24,16,12,.23); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); box-shadow:0 2px 14px rgba(0,0,0,.12); }
+.captain-auth { padding:8px 16px; border:1px solid rgba(218,179,105,.75); border-radius:6px; background:rgba(31,20,13,.4); color:#f2d69c; text-decoration:none; cursor:pointer; font:inherit; font-size:14px; }
+.captain-auth:hover, .captain-edit:hover { background:rgba(105,70,30,.55); }
+.captain-profile { position:absolute; top:64px; left:20px; width:min(310px,calc(100vw - 40px)); border:1px solid rgba(221,178,99,.68); border-radius:12px; background:rgba(27,18,12,.47); box-shadow:0 8px 28px rgba(0,0,0,.22); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); overflow:hidden; }
+.captain-profile-toggle { display:flex; align-items:center; justify-content:space-between; width:100%; padding:13px 16px; border:0; background:rgba(130,88,37,.15); color:#f5d99c; font:inherit; font-size:16px; cursor:pointer; }
+.captain-profile-toggle:hover { background:rgba(170,119,50,.22); }
+.captain-profile-arrow { display:inline-block; transition:transform .35s ease; transform:rotate(0deg); }
+.captain-profile.is-collapsed .captain-profile-arrow { transform:rotate(180deg); }
+.captain-profile-content { display:grid; grid-template-rows:1fr; opacity:1; visibility:visible; transition:grid-template-rows .38s ease, opacity .3s ease, visibility .38s; border-top:1px solid rgba(205,161,90,.25); }
+.captain-profile-content-inner { min-height:0; overflow:hidden; text-align:center; padding:15px 18px 18px; transition:padding .38s ease; }
+.captain-profile.is-collapsed .captain-profile-content { grid-template-rows:0fr; opacity:0; visibility:hidden; }
+.captain-profile.is-collapsed .captain-profile-content-inner { padding-top:0; padding-bottom:0; }
+.captain-avatar { display:block; width:94px; height:94px; margin:2px auto 12px; border:2px solid #d6b270; border-radius:50%; object-fit:cover; background:#3b2818; }
+.captain-nickname { margin:0; font-size:22px; color:#f8dfa9; }
+.captain-major { margin:7px 0 0; font-size:14px; color:#d6b986; }
+.captain-bio { margin:14px 0; font-size:14px; line-height:1.75; color:#f0d7b0; white-space:pre-wrap; overflow-wrap:anywhere; }
+.captain-profile-links { display:flex; flex-wrap:wrap; justify-content:center; gap:9px; }
+.captain-edit { display:inline-block; padding:7px 12px; border:1px solid rgba(211,169,98,.7); border-radius:6px; color:#f1d59d; text-decoration:none; font:inherit; font-size:13px; background:rgba(92,62,32,.35); }
+.captain-status { margin:10px 0 0; font-size:12px; color:#e4c28c; }
+@media (max-width:600px) { .captain-topbar { left:10px; right:10px; } .captain-profile { top:62px; left:12px; width:min(270px,calc(100vw - 24px)); } .captain-profile-content-inner { padding:12px; } .captain-avatar { width:72px; height:72px; } }
+@media (prefers-reduced-motion:reduce) { .captain-profile-content, .captain-profile-content-inner, .captain-profile-arrow { transition:none; } }
+
+/* 입장 타이틀이 사라진 직후, 프로필이 왼쪽에서 부드럽게 등장 */
+@keyframes captainProfileEnter {
+  0% { opacity:0; transform:translate3d(-115%, 0, 0); }
+  65% { opacity:1; }
+  100% { opacity:1; transform:translate3d(0, 0, 0); }
+}
+.captain-profile {
+  animation: captainProfileEnter 0.9s cubic-bezier(.22, 1, .36, 1) 3.35s both;
+}
+@media (prefers-reduced-motion:reduce) {
+  .captain-profile { animation:none; }
+}
 </style>
 </head>
 <body>
@@ -456,18 +475,19 @@ body { overflow: hidden; }
     </nav>
     <section class="captain-profile" id="captain-profile" aria-label="선장 프로필">
       <button class="captain-profile-toggle" id="captain-profile-toggle" type="button" aria-expanded="true" aria-controls="captain-profile-content">
-        <span>⚜ 선장의 기록</span><span id="captain-profile-arrow" aria-hidden="true">⌃</span>
+        <span>⚜ 선장의 기록</span><span id="captain-profile-arrow" class="captain-profile-arrow" aria-hidden="true">⌃</span>
       </button>
       <div class="captain-profile-content" id="captain-profile-content">
+        <div class="captain-profile-content-inner">
         <img class="captain-avatar" id="captain-avatar" src="/assets/images/default-avatar.png" alt="선장 프로필 사진">
         <h2 class="captain-nickname" id="captain-nickname">골목대장</h2>
         <p class="captain-major" id="captain-major" hidden></p>
         <p class="captain-bio" id="captain-bio">선장의 항해 기록을 준비하고 있습니다.</p>
         <div class="captain-profile-links">
-          <a class="captain-github" id="captain-github" href="https://github.com/golmokdaezang" target="_blank" rel="noopener noreferrer">GitHub</a>
           <a class="captain-edit" id="captain-edit" href="/profile/settings/" hidden>프로필 수정</a>
         </div>
         <p class="captain-status" id="captain-status" hidden></p>
+        </div>
       </div>
     </section>
   </div>
@@ -617,7 +637,6 @@ if (window.matchMedia(
   toggle.addEventListener("click", () => {
     const collapsed = panel.classList.toggle("is-collapsed");
     toggle.setAttribute("aria-expanded", String(!collapsed));
-    $("captain-profile-arrow").textContent = collapsed ? "⌄" : "⌃";
   });
   $("captain-avatar").addEventListener("error", function () {
     if (!this.dataset.fallbackTried) {
@@ -625,33 +644,42 @@ if (window.matchMedia(
       this.src = fallbackAvatar;
     }
   });
-  if (!window.supabase || !window.SUPABASE_URL || !window.SUPABASE_PUBLISHABLE_KEY) {
+  function showStatus(message) {
     $("captain-status").hidden = false;
-    $("captain-status").textContent = "프로필 연결 설정을 확인해 주세요.";
+    $("captain-status").textContent = message;
+  }
+  if (!window.supabase || !window.SUPABASE_URL || !window.SUPABASE_PUBLISHABLE_KEY) {
+    showStatus("프로필 연결 설정을 확인해 주세요.");
     return;
   }
   const client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_PUBLISHABLE_KEY);
+  $("captain-logout").addEventListener("click", async () => {
+    const { error } = await client.auth.signOut();
+    if (error) { alert("로그아웃에 실패했습니다: " + error.message); return; }
+    window.location.reload();
+  });
   try {
     const { data: userData, error: authError } = await client.auth.getUser();
-    if (!authError && userData?.user) {
-      $("captain-login").hidden = true;
-      $("captain-logout").hidden = false;
-      // 로그인 상태만으로 관리자 권한을 확정하지 않습니다.
-      // 실제 수정 권한은 Supabase RLS에서 제한됩니다.
-      $("captain-edit").hidden = false;
-    }
-    $("captain-logout").addEventListener("click", async () => {
-      const { error } = await client.auth.signOut();
-      if (error) { alert("로그아웃에 실패했습니다: " + error.message); return; }
-      window.location.reload();
-    });
+    if (authError) console.warn("로그인 상태 확인:", authError.message);
+    const loggedIn = !authError && !!userData?.user;
+    $("captain-login").hidden = loggedIn;
+    $("captain-logout").hidden = !loggedIn;
+    $("captain-edit").hidden = !loggedIn;
+  } catch (error) {
+    console.warn("로그인 상태 확인 실패:", error);
+  }
+  // 공개 프로필은 로그인 여부와 관계없이 조회합니다.
+  try {
     const { data: profile, error: profileError } = await client
       .from("profiles")
-      .select("nickname, major, bio, avatar_url, github_url")
+      .select("nickname, major, bio, avatar_url")
       .limit(1)
       .maybeSingle();
     if (profileError) throw profileError;
-    if (!profile) return;
+    if (!profile) {
+      showStatus("저장된 프로필이 없습니다. 로그인 후 프로필 설정에서 저장해 주세요.");
+      return;
+    }
     $("captain-nickname").textContent = profile.nickname || "골목대장";
     $("captain-bio").textContent = profile.bio || "선장의 항해 기록을 준비하고 있습니다.";
     if (profile.major) {
@@ -661,13 +689,9 @@ if (window.matchMedia(
     if (profile.avatar_url && /^https:\/\//i.test(profile.avatar_url)) {
       $("captain-avatar").src = profile.avatar_url;
     }
-    if (profile.github_url && /^https:\/\//i.test(profile.github_url)) {
-      $("captain-github").href = profile.github_url;
-    }
   } catch (error) {
     console.error("선장 프로필 로딩 오류:", error);
-    $("captain-status").hidden = false;
-    $("captain-status").textContent = "프로필을 불러오지 못했습니다.";
+    showStatus("프로필 조회 오류: " + (error.message || "알 수 없는 오류"));
   }
 })();
 </script>
