@@ -7,6 +7,11 @@
 
 const ZOOM = 1.5;
 
+/* 돋보기 이미지의 렌즈 중심 */
+const LENS_X = 0.395;
+const LENS_Y = 0.355;
+
+/* 섬 목록 */
 const ISLANDS = [
   {
     name: "웹해킹",
@@ -61,7 +66,7 @@ const ISLANDS = [
 ];
 
 /* ==========================
-   요소
+   요소 가져오기
 ========================== */
 
 const viewport = document.getElementById("mapViewport");
@@ -74,7 +79,7 @@ const zoomImage = document.getElementById("magnifierMap");
 const label = document.getElementById("magnifierLabel");
 
 /* ==========================
-   섬 생성
+   섬 클릭 영역 생성
 ========================== */
 
 function createIslands() {
@@ -83,6 +88,7 @@ function createIslands() {
 
     link.className = "island";
     link.href = island.href;
+
     link.setAttribute("aria-label", island.name);
 
     link.style.left = island.x + "%";
@@ -95,7 +101,7 @@ function createIslands() {
 }
 
 /* ==========================
-   돋보기 위치 추적
+   마우스 추적
 ========================== */
 
 let mouseX = 0;
@@ -106,15 +112,15 @@ function updateMagnifier(x, y) {
   mouseX = x;
   mouseY = y;
 
-  const magWidth = magnifier.offsetWidth;
-  const magHeight = magnifier.offsetHeight;
+  const width = magnifier.offsetWidth;
+  const height = magnifier.offsetHeight;
 
-  // 이미지의 렌즈 중심을 마우스에 맞춤
-  const lensCenterX = magWidth * 0.395;
-  const lensCenterY = magHeight * 0.355;
+  const centerX = width * LENS_X;
+  const centerY = height * LENS_Y;
 
+  /* 지연 없이 마우스를 따라 이동 */
   magnifier.style.transform =
-    `translate3d(${x - lensCenterX}px, ${y - lensCenterY}px, 0)`;
+    `translate3d(${x - centerX}px, ${y - centerY}px, 0)`;
 
   magnifier.classList.add("visible");
 
@@ -123,12 +129,11 @@ function updateMagnifier(x, y) {
 }
 
 /* ==========================
-   렌즈 안 지도 확대
+   지도 확대
 ========================== */
 
 function updateZoom() {
   const rect = mapImage.getBoundingClientRect();
-  const lensRect = lens.getBoundingClientRect();
 
   const insideMap =
     mouseX >= rect.left &&
@@ -143,24 +148,23 @@ function updateZoom() {
   const relativeX = mouseX - rect.left;
   const relativeY = mouseY - rect.top;
 
+  const lensSize = lens.offsetWidth;
+
   const zoomWidth = rect.width * ZOOM;
   const zoomHeight = rect.height * ZOOM;
 
   zoomImage.style.width = zoomWidth + "px";
   zoomImage.style.height = zoomHeight + "px";
 
-  const offsetX =
-    lensRect.width / 2 - relativeX * ZOOM;
+  zoomImage.style.left =
+    (lensSize / 2 - relativeX * ZOOM) + "px";
 
-  const offsetY =
-    lensRect.height / 2 - relativeY * ZOOM;
-
-  zoomImage.style.left = offsetX + "px";
-  zoomImage.style.top = offsetY + "px";
+  zoomImage.style.top =
+    (lensSize / 2 - relativeY * ZOOM) + "px";
 }
 
 /* ==========================
-   섬 이름 감지
+   섬 이름 표시
 ========================== */
 
 function updateIslandLabel() {
@@ -188,13 +192,14 @@ function updateIslandLabel() {
 }
 
 /* ==========================
-   마우스 이벤트
+   마우스 이동 이벤트
 ========================== */
 
 document.addEventListener("pointermove", (event) => {
   if (event.pointerType === "touch") return;
 
   pointerVisible = true;
+
   updateMagnifier(event.clientX, event.clientY);
 }, { passive: true });
 
@@ -287,7 +292,7 @@ viewport.addEventListener("click", (event) => {
 }, true);
 
 /* ==========================
-   지도 초기 위치
+   지도 처음 위치
 ========================== */
 
 function centerMap() {
