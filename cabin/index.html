@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Grand Security Line | 선장실</title>
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap");
 @font-face {
   font-family: "YoonChoWooSan";
   src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408@1.0/YoonChildfundkoreaManSeh.woff2")
@@ -399,14 +400,14 @@ body { overflow: hidden; }
 .captain-profile { position:absolute; top:72px; left:20px; width:min(315px,calc(100vw - 40px)); max-height:calc(100dvh - 85px); overflow-y:auto; overflow-x:hidden; scrollbar-width:thin; pointer-events:auto; cursor:pointer; filter:drop-shadow(0 12px 15px rgba(0,0,0,.35)); opacity:0; transform:translate3d(calc(-100% - 30px),0,0); visibility:hidden; transition:transform .78s cubic-bezier(.22,1,.36,1),opacity .62s ease,visibility 0s linear .78s; }
 .captain-ui.is-ready:not(.is-collapsed) .captain-profile { opacity:1; transform:translate3d(0,0,0); visibility:visible; transition:transform .88s cubic-bezier(.22,1,.36,1),opacity .65s ease,visibility 0s; }
 .captain-poster { position:relative; width:100%; aspect-ratio:1046/1504; background:url('/assets/images/wanted-poster.png') center top/100% 100% no-repeat; color:#2a170c; isolation:isolate; }
-.captain-poster::after { content:""; position:absolute; inset:0; background:rgba(42,25,14,.13); mix-blend-mode:multiply; pointer-events:none; z-index:3; }
-.captain-poster { filter:brightness(.78) saturate(.72); }
+.captain-poster::after { content:""; position:absolute; inset:0; background:linear-gradient(165deg, rgba(255,218,148,0) 42%, rgba(255,207,118,.035) 65%, rgba(255,193,105,.17) 100%); mix-blend-mode:screen; pointer-events:none; z-index:3; }
+.captain-poster { filter:brightness(.91) saturate(.94); }
 .captain-avatar { position:absolute; left:16%; top:16.7%; width:68%; height:30.7%; object-fit:cover; object-position:center; background:#5b3a20; filter:sepia(.18) contrast(1.06); border:0; }
-.captain-nickname { position:absolute; top:55%; left:12%; width:76%; margin:0; text-align:center; font-size:22px; font-weight:normal; overflow-wrap:anywhere; line-height:1.2; }
+.captain-nickname { position:absolute; top:55%; left:12%; width:76%; margin:0; text-align:center; font-family:"Gowun Batang",serif; font-size:22px; font-weight:700; overflow-wrap:anywhere; line-height:1.2; }
 .captain-major { position:absolute; top:60%; left:12%; width:76%; margin:0; text-align:center; font-size:12px; overflow-wrap:anywhere; }
-.captain-bio { position:absolute; top:64%; left:12%; width:76%; margin:0; text-align:center; font-size:12px; line-height:1.35; white-space:pre-wrap; overflow-wrap:anywhere; max-height:9%; overflow:auto; }
+.captain-bio { position:absolute; top:64%; left:12%; width:76%; margin:0; text-align:center; font-family:"Gowun Batang",serif; font-size:12px; line-height:1.45; white-space:pre-wrap; overflow-wrap:anywhere; max-height:9%; overflow:auto; }
 .captain-bounty { position:absolute; top:77.2%; left:29%; width:52%; margin:0; text-align:center; font-family:Georgia,serif; font-size:23px; font-weight:bold; overflow-wrap:anywhere; }
-.captain-status { position:absolute; top:87%; left:12%; width:76%; margin:0; text-align:center; font-size:10px; color:#512513; overflow-wrap:anywhere; }
+
 .captain-profile:focus-visible,.captain-profile-toggle:focus-visible { outline:2px solid #f3d18b; outline-offset:2px; }
 @media(max-width:600px) { .captain-topbar { height:52px; padding:0 10px; } .captain-top-left { gap:4px; } .captain-profile { top:67px; left:18px; width:min(285px,calc(100vw - 36px)); max-height:calc(100dvh - 80px); } .captain-edit { padding:7px 9px; font-size:12px; } }
 @media(prefers-reduced-motion:reduce) { .captain-profile,.captain-ui.is-ready:not(.is-collapsed) .captain-profile { transition:none; } }
@@ -470,7 +471,6 @@ body { overflow: hidden; }
         <p class="captain-major" id="captain-major" hidden></p>
         <p class="captain-bio" id="captain-bio">선장의 항해 기록을 준비하고 있습니다.</p>
         <p class="captain-bounty" id="captain-bounty">0</p>
-        <p class="captain-status" id="captain-status" hidden></p>
       </div>
     </section>
   </div>
@@ -646,8 +646,7 @@ if (window.matchMedia(
     }
   });
   function showStatus(message) {
-    $("captain-status").hidden = false;
-    $("captain-status").textContent = message;
+    console.warn("선장 프로필:", message);
   }
   if (!window.supabase || !window.SUPABASE_URL || !window.SUPABASE_PUBLISHABLE_KEY) {
     showStatus("프로필 연결 설정을 확인해 주세요.");
