@@ -295,7 +295,3 @@ body,
 .map-page * {
   cursor: none !important;
 }
-
-.magnifier-lens {
-  display: none !important;
-}
