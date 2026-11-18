@@ -387,44 +387,30 @@ body { overflow: hidden; }
   .lantern-glow { animation: none; }
 }
 
-/* 선장실 UI: 기존 배경 및 클릭 영역은 유지 */
-.captain-ui { position:absolute; inset:0; z-index:30; pointer-events:none; font-family:"YoonChoWooSan", "Malgun Gothic", sans-serif; color:#f4dfb3; }
-.captain-ui button, .captain-ui a, .captain-profile { pointer-events:auto; }
-.captain-ui [hidden] { display:none !important; }
-.captain-topbar { position:absolute; top:10px; left:18px; right:18px; min-height:43px; display:flex; align-items:center; justify-content:flex-end; gap:12px; padding:4px 8px; border:1px solid rgba(214,176,110,.38); border-radius:8px; background:rgba(24,16,12,.23); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); box-shadow:0 2px 14px rgba(0,0,0,.12); }
-.captain-auth { padding:8px 16px; border:1px solid rgba(218,179,105,.75); border-radius:6px; background:rgba(31,20,13,.4); color:#f2d69c; text-decoration:none; cursor:pointer; font:inherit; font-size:14px; }
-.captain-auth:hover, .captain-edit:hover { background:rgba(105,70,30,.55); }
-.captain-profile { position:absolute; top:64px; left:20px; width:min(310px,calc(100vw - 40px)); border:1px solid rgba(221,178,99,.68); border-radius:12px; background:rgba(27,18,12,.47); box-shadow:0 8px 28px rgba(0,0,0,.22); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); overflow:hidden; }
-.captain-profile-toggle { display:flex; align-items:center; justify-content:space-between; width:100%; padding:13px 16px; border:0; background:rgba(130,88,37,.15); color:#f5d99c; font:inherit; font-size:16px; cursor:pointer; }
-.captain-profile-toggle:hover { background:rgba(170,119,50,.22); }
-.captain-profile-arrow { display:inline-block; transition:transform .35s ease; transform:rotate(0deg); }
-.captain-profile.is-collapsed .captain-profile-arrow { transform:rotate(180deg); }
-.captain-profile-content { display:grid; grid-template-rows:1fr; opacity:1; visibility:visible; transition:grid-template-rows .38s ease, opacity .3s ease, visibility .38s; border-top:1px solid rgba(205,161,90,.25); }
-.captain-profile-content-inner { min-height:0; overflow:hidden; text-align:center; padding:15px 18px 18px; transition:padding .38s ease; }
-.captain-profile.is-collapsed .captain-profile-content { grid-template-rows:0fr; opacity:0; visibility:hidden; }
-.captain-profile.is-collapsed .captain-profile-content-inner { padding-top:0; padding-bottom:0; }
-.captain-avatar { display:block; width:94px; height:94px; margin:2px auto 12px; border:2px solid #d6b270; border-radius:50%; object-fit:cover; background:#3b2818; }
-.captain-nickname { margin:0; font-size:22px; color:#f8dfa9; }
-.captain-major { margin:7px 0 0; font-size:14px; color:#d6b986; }
-.captain-bio { margin:14px 0; font-size:14px; line-height:1.75; color:#f0d7b0; white-space:pre-wrap; overflow-wrap:anywhere; }
-.captain-profile-links { display:flex; flex-wrap:wrap; justify-content:center; gap:9px; }
-.captain-edit { display:inline-block; padding:7px 12px; border:1px solid rgba(211,169,98,.7); border-radius:6px; color:#f1d59d; text-decoration:none; font:inherit; font-size:13px; background:rgba(92,62,32,.35); }
-.captain-status { margin:10px 0 0; font-size:12px; color:#e4c28c; }
-@media (max-width:600px) { .captain-topbar { left:10px; right:10px; } .captain-profile { top:62px; left:12px; width:min(270px,calc(100vw - 24px)); } .captain-profile-content-inner { padding:12px; } .captain-avatar { width:72px; height:72px; } }
-@media (prefers-reduced-motion:reduce) { .captain-profile-content, .captain-profile-content-inner, .captain-profile-arrow { transition:none; } }
-
-/* 입장 타이틀이 사라진 직후, 프로필이 왼쪽에서 부드럽게 등장 */
-@keyframes captainProfileEnter {
-  0% { opacity:0; transform:translate3d(-115%, 0, 0); }
-  65% { opacity:1; }
-  100% { opacity:1; transform:translate3d(0, 0, 0); }
-}
-.captain-profile {
-  animation: captainProfileEnter 0.9s cubic-bezier(.22, 1, .36, 1) 3.35s both;
-}
-@media (prefers-reduced-motion:reduce) {
-  .captain-profile { animation:none; }
-}
+/* 선장실 상단바 + 이미지 기반 현상금 포스터 */
+.captain-ui{position:absolute;inset:0;z-index:30;pointer-events:none;font-family:"YoonChoWooSan","Malgun Gothic",sans-serif}
+.captain-ui a,.captain-ui button,.captain-profile{pointer-events:auto}
+.captain-ui [hidden]{display:none!important}
+.captain-topbar{position:absolute;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid rgba(222,179,104,.52);background:rgba(24,16,12,.28);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.captain-profile-toggle{border:0;background:transparent;color:#f3d18b;font:inherit;font-size:15px;padding:14px 8px;cursor:pointer}
+.captain-profile-arrow{display:inline-block;margin-left:7px;transition:transform .42s ease}
+.captain-ui.is-collapsed .captain-profile-arrow{transform:rotate(180deg)}
+.captain-auth{padding:8px 14px;border:1px solid rgba(218,179,105,.65);border-radius:5px;background:rgba(31,20,13,.36);color:#f2d69c;text-decoration:none;cursor:pointer;font:inherit;font-size:14px}
+.captain-auth:hover{background:rgba(105,70,30,.55)}
+.captain-profile{position:absolute;top:56px;left:10px;width:min(315px,calc(100vw - 20px));max-height:calc(100dvh - 64px);overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;transform-origin:top center;transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .38s ease,visibility .5s;filter:drop-shadow(0 12px 15px rgba(0,0,0,.35))}
+.captain-ui.is-collapsed .captain-profile{transform:translateY(-28px) scaleY(.06);opacity:0;visibility:hidden;pointer-events:none}
+.captain-poster{position:relative;width:100%;aspect-ratio:1046/1504;background:url('/assets/images/wanted-poster.png') center top/100% 100% no-repeat;color:#2a170c}
+.captain-avatar{position:absolute;left:16%;top:16.7%;width:68%;height:30.7%;object-fit:cover;object-position:center;background:#5b3a20;filter:sepia(.18) contrast(1.06);border:0}
+.captain-nickname{position:absolute;top:55%;left:12%;width:76%;margin:0;text-align:center;font-size:clamp(17px,2vw,22px);font-weight:bold;overflow-wrap:anywhere;line-height:1.2}
+.captain-major{position:absolute;top:60%;left:12%;width:76%;margin:0;text-align:center;font-size:12px;overflow-wrap:anywhere}
+.captain-bio{position:absolute;top:64%;left:12%;width:76%;margin:0;text-align:center;font-size:12px;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere;max-height:9%;overflow:auto}
+.captain-bounty{position:absolute;top:77.2%;left:29%;width:52%;margin:0;text-align:center;font-family:Georgia,serif;font-size:clamp(18px,2vw,23px);font-weight:bold;overflow-wrap:anywhere}
+.captain-edit{position:absolute;top:93.5%;left:50%;transform:translateX(-50%);white-space:nowrap;border:1px solid rgba(55,31,14,.7);border-radius:4px;background:rgba(54,31,18,.88);color:#f3d18b;text-decoration:none;font:inherit;font-size:12px;padding:5px 10px}
+.captain-status{position:absolute;top:87%;left:12%;width:76%;margin:0;text-align:center;font-size:10px;color:#512513;overflow-wrap:anywhere}
+@keyframes captainProfileEnter{from{opacity:0;transform:translateX(-110%)}to{opacity:1;transform:translateX(0)}}
+.captain-profile{animation:captainProfileEnter .9s cubic-bezier(.22,1,.36,1) 3.35s both}
+@media(max-width:600px){.captain-topbar{height:52px;padding:0 10px}.captain-profile{top:52px;width:min(285px,calc(100vw - 20px))}}
+@media(prefers-reduced-motion:reduce){.captain-profile{animation:none;transition:none}.captain-profile-arrow{transition:none}}
 </style>
 </head>
 <body>
@@ -468,26 +454,23 @@ body { overflow: hidden; }
   ></a>
 
   <!-- 선장 프로필 및 관리자 로그인 UI -->
-  <div class="captain-ui">
-    <nav class="captain-topbar" aria-label="관리자 메뉴">
-      <a class="captain-auth" id="captain-login" href="/login/">로그인</a>
-      <button class="captain-auth" id="captain-logout" type="button" hidden>로그아웃</button>
+  <div class="captain-ui" id="captain-ui">
+    <nav class="captain-topbar" aria-label="선장실 메뉴">
+      <button class="captain-profile-toggle" id="captain-profile-toggle" type="button" aria-expanded="true" aria-controls="captain-profile"><span>⚜ 선장 프로필</span><span class="captain-profile-arrow" aria-hidden="true">⌃</span></button>
+      <div>
+        <a class="captain-auth" id="captain-login" href="/login/">로그인</a>
+        <button class="captain-auth" id="captain-logout" type="button" hidden>로그아웃</button>
+      </div>
     </nav>
-    <section class="captain-profile" id="captain-profile" aria-label="선장 프로필">
-      <button class="captain-profile-toggle" id="captain-profile-toggle" type="button" aria-expanded="true" aria-controls="captain-profile-content">
-        <span>⚜ 선장 프로필</span><span id="captain-profile-arrow" class="captain-profile-arrow" aria-hidden="true">⌃</span>
-      </button>
-      <div class="captain-profile-content" id="captain-profile-content">
-        <div class="captain-profile-content-inner">
+    <section class="captain-profile" id="captain-profile" aria-label="선장 현상금 포스터">
+      <div class="captain-poster">
         <img class="captain-avatar" id="captain-avatar" src="/assets/images/default-avatar.png" alt="선장 프로필 사진">
         <h2 class="captain-nickname" id="captain-nickname">골목대장</h2>
         <p class="captain-major" id="captain-major" hidden></p>
         <p class="captain-bio" id="captain-bio">선장의 항해 기록을 준비하고 있습니다.</p>
-        <div class="captain-profile-links">
-          <a class="captain-edit" id="captain-edit" href="/profile/settings/" hidden>프로필 수정</a>
-        </div>
+        <p class="captain-bounty" id="captain-bounty">0</p>
+        <a class="captain-edit" id="captain-edit" href="/profile/settings/" hidden>프로필 수정</a>
         <p class="captain-status" id="captain-status" hidden></p>
-        </div>
       </div>
     </section>
   </div>
@@ -631,9 +614,15 @@ if (window.matchMedia(
 <script>
 (async function initCaptainProfile() {
   const $ = (id) => document.getElementById(id);
-  const panel = $("captain-profile");
+  const panel = $("captain-ui");
   const toggle = $("captain-profile-toggle");
   const fallbackAvatar = "/assets/images/default-avatar.png";
+  const posterPanel = $("captain-profile");
+  posterPanel.addEventListener("animationend", (event) => {
+    if (event.animationName === "captainProfileEnter") {
+      posterPanel.style.animation = "none";
+    }
+  });
   toggle.addEventListener("click", () => {
     const collapsed = panel.classList.toggle("is-collapsed");
     toggle.setAttribute("aria-expanded", String(!collapsed));
@@ -660,7 +649,9 @@ if (window.matchMedia(
   });
   try {
     const { data: userData, error: authError } = await client.auth.getUser();
-    if (authError) console.warn("로그인 상태 확인:", authError.message);
+    if (authError && !/session missing/i.test(authError.message)) {
+      console.warn("로그인 상태 확인:", authError.message);
+    }
     const loggedIn = !authError && !!userData?.user;
     $("captain-login").hidden = loggedIn;
     $("captain-logout").hidden = !loggedIn;
@@ -672,7 +663,7 @@ if (window.matchMedia(
   try {
     const { data: profile, error: profileError } = await client
       .from("profiles")
-      .select("nickname, major, bio, avatar_url")
+      .select("nickname, major, bio, avatar_url, bounty")
       .limit(1)
       .maybeSingle();
     if (profileError) throw profileError;
@@ -681,7 +672,9 @@ if (window.matchMedia(
       return;
     }
     $("captain-nickname").textContent = profile.nickname || "골목대장";
+    $("captain-bounty").textContent = Number(profile.bounty || 0).toLocaleString("ko-KR");
     $("captain-bio").textContent = profile.bio || "선장의 항해 기록을 준비하고 있습니다.";
+    $("captain-major").hidden = true;
     if (profile.major) {
       $("captain-major").textContent = profile.major;
       $("captain-major").hidden = false;
