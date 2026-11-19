@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page.title | escape }} | {{ site.title | escape }}</title>
+  <style>
+    :root { color-scheme: dark; --gold:#c8a76b; --muted:#aa9b85; --ink:#e6d6b9; --edge:#665034; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; min-height:100vh; color:var(--ink); font-family:Georgia,'Malgun Gothic',serif; background:radial-gradient(ellipse at 70% 0%,#302418 0%,#17120f 55%,#0d0b0a 100%); }
+    body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.15; background:repeating-linear-gradient(90deg,transparent 0 80px,#947349 81px,transparent 82px),repeating-linear-gradient(0deg,transparent 0 80px,#947349 81px,transparent 82px); }
+    a { color:inherit; }
+    .topbar { position:relative; display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:18px clamp(18px,4vw,70px); border-bottom:1px solid #6c52367a; background:#100e0bc9; }
+    .brand { font-size:.8rem; letter-spacing:.2em; color:var(--gold); }
+    .return { text-decoration:none; color:var(--gold); font-size:.85rem; border:1px solid #866a47; border-radius:3px; padding:.6rem .9rem; }
+    .return:hover,.return:focus-visible { background:#594128; color:#fff0cf; }
+    .shell { position:relative; max-width:1480px; margin:auto; padding:clamp(20px,4vw,56px); }
+    .intro { margin:0 0 30px; padding-bottom:24px; border-bottom:1px solid #6b5135; }
+    .intro .symbol { color:var(--gold); font-size:1.5rem; }
+    h1 { margin:12px 0; font-size:clamp(1.6rem,3vw,2.7rem); font-weight:500; }
+    .intro p { margin:0; color:var(--muted); }
+    .reading-grid { display:grid; grid-template-columns:minmax(220px,290px) minmax(0,1fr); gap:clamp(20px,4vw,60px); align-items:start; }
+    .toc { position:sticky; top:22px; max-height:calc(100vh - 44px); overflow-y:auto; scrollbar-color:#947044 #251b13; scrollbar-width:thin; padding:22px 10px 20px 0; }
+    .toc h2 { font-size:.85rem; letter-spacing:.22em; color:var(--gold); margin:0 0 20px; }
+    .toc-list { border-left:1px solid #745b3d; display:flex; flex-direction:column; }
+    .toc-button { appearance:none; display:block; width:100%; border:0; border-left:3px solid transparent; margin-left:-2px; padding:14px 10px 14px 17px; text-align:left; background:none; color:#b2a492; font:inherit; font-size:.94rem; line-height:1.5; cursor:pointer; overflow-wrap:anywhere; }
+    .toc-button:hover,.toc-button:focus-visible { color:#f1d9a8; background:#ae824016; outline:none; }
+    .toc-button[aria-selected="true"] { border-left-color:#d2aa65; color:#f0d9a7; background:#b68d4215; }
+    .toc-date { display:block; margin-top:5px; color:#877b6c; font-size:.7rem; }
+    .paper { min-height:60vh; background:linear-gradient(130deg,#f2e4c9,#e1ccaa 60%,#d7bf99); color:#443322; border:1px solid #b59765; box-shadow:0 14px 50px #0008, inset 0 0 45px #9e76451c; padding:clamp(24px,5vw,66px); position:relative; }
+    .paper::before { content:""; position:absolute; inset:12px; border:1px solid #b69a6b88; pointer-events:none; }
+    .article { position:relative; overflow-wrap:anywhere; }
+    .article[hidden] { display:none !important; }
+    .article h2 { font-size:clamp(1.5rem,3vw,2.25rem); margin:0 0 12px; }
+    .article-date { font-size:.78rem; letter-spacing:.1em; color:#876c49; padding-bottom:20px; margin-bottom:28px; border-bottom:1px solid #bda27c; }
+    .article-body { line-height:1.95; font-size:1rem; }
+    .article-body img { max-width:100%; height:auto; }
+    .article-body pre { overflow:auto; padding:14px; background:#3b3025; color:#f3e9d6; border-radius:4px; }
+    .article-body :not(pre)>code { overflow-wrap:anywhere; background:#d1bc97; padding:2px 4px; }
+    .article-body a { color:#74501c; text-decoration:underline; }
+    .article-body blockquote { margin:1.5rem 0; border-left:3px solid #aa8755; padding-left:1rem; color:#695239; }
+    .article-body table { display:block; overflow-x:auto; border-collapse:collapse; max-width:100%; }
+    .article-body th,.article-body td { border:1px solid #ad9470; padding:8px; }
+    .empty { color:#796347; text-align:center; padding:70px 12px; }
+    .fallback { padding:22px; border:1px solid #6c5236; }
+    .fallback a { color:var(--gold); }
+    @media(max-width:760px) { .reading-grid { grid-template-columns:1fr; gap:12px; } .toc { position:relative; top:auto; max-height:230px; border-bottom:1px solid #735739; padding-top:0; } .paper { min-height:45vh; } .topbar { flex-wrap:wrap; } }
+    @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+  </style>
+</head>
+<body>
+  <header class="topbar"><span class="brand">✦ CAPTAIN'S ARCHIVE ✦</span><a class="return" href="{{ '/bookshelf/' | relative_url }}">← 책장으로 돌아가기</a></header>
+  <main class="shell">
+    {% if page.book_key %}
+      {% assign book = site.data.books | where: 'slug', page.book_key | first %}
+      <header class="intro"><div class="symbol">{% if book %}{{ book.symbol }}{% else %}✦{% endif %}</div><h1>{% if book %}{{ book.name }}{% else %}{{ page.title }}{% endif %}</h1><p>{% if book %}{{ book.description }}{% endif %}</p></header>
+      <div class="reading-grid">
+        <nav class="toc" aria-label="게시글 목차"><h2>목차 · CONTENTS</h2><div class="toc-list" role="tablist" aria-label="기록 선택">
+          {% assign entry_index = 0 %}
+          {% for post in site.posts %}{% if post.categories contains page.book_key %}
+            <button type="button" class="toc-button" role="tab" id="tab-{{ entry_index }}" aria-controls="article-{{ entry_index }}" aria-selected="{% if entry_index == 0 %}true{% else %}false{% endif %}" tabindex="{% if entry_index == 0 %}0{% else %}-1{% endif %}" data-index="{{ entry_index }}">{{ post.title | escape }}<span class="toc-date">{{ post.date | date: '%Y.%m.%d' }}</span></button>
+            {% assign entry_index = entry_index | plus: 1 %}
+          {% endif %}{% endfor %}
+        </div></nav>
+        <section class="paper" aria-label="게시글 본문">
+          {% assign panel_index = 0 %}
+          {% for post in site.posts %}{% if post.categories contains page.book_key %}
+            <article class="article" role="tabpanel" id="article-{{ panel_index }}" aria-labelledby="tab-{{ panel_index }}" {% unless panel_index == 0 %}hidden{% endunless %}>
+              <h2>{{ post.title | escape }}</h2><div class="article-date">{{ post.date | date: '%Y.%m.%d' }} · 선장의 기록</div><div class="article-body">{{ post.content }}</div>
+            </article>
+            {% assign panel_index = panel_index | plus: 1 %}
+          {% endif %}{% endfor %}
+          {% if panel_index == 0 %}<div class="empty">아직 이 책에 기록된 항해일지가 없습니다.<p>첫 게시글을 작성하면 이곳에 나타납니다.</p></div>{% endif %}
+        </section>
+      </div>
+    {% else %}
+      <div class="fallback">{{ content }}</div>
+    {% endif %}
+  </main>
+  <script>
+    (function () {
+      const tabs = Array.from(document.querySelectorAll('.toc-button[role="tab"]'));
+      const panels = Array.from(document.querySelectorAll('.article[role="tabpanel"]'));
+      function activate(index, moveFocus) {
+        if (!Number.isInteger(index) || index < 0 || index >= tabs.length) return;
+        tabs.forEach((tab, i) => {
+          const active = i === index;
+          tab.setAttribute('aria-selected', String(active));
+          tab.tabIndex = active ? 0 : -1;
+          panels[i].hidden = !active;
+        });
+        if (moveFocus) tabs[index].focus();
+      }
+      tabs.forEach((tab, i) => {
+        tab.addEventListener('click', () => activate(i, false));
+        tab.addEventListener('keydown', (event) => {
+          if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
+          event.preventDefault();
+          const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (i + (event.key === 'ArrowDown' ? 1 : -1) + tabs.length) % tabs.length;
+          activate(next, true);
+        });
+      });
+    }());
+  </script>
+</body>
+</html>
