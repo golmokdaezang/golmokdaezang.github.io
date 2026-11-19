@@ -423,7 +423,7 @@ body { overflow: hidden; }
   height: 25%;
   display: block;
   background: transparent;
-  cursor: zoom-in;
+  cursor: pointer;
   border-radius: 5px;
 }
 .cabin-bookshelf-link:focus-visible {
@@ -489,6 +489,55 @@ body { overflow: hidden; }
   .bookshelf-approach.active .approach-shelf { animation: none; }
 }
 
+
+/* === GOLDEN INTERACTION HINTS START === */
+/* 고풍스러운 돋보기: 클릭 가능한 부분에만 표시 */
+.cabin .lantern, .cabin .cabin-door, .cabin .cabin-map,
+.cabin .cabin-bookshelf-link, .cabin .captain-ui a,
+.cabin .captain-ui button, .cabin .captain-profile {
+  cursor: url('/assets/images/antique-magnifier-cursor.svg') 16 16, pointer;
+}
+/* 조용한 금빛 툴팁. 툴팁은 클릭 영역 바깥에도 보임 */
+.cabin [data-hint] { position: absolute; }
+.cabin [data-hint]::after {
+  content: attr(data-hint);
+  position: absolute;
+  left: 50%; top: calc(100% + 9px);
+  transform: translate(-50%, -4px);
+  z-index: 70;
+  width: max-content; max-width: min(260px, 75vw);
+  padding: 5px 11px;
+  border-top: 1px solid rgba(201,161,94,.65);
+  border-bottom: 1px solid rgba(201,161,94,.65);
+  background: rgba(24,17,12,.85);
+  color: #d9b982;
+  font-family: 'Gowun Batang', Georgia, serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: .09em;
+  text-align: center;
+  white-space: normal;
+  text-shadow: 0 1px 3px rgba(0,0,0,.8);
+  box-shadow: 0 4px 12px rgba(0,0,0,.2);
+  opacity: 0; visibility: hidden;
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease, visibility .18s;
+}
+.cabin [data-hint]:hover::after,
+.cabin [data-hint]:focus-visible::after {
+  opacity: 1; visibility: visible;
+  transform: translate(-50%, 0);
+}
+/* 상단 메뉴의 원래 배치를 유지한다. */
+.cabin .captain-topbar [data-hint] { position: relative; }
+/* 프로필 포스터는 왼쪽에 있으므로 안내 문구도 안쪽에 표시 */
+.cabin .captain-profile[data-hint]::after { top: 10px; left: 50%; }
+/* 책장 설명은 책 바로 아래에 조용히 표시 */
+.cabin .cabin-bookshelf-link[data-hint]::after { top: calc(100% + 7px); }
+@media (hover: none) { .cabin [data-hint]::after { display: none; } }
+/* === GOLDEN INTERACTION HINTS END === */
+
 </style>
 </head>
 <body>
@@ -517,36 +566,36 @@ body { overflow: hidden; }
     type="button"
     aria-label="랜턴 켜기 또는 끄기"
     aria-pressed="false"
-  ></button>
+   data-hint="랜턴 불빛 바꾸기"></button>
   <!-- 기존 갑판 이동 -->
   <a
     class="cabin-door"
     href="/crew.html"
     aria-label="갑판으로 나가기"
-  ></a>
+   data-hint="갑판으로 나가기"></a>
   <!-- 새 지도 이동 -->
   <a
     class="cabin-map"
     href="/map/"
     aria-label="지도 펼치기"
-  ></a>
+   data-hint="항해 지도 펼치기"></a>
     <!-- 랜턴 아래 책장으로 접근 -->
   <a class="cabin-bookshelf-link" id="cabin-bookshelf-link"
      href="/bookshelf/" aria-label="선실 책장으로 다가가기"
-     title="책장 살펴보기"></a>
+      data-hint="서가를 살펴보기"></a>
   <!-- 선장 프로필 및 관리자 로그인 UI -->
   <div class="captain-ui" id="captain-ui">
     <nav class="captain-topbar" aria-label="선장실 메뉴">
         <div class="captain-top-left">
-          <button class="captain-profile-toggle" id="captain-profile-toggle" type="button" aria-expanded="true" aria-controls="captain-profile">⚜ 선장 프로필</button>
-          <a class="captain-edit" id="captain-edit" href="/profile/settings/" hidden>프로필 수정</a>
+          <button class="captain-profile-toggle" id="captain-profile-toggle" type="button" aria-expanded="true" aria-controls="captain-profile" data-hint="선장 프로필 펼치기">⚜ 선장 프로필</button>
+          <a class="captain-edit" id="captain-edit" href="/profile/settings/" hidden data-hint="프로필 수정하기">프로필 수정</a>
         </div>
         <div>
-          <a class="captain-auth" id="captain-login" href="/login/">로그인</a>
-          <button class="captain-auth" id="captain-logout" type="button" hidden>로그아웃</button>
+          <a class="captain-auth" id="captain-login" href="/login/" data-hint="선장실 로그인">로그인</a>
+          <button class="captain-auth" id="captain-logout" type="button" hidden data-hint="로그아웃">로그아웃</button>
         </div>
       </nav>
-    <section class="captain-profile" id="captain-profile" aria-label="선장 현상금 포스터" role="button" tabindex="0" title="클릭하면 포스터를 숨깁니다">
+    <section class="captain-profile" id="captain-profile" aria-label="선장 현상금 포스터" role="button" tabindex="0"  data-hint="포스터 접어두기">
       <div class="captain-poster">
         <img class="captain-avatar" id="captain-avatar" src="/assets/images/default-avatar.png" alt="선장 프로필 사진">
         <h2 class="captain-nickname" id="captain-nickname">골목대장</h2>

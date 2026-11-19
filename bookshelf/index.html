@@ -95,9 +95,42 @@
     }
     .parchment-reveal.departing { filter:brightness(1.045); transition:filter .8s ease; }
     @media (prefers-reduced-motion:reduce) { .book,.background {transition:none;} .parchment-reveal.expanding {animation-duration:.01s;} .quill.bob,.quill.scribing {animation:none;} .quill {transition:none;} }
-  </style>
+  
+/* === BOOKSHELF RETURN START === */
+.desk-return {
+  position: fixed;
+  z-index: 95;
+  left: max(15px, env(safe-area-inset-left));
+  top: max(15px, env(safe-area-inset-top));
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  border: 1px solid rgba(202,165,103,.55);
+  border-radius: 3px;
+  background: rgba(26,19,13,.67);
+  color: #ddbd86;
+  font-family: 'Gowun Batang', Georgia, serif;
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-decoration: none;
+  text-shadow: 0 1px 4px #000;
+  backdrop-filter: blur(3px);
+  cursor: url('/assets/images/antique-magnifier-cursor.svg') 16 16, pointer;
+  transition: background .2s, border-color .2s, color .2s;
+}
+.desk-return:hover, .desk-return:focus-visible {
+  background: rgba(56,37,22,.84);
+  border-color: rgba(239,198,123,.8);
+  color: #f2d6a2;
+}
+.desk-return:focus-visible { outline: 2px solid #ddbd86; outline-offset: 3px; }
+/* === BOOKSHELF RETURN END === */
+
+</style>
 </head>
 <body>
+  <a class="desk-return" href="/cabin/" aria-label="책상으로 돌아가기">〈 &nbsp;책상으로 돌아가기</a>
   <main class="scene" id="scene" aria-label="선장의 서재 책장">
     <div class="stage" id="stage">
       <img class="background day" src="/assets/images/bookshelf-day.png" alt="" draggable="false">
