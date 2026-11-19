@@ -7,7 +7,7 @@
   <title>선장의 서재 | 책장</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poor+Story&display=swap" rel="stylesheet">
   <style>
     :root { color-scheme: dark; font-family: Georgia, 'Noto Serif KR', serif; }
     * { box-sizing: border-box; }
@@ -43,7 +43,7 @@
     }
     .parchment-reveal.expanding {
       visibility:visible;
-      animation:mist-expand 4.15s cubic-bezier(.42,0,.17,1) forwards;
+      animation:mist-expand 2.85s cubic-bezier(.42,0,.17,1) forwards;
     }
     .parchment-reveal.covered { visibility:visible; opacity:1; --mist-radius:180vmax; }
     @keyframes mist-expand {
@@ -51,15 +51,22 @@
       12% { opacity:.9; }
       100% { --mist-radius:180vmax; opacity:1; filter:blur(0); }
     }
+    /* 초록우산 어린이체 파일을 assets/fonts/green-umbrella.woff2 에 넣으면 적용된다. */
+    @font-face {
+      font-family:'Green Umbrella';
+      src:url('/assets/fonts/green-umbrella.woff2') format('woff2');
+      font-display:swap;
+    }
     .writing-area {
       position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-      width:min(90vw,800px); height:220px; opacity:0; transition:opacity .6s ease;
+      width:min(94vw,950px); height:230px; opacity:0; transition:opacity .18s ease;
+      display:flex; align-items:center; justify-content:center;
     }
     .parchment-reveal.writing .writing-area { opacity:1; }
     .writing-text {
-      position:absolute; left:9%; top:51%; transform:translateY(-50%);
-      white-space:nowrap; font-family:'Nanum Pen Script','Nanum Myeongjo',cursive;
-      font-weight:400; font-size:clamp(33px,6vw,74px); line-height:1.2;
+      position:relative; flex:none;
+      white-space:nowrap; font-family:'Green Umbrella','초록우산 어린이체','Poor Story',cursive;
+      font-weight:400; font-size:clamp(30px,5.6vw,70px); line-height:1.2;
       letter-spacing:.01em; color:#56351f; text-shadow:0 1px 1px #fff6;
     }
     .quill {
@@ -194,19 +201,19 @@
       const area=writingArea.getBoundingClientRect();
       const text=writingText.getBoundingClientRect();
       // 펜촉이 마지막 글자 오른쪽 아래에 오도록 위치시킨다.
-      quill.style.left=(text.right-area.left+5)+'px';
-      quill.style.top=(text.bottom-area.top-5)+'px';
+      quill.style.left=(text.right-area.left+3)+'px';
+      quill.style.top=(text.bottom-area.top-7)+'px';
     }
 
     async function writeMessage() {
       writingText.textContent='';
       parchment.classList.add('writing');
       quill.classList.add('scribing');
-      await wait(520);
+      setPenAtTextEnd();
       for(const ch of Array.from(MESSAGE)) {
         writingText.textContent+=ch;
         setPenAtTextEnd();
-        await wait(ch===' '?155:ch==='.'?260:225);
+        await wait(ch===' '?90:ch==='.'?135:155);
       }
       quill.classList.remove('scribing');
       quill.classList.add('bob');
@@ -220,22 +227,21 @@
       const destination=bookData[selectedIndex].url||'/';
       let ready=false;
       const preload=warmDestination(destination).then(()=>{ready=true;});
-      // 부드러운 가장자리의 양피지가 약 4.15초 동안 번져 나온다.
+      // 안개 같은 양피지가 약 2.85초 동안 번져 나온다.
       const expanded=new Promise(resolve=>{
         parchment.addEventListener('animationend',resolve,{once:true});
-        setTimeout(resolve,4550);
+        setTimeout(resolve,3250);
       });
       parchment.classList.add('expanding');
       await expanded;
       parchment.classList.remove('expanding');
       parchment.classList.add('covered');
-      await wait(250);
       // 로딩이 빨라도 펜이 문구를 끝까지 쓰도록 보장한다.
       await writeMessage();
       if(!ready) await Promise.race([preload,wait(2400)]);
       quill.classList.remove('bob');
       parchment.classList.add('departing');
-      await wait(850);
+      await wait(480);
       // 도착 페이지에 별도 오버레이를 설치하면 자연스럽게 이어진다.
       try {sessionStorage.setItem('parchmentArrival','1');} catch(_) {}
       window.location.assign(destination);
