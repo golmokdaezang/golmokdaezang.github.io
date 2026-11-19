@@ -31,8 +31,8 @@
     }
 
     /*
-      배경과 책을 모두 1600 × 960 좌표계에 배치한다.
-      실제 표시 크기는 JavaScript에서 함께 조절한다.
+      책장 배경과 책을 같은 좌표계에 배치
+      기준 크기: 1600 × 960
     */
     .bookshelf-stage {
       position: absolute;
@@ -40,21 +40,25 @@
       height: 960px;
       left: 50%;
       top: 50%;
+
       transform-origin: center center;
       transform:
         translate(-50%, -50%)
         scale(var(--scene-scale, 1));
     }
 
+    /* 낮 배경 */
     .background {
       position: absolute;
       inset: 0;
+
       background-image: url("/assets/images/bookshelf-day.png");
       background-size: 100% 100%;
       background-position: center;
       background-repeat: no-repeat;
     }
 
+    /* 밤 배경 */
     .background.night {
       background-image: url("/assets/images/bookshelf-night.png");
       opacity: 0;
@@ -74,31 +78,30 @@
       z-index: 30;
 
       display: flex;
-      justify-content: space-between;
       align-items: center;
-
       padding: 12px 24px;
 
       background: rgba(18, 12, 8, 0.75);
       border-bottom: 1px solid rgba(180, 139, 75, 0.4);
     }
 
-    .toolbar a,
-    .toolbar button {
+    .toolbar a {
       color: #e8cf9e;
       background: rgba(20, 12, 7, 0.4);
       border: 1px solid rgba(180, 139, 75, 0.5);
       border-radius: 6px;
+
       padding: 9px 14px;
       text-decoration: none;
       cursor: pointer;
+
       font: inherit;
       font-size: 14px;
+
       transition: background 0.2s ease;
     }
 
-    .toolbar a:hover,
-    .toolbar button:hover {
+    .toolbar a:hover {
       background: rgba(180, 139, 75, 0.22);
     }
 
@@ -137,33 +140,78 @@
       display: block;
       width: 100%;
       height: 100%;
+
       object-fit: fill;
       pointer-events: none;
       user-select: none;
       -webkit-user-drag: none;
     }
 
-    /* 마우스를 올리면 살짝 앞으로 */
+    /* 책 위에 마우스를 올렸을 때 */
     .book:hover,
     .book:focus-visible {
       transform: translate3d(0, -9px, 0) scale(1.09);
+
       filter:
         brightness(1.1)
         drop-shadow(10px 14px 10px rgba(0, 0, 0, 0.7));
+
       z-index: 10;
       outline: none;
     }
 
-    /* 클릭하면 조금 더 앞으로 */
+    /* 책을 클릭했을 때 */
     .book.selected {
       transform: translate3d(0, -22px, 0) scale(1.2);
+
       filter:
         brightness(1.12)
         drop-shadow(14px 20px 14px rgba(0, 0, 0, 0.8));
+
       z-index: 11;
     }
 
-    /* 선택 안내 */
+    /*
+      랜턴 투명 클릭 영역
+
+      사진 속 랜턴 위에 투명 버튼을 배치한다.
+      마우스를 올려도 시각적 효과는 없다.
+    */
+    .lantern-toggle {
+      position: absolute;
+
+      left: 70.5%;
+      top: 70%;
+      width: 8%;
+      height: 24%;
+
+      padding: 0;
+      border: none;
+      background: transparent;
+
+      cursor: default;
+      z-index: 15;
+
+      appearance: none;
+      -webkit-appearance: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .lantern-toggle:hover,
+    .lantern-toggle:active {
+      background: transparent;
+      filter: none;
+      transform: none;
+    }
+
+    /* 키보드 사용자에게만 포커스 표시 */
+    .lantern-toggle:focus-visible {
+      outline: 2px solid #e8cf9e;
+      outline-offset: 2px;
+      border-radius: 12px;
+    }
+
+    /* 책 선택 안내 */
     .info {
       position: absolute;
       bottom: 24px;
@@ -181,6 +229,7 @@
       color: #e8cf9e;
       text-align: center;
       font-size: 14px;
+
       pointer-events: none;
     }
 
@@ -199,20 +248,26 @@
     <!-- 배경과 책이 함께 확대·축소되는 영역 -->
     <div class="bookshelf-stage" id="bookshelfStage">
 
+      <!-- 낮·밤 배경 -->
       <div class="background"></div>
       <div class="background night"></div>
 
+      <!-- 책 6권 -->
       <div class="books" id="books"></div>
+
+      <!-- 사진 속 랜턴 클릭 영역 -->
+      <button
+        id="lanternToggle"
+        class="lantern-toggle"
+        type="button"
+        aria-label="랜턴을 눌러 밤으로 전환">
+      </button>
 
     </div>
 
-    <!-- 상단 메뉴 -->
+    <!-- 상단 메뉴: 선장실 버튼만 유지 -->
     <nav class="toolbar" aria-label="책장 메뉴">
       <a href="/cabin/">← 선장실</a>
-
-      <button id="themeButton" type="button">
-        ☾ 밤으로
-      </button>
     </nav>
 
     <!-- 책 선택 메시지 -->
@@ -224,42 +279,66 @@
 
   <script>
     /*
-      책장 원본 좌표계: 1600 × 960
+      책 6권 배치 좌표
 
-      x, y, w, h는 원본 이미지 기준 백분율이다.
-      책 이미지는 첫 번째 선반 위에 배치한다.
-
-      아래 값은 초기 조정값이며, 이미지별 투명 여백에
-      따라 추가 조정이 필요할 수 있다.
+      기존에 완성한 위치, 높낮이, 두께, 간격을
+      변경하지 않고 그대로 유지한다.
     */
-    
-
-const bookData = [
-  { name: "파란 책", file: "book-blue.png",
-    x: 29.8, y: 17.6, w: 3.3, h: 22.0 },
-
-  { name: "초록 책", file: "book-green.png",
-    x: 33.0, y: 17.2, w: 3.3, h: 22.4 },
-
-  { name: "보라 책", file: "book-purple.png",
-    x: 36.2, y: 18.2, w: 3.3, h: 21.4 },
-
-  { name: "갈색 책", file: "book-brown.png",
-    x: 39.4, y: 17.0, w: 3.3, h: 22.6 },
-
-  { name: "아쿠아 책", file: "book-aqua.png",
-    x: 42.6, y: 18.0, w: 3.3, h: 21.6 },
-
-  { name: "검정 책", file: "book-black.png",
-    x: 45.8, y: 16.6, w: 3.3, h: 23.0 }
-];
-
-
+    const bookData = [
+      {
+        name: "파란 책",
+        file: "book-blue.png",
+        x: 29.8,
+        y: 17.6,
+        w: 3.3,
+        h: 22.0
+      },
+      {
+        name: "초록 책",
+        file: "book-green.png",
+        x: 33.0,
+        y: 17.2,
+        w: 3.3,
+        h: 22.4
+      },
+      {
+        name: "보라 책",
+        file: "book-purple.png",
+        x: 36.2,
+        y: 18.2,
+        w: 3.3,
+        h: 21.4
+      },
+      {
+        name: "갈색 책",
+        file: "book-brown.png",
+        x: 39.4,
+        y: 17.0,
+        w: 3.3,
+        h: 22.6
+      },
+      {
+        name: "아쿠아 책",
+        file: "book-aqua.png",
+        x: 42.6,
+        y: 18.0,
+        w: 3.3,
+        h: 21.6
+      },
+      {
+        name: "검정 책",
+        file: "book-black.png",
+        x: 45.8,
+        y: 16.6,
+        w: 3.3,
+        h: 23.0
+      }
+    ];
 
     const container = document.getElementById("books");
     const info = document.getElementById("info");
-    const themeButton = document.getElementById("themeButton");
     const stage = document.getElementById("bookshelfStage");
+    const lanternToggle = document.getElementById("lanternToggle");
 
     let selectedBook = null;
 
@@ -269,6 +348,7 @@ const bookData = [
 
       button.type = "button";
       button.className = "book";
+
       button.setAttribute("aria-label", book.name);
       button.setAttribute("aria-pressed", "false");
 
@@ -313,9 +393,12 @@ const bookData = [
     function applyTheme(dark) {
       document.body.classList.toggle("dark", dark);
 
-      themeButton.textContent = dark
-        ? "☀ 낮으로"
-        : "☾ 밤으로";
+      lanternToggle.setAttribute(
+        "aria-label",
+        dark
+          ? "랜턴을 눌러 낮으로 전환"
+          : "랜턴을 눌러 밤으로 전환"
+      );
 
       localStorage.setItem(
         "bookshelf-theme",
@@ -323,21 +406,19 @@ const bookData = [
       );
     }
 
+    /* 마지막 낮·밤 상태 복원 */
     applyTheme(
       localStorage.getItem("bookshelf-theme") === "night"
     );
 
-    themeButton.addEventListener("click", () => {
+    /* 랜턴을 클릭했을 때만 낮·밤 전환 */
+    lanternToggle.addEventListener("click", () => {
       const isDark = document.body.classList.contains("dark");
       applyTheme(!isDark);
     });
 
     /*
-      브라우저 크기가 달라져도 책장과 책의 위치가
-      함께 움직이도록 전체 무대를 확대·축소한다.
-
-      cover 방식이므로 화면 비율에 따라
-      가장자리 일부는 잘릴 수 있다.
+      브라우저 크기에 따라 책장과 책을 함께 확대·축소
     */
     function resizeBookshelf() {
       const scene = document.getElementById("scene");
