@@ -29,7 +29,8 @@
     .open-button:hover:not(:disabled) { filter:brightness(1.2); transform:translateY(-2px); }
     .open-button:disabled { opacity:.65; cursor:default; }
     .parchment-reveal { position:fixed; inset:0; z-index:1000; pointer-events:none; visibility:hidden; background-color:#e8c99b; background-image:url('/assets/images/parchment-bg.webp'); background-size:cover; background-position:center; clip-path:circle(0% at 50% 50%); }
-    .parchment-reveal.expanding { visibility:visible; animation:parchment-expand 1.2s cubic-bezier(.22,.75,.25,1) forwards; }
+    .parchment-reveal.expanding { visibility:visible; animation:parchment-expand 1.85s cubic-bezier(.18,.55,.18,1) forwards; }
+    .parchment-reveal.covered { visibility:visible; clip-path:circle(150vmax at 50% 50%); }
     @keyframes parchment-expand { from {clip-path:circle(0% at 50% 50%)} to {clip-path:circle(150vmax at 50% 50%)} }
     @media (prefers-reduced-motion:reduce) { .book,.background {transition:none;} .parchment-reveal.expanding {animation-duration:.01s;} }
   </style>
@@ -113,21 +114,45 @@
       lantern.setAttribute('aria-pressed',String(isNight));
     });
 
+    // 페이지 이동 전 목적지 HTML을 미리 요청하여 캐시를 준비한다.
+    // 실제 탐색 완료 시점은 브라우저가 결정하므로 로딩 완료를 보장하지는 않는다.
+    function warmDestination(url) {
+      try {
+        const target = new URL(url, location.href);
+        if (target.origin !== location.origin) return Promise.resolve();
+        return fetch(target.href, { credentials: 'same-origin', cache: 'default' })
+          .then(() => undefined)
+          .catch(() => undefined);
+      } catch (_) {
+        return Promise.resolve();
+      }
+    }
+
     function openSelectedBook() {
-      if(transitioning||selectedIndex<0)return;
-      transitioning=true;
-      openButton.disabled=true;
-      const destination=bookData[selectedIndex].url||'/';
-      let completed=false;
-      const navigate=()=>{
-        if(completed)return;
-        completed=true;
-        window.location.assign(destination);
-      };
-      parchment.addEventListener('animationend',navigate,{once:true});
+      if (transitioning || selectedIndex < 0) return;
+      transitioning = true;
+      openButton.disabled = true;
+      lantern.disabled = true;
+      const destination = bookData[selectedIndex].url || '/';
+
+      // 양피지가 확장되는 동안 다음 페이지의 HTML을 미리 불러온다.
+      const preload = warmDestination(destination);
+      const expanded = new Promise(resolve => {
+        parchment.addEventListener('animationend', resolve, { once: true });
+        // 모션 감소 설정 및 이벤트 누락 대비
+        setTimeout(resolve, 2100);
+      });
       parchment.classList.add('expanding');
-      // 애니메이션 이벤트가 발생하지 않는 환경을 위한 예비 처리
-      window.setTimeout(navigate,1600);
+
+      // 확장 완료 이후 최대 2초만 더 대기한다. 무한 로딩을 방지한다.
+      Promise.all([
+        expanded,
+        Promise.race([preload, new Promise(resolve => setTimeout(resolve, 3900))])
+      ]).then(() => {
+        parchment.classList.remove('expanding');
+        parchment.classList.add('covered');
+        window.location.assign(destination);
+      });
     }
     openButton.addEventListener('click',openSelectedBook);
   </script>
