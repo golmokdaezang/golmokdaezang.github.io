@@ -272,9 +272,9 @@ permalink: /bookshelf/
 
     <div class="stage" id="stage">
 
-      <img class="background day" src="{{ '/assets/images/bookshelf-day.png' | relative_url }}" alt="" draggable="false">
+      <img class="background day" src="/assets/images/bookshelf-day.png" alt="" draggable="false">
 
-      <img class="background night" src="{{ '/assets/images/bookshelf-night.png' | relative_url }}" alt="" draggable="false">
+      <img class="background night" src="/assets/images/bookshelf-night.png" alt="" draggable="false">
 
       <div id="books"></div>
 
@@ -298,7 +298,7 @@ permalink: /bookshelf/
 
       <div class="writing-text" id="writingText"></div>
 
-      <img class="quill" id="quill" src="{{ '/assets/images/quill-white.webp' | relative_url }}" alt="">
+      <img class="quill" id="quill" src="/assets/images/quill-white.webp" alt="">
 
     </div>
 
@@ -323,7 +323,7 @@ permalink: /bookshelf/
     'use strict';
 
     // 책 정보는 아래 HTML 템플릿에서 읽습니다. 원본은 _data/books.yml입니다.
-    const bookData = Array.from(document.querySelectorAll('#book-data-template [data-book]'), el => ({
+    let bookData = Array.from(document.getElementById('book-data-template').content.querySelectorAll('[data-book]'), el => ({
       name: el.dataset.name,
       file: el.dataset.file,
       x: Number(el.dataset.x),
@@ -335,7 +335,19 @@ permalink: /bookshelf/
       url: el.dataset.url
     }));
 
-    const scene=document.getElementById('scene');
+    // Jekyll이 처리되지 않은 정적 배포에서도 책 여섯 권은 표시합니다.
+  if (bookData.length === 0) {
+    bookData = [
+      {name:'파란 책',file:'book-blue.png',x:29.8,y:18.7,w:3.3,h:20.9,url:'/books/blue/'},
+      {name:'초록 책',file:'book-green.png',x:33.0,y:18.3,w:3.3,h:21.3,url:'/books/green/'},
+      {name:'보라 책',file:'book-purple.png',x:36.2,y:19.3,w:3.3,h:20.3,url:'/books/purple/'},
+      {name:'갈색 책',file:'book-brown.png',x:39.4,y:18.1,w:3.3,h:21.5,url:'/books/brown/'},
+      {name:'아쿠아 책',file:'book-aqua.png',x:42.6,y:19.1,w:3.3,h:20.5,url:'/books/aqua/'},
+      {name:'검정 책',file:'book-black.png',x:45.8,y:17.7,w:3.3,h:21.9,url:'/books/black/'}
+    ];
+  }
+
+  const scene=document.getElementById('scene');
 
     const stage=document.getElementById('stage');
 
@@ -391,7 +403,7 @@ permalink: /bookshelf/
 
       const img=document.createElement('img');
 
-      img.src='{{ '/assets/images/books/' | relative_url }}'+book.file;
+      img.src='/assets/images/books/'+book.file;
 
       img.alt='';
 
@@ -531,7 +543,7 @@ permalink: /bookshelf/
 
       lantern.disabled=true;
 
-      const destination=bookData[selectedIndex].url||'{{ '/blog/' | relative_url }}';
+      const destination=bookData[selectedIndex].url||'/blog/';
 
       let ready=false;
 
