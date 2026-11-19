@@ -84,16 +84,20 @@
       display: block;
       pointer-events: none;
     }
-    .book:hover, .book:focus-visible {
-      transform: translateY(-12px) scale(1.18);
-      filter: drop-shadow(12px 12px 9px #000a);
-      z-index: 10;
-    }
-    .book.selected {
-      transform: translateY(-24px) scale(1.35);
-      filter: drop-shadow(16px 18px 14px #000c);
-      z-index: 11;
-    }
+.book:hover,
+.book:focus-visible {
+  transform: translateY(-5px) scale(1.12);
+  filter: brightness(1.12)
+          drop-shadow(8px 12px 9px rgba(0, 0, 0, .75));
+  z-index: 10;
+}
+
+.book.selected {
+  transform: translateY(-14px) scale(1.25);
+  filter: brightness(1.15)
+          drop-shadow(12px 18px 14px rgba(0, 0, 0, .85));
+  z-index: 11;
+}
     .info {
       position: absolute;
       bottom: 24px;
@@ -132,19 +136,24 @@
     // x, y, w, h는 화면 크기에 대한 백분율이야.
     // 실제 책장 사진에 맞춰 조정해야 해.
     const bookData = [
-      { name: "파란 책", file: "book-blue.png",
-        x: 32, y: 24, w: 3.2, h: 23 },
-      { name: "초록 책", file: "book-green.png",
-        x: 36, y: 24, w: 3.2, h: 23 },
-      { name: "보라 책", file: "book-purple.png",
-        x: 40, y: 24, w: 3.2, h: 23 },
-      { name: "갈색 책", file: "book-brown.png",
-        x: 44, y: 24, w: 3.2, h: 23 },
-      { name: "아쿠아 책", file: "book-aqua.png",
-        x: 48, y: 24, w: 3.2, h: 23 },
-      { name: "검정 책", file: "book-black.png",
-        x: 52, y: 24, w: 3.2, h: 23 }
-    ];
+  { name: "파란 책", file: "book-blue.png",
+    x: 32.5, y: 32.0, w: 2.7, h: 18.8 },
+
+  { name: "초록 책", file: "book-green.png",
+    x: 36.4, y: 32.0, w: 2.7, h: 18.8 },
+
+  { name: "보라 책", file: "book-purple.png",
+    x: 39.8, y: 24.0, w: 3.8, h: 24.5 },
+
+  { name: "갈색 책", file: "book-brown.png",
+    x: 44.3, y: 31.8, w: 2.7, h: 18.8 },
+
+  { name: "아쿠아 책", file: "book-aqua.png",
+    x: 48.2, y: 32.0, w: 2.7, h: 18.8 },
+
+  { name: "검정 책", file: "book-black.png",
+    x: 52.0, y: 32.0, w: 2.7, h: 18.8 }
+];
 
     const container = document.getElementById("books");
     const info = document.getElementById("info");
