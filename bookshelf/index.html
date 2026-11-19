@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1b140e">
   <title>선장의 서재 | 책장</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
   <style>
     :root { color-scheme: dark; font-family: Georgia, 'Noto Serif KR', serif; }
     * { box-sizing: border-box; }
@@ -28,20 +31,63 @@
     .open-button { border:1px solid rgba(248,216,145,.7); border-radius:6px; background:linear-gradient(180deg,#6a4725,#382317); box-shadow:0 4px 18px #0009, inset 0 1px #cda36d77; color:#f8e4b9; padding:14px 36px; font-size:22px; font-weight:bold; cursor:pointer; transition:filter .2s,transform .2s; }
     .open-button:hover:not(:disabled) { filter:brightness(1.2); transform:translateY(-2px); }
     .open-button:disabled { opacity:.65; cursor:default; }
-    .parchment-reveal { position:fixed; inset:0; z-index:1000; pointer-events:none; visibility:hidden; background-color:#e8c99b; background-image:url('/assets/images/parchment-bg.webp'); background-size:cover; background-position:center; clip-path:circle(0% at 50% 50%); }
-    .parchment-reveal.expanding { visibility:visible; animation:parchment-expand 3.35s cubic-bezier(.45,0,.18,1) forwards; }
-    .parchment-reveal.covered { visibility:visible; clip-path:circle(150vmax at 50% 50%); }
-    .writing-area { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:min(88vw,750px); height:190px; opacity:0; transition:opacity .65s ease; }
+    /* 종이가 둥근 원으로 잘리지 않고, 가장자리가 안개처럼 번져 나간다. */
+    @property --mist-radius { syntax: '<length>'; inherits: false; initial-value: 0vmax; }
+    .parchment-reveal {
+      --mist-radius: 0vmax;
+      position:fixed; inset:0; z-index:1000; pointer-events:none; visibility:hidden;
+      background:#e8c99b url('/assets/images/parchment-bg.webp') center/cover no-repeat;
+      -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 0,#000 max(0px, calc(var(--mist-radius) - 19vmax)),transparent calc(var(--mist-radius) + 19vmax));
+      mask-image:radial-gradient(circle at 50% 50%,#000 0,#000 max(0px, calc(var(--mist-radius) - 19vmax)),transparent calc(var(--mist-radius) + 19vmax));
+      opacity:0;
+    }
+    .parchment-reveal.expanding {
+      visibility:visible;
+      animation:mist-expand 4.15s cubic-bezier(.42,0,.17,1) forwards;
+    }
+    .parchment-reveal.covered { visibility:visible; opacity:1; --mist-radius:180vmax; }
+    @keyframes mist-expand {
+      0% { --mist-radius:0vmax; opacity:0; filter:blur(3px); }
+      12% { opacity:.9; }
+      100% { --mist-radius:180vmax; opacity:1; filter:blur(0); }
+    }
+    .writing-area {
+      position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+      width:min(90vw,800px); height:220px; opacity:0; transition:opacity .6s ease;
+    }
     .parchment-reveal.writing .writing-area { opacity:1; }
-    .writing-text { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); white-space:nowrap; font-family:'Nanum Myeongjo','Noto Serif KR',Georgia,serif; font-weight:700; font-size:clamp(23px,4.2vw,47px); letter-spacing:.03em; color:#674021; text-shadow:0 1px 1px #fff6; }
-    .quill { position:absolute; left:0; top:0; width:clamp(95px,16vw,185px); height:auto; pointer-events:none; opacity:0; transform:translate(-4%, -94%) rotate(-7deg); filter:drop-shadow(5px 7px 4px #51351c50); transition:left .23s ease-in-out,top .23s ease-in-out,opacity .45s ease,transform .6s ease; }
+    .writing-text {
+      position:absolute; left:9%; top:51%; transform:translateY(-50%);
+      white-space:nowrap; font-family:'Nanum Pen Script','Nanum Myeongjo',cursive;
+      font-weight:400; font-size:clamp(33px,6vw,74px); line-height:1.2;
+      letter-spacing:.01em; color:#56351f; text-shadow:0 1px 1px #fff6;
+    }
+    .quill {
+      position:absolute; left:0; top:0; width:clamp(90px,15vw,174px); height:auto;
+      pointer-events:none; opacity:0; z-index:3;
+      transform:translate(-10%,-95%) rotate(-6deg);
+      filter:drop-shadow(5px 7px 4px #51351c50);
+      transition:left .18s linear,top .18s ease-in-out,opacity .5s ease;
+      transform-origin:12% 96%;
+    }
     .parchment-reveal.writing .quill { opacity:1; }
-    .quill.bob { animation:quill-idle 1.2s ease-in-out infinite; }
-    @keyframes quill-idle { 0%,100% { translate:0 0; rotate:-2deg; } 50% { translate:4px -7px; rotate:3deg; } }
-    .parchment-reveal.departing .writing-area { opacity:0; transform:translate(-50%,-50%) scale(1.06); transition:opacity .65s ease,transform .8s ease; }
-    .parchment-reveal.departing { filter:brightness(1.12); transition:filter .8s ease; }
-    @keyframes parchment-expand { from {clip-path:circle(0% at 50% 50%)} to {clip-path:circle(150vmax at 50% 50%)} }
-    @media (prefers-reduced-motion:reduce) { .book,.background {transition:none;} .parchment-reveal.expanding {animation-duration:.01s;} .quill.bob {animation:none;} .quill {transition:none;} }
+    /* 펜촉이 종이를 톡톡 누르는 듯한 미세한 상하 떨림 */
+    .quill.scribing { animation:quill-strokes .17s ease-in-out infinite alternate; }
+    @keyframes quill-strokes {
+      from { transform:translate(-10%,-95%) rotate(-8deg) translateY(0); }
+      to { transform:translate(-10%,-95%) rotate(-3deg) translateY(4px); }
+    }
+    .quill.bob { animation:quill-idle 1.15s ease-in-out infinite; }
+    @keyframes quill-idle {
+      0%,100% {transform:translate(-10%,-95%) rotate(-6deg)}
+      50% {transform:translate(-10%,-95%) rotate(-3deg) translate(3px,-4px)}
+    }
+    .parchment-reveal.departing .writing-area {
+      opacity:0; transform:translate(-50%,-50%) scale(1.025);
+      transition:opacity .8s ease,transform .8s ease;
+    }
+    .parchment-reveal.departing { filter:brightness(1.045); transition:filter .8s ease; }
+    @media (prefers-reduced-motion:reduce) { .book,.background {transition:none;} .parchment-reveal.expanding {animation-duration:.01s;} .quill.bob,.quill.scribing {animation:none;} .quill {transition:none;} }
   </style>
 </head>
 <body>
@@ -155,12 +201,14 @@
     async function writeMessage() {
       writingText.textContent='';
       parchment.classList.add('writing');
-      await wait(420);
+      quill.classList.add('scribing');
+      await wait(520);
       for(const ch of Array.from(MESSAGE)) {
         writingText.textContent+=ch;
         setPenAtTextEnd();
-        await wait(ch===' '?120:ch==='.'?230:185);
+        await wait(ch===' '?155:ch==='.'?260:225);
       }
+      quill.classList.remove('scribing');
       quill.classList.add('bob');
     }
 
@@ -172,10 +220,10 @@
       const destination=bookData[selectedIndex].url||'/';
       let ready=false;
       const preload=warmDestination(destination).then(()=>{ready=true;});
-      // 양피지는 약 3.35초 동안 부드럽게 커진다.
+      // 부드러운 가장자리의 양피지가 약 4.15초 동안 번져 나온다.
       const expanded=new Promise(resolve=>{
         parchment.addEventListener('animationend',resolve,{once:true});
-        setTimeout(resolve,3700);
+        setTimeout(resolve,4550);
       });
       parchment.classList.add('expanding');
       await expanded;
