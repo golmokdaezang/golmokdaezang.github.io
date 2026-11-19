@@ -412,6 +412,83 @@ body { overflow: hidden; }
 .captain-profile:focus-visible,.captain-profile-toggle:focus-visible { outline:2px solid #f3d18b; outline-offset:2px; }
 @media(max-width:600px) { .captain-topbar { height:52px; padding:0 10px; } .captain-top-left { gap:4px; } .captain-profile { top:67px; left:18px; width:min(285px,calc(100vw - 36px)); max-height:calc(100dvh - 80px); } .captain-edit { padding:7px 9px; font-size:12px; } }
 @media(prefers-reduced-motion:reduce) { .captain-profile,.captain-ui.is-ready:not(.is-collapsed) .captain-profile { transition:none; } }
+
+/* 선실 책장: 랜턴 아래 책등 부분만 클릭 */
+.cabin-bookshelf-link {
+  position: absolute;
+  z-index: 13;
+  left: 64%;
+  top: 26%;
+  width: 13%;
+  height: 25%;
+  display: block;
+  background: transparent;
+  cursor: zoom-in;
+  border-radius: 5px;
+}
+.cabin-bookshelf-link:focus-visible {
+  outline: 2px solid #f3d18b;
+  outline-offset: 3px;
+}
+/* 실제 선실 이미지에서 책장 쪽으로 걸어가는 화면 */
+.bookshelf-approach {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  overflow: hidden;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  background: #100b08;
+}
+.bookshelf-approach.active {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+.bookshelf-approach .approach-cabin,
+.bookshelf-approach .approach-shelf {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+}
+.bookshelf-approach .approach-cabin {
+  transform-origin: 70% 38%;
+  transform: scale(1);
+}
+.bookshelf-approach.active .approach-cabin {
+  animation: walkToShelf 2s cubic-bezier(.18,.72,.24,1) forwards;
+}
+.bookshelf-approach .approach-shelf {
+  opacity: 0;
+  transform: scale(1.1);
+}
+.bookshelf-approach.active .approach-shelf {
+  animation: revealShelf 1.45s ease-out 1.05s forwards;
+}
+.bookshelf-approach .approach-shadow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% 38%, transparent 28%, rgba(10,6,4,.65) 100%);
+  pointer-events: none;
+}
+@keyframes walkToShelf {
+  0% { transform: scale(1); filter: brightness(1); }
+  100% { transform: scale(3.1); filter: brightness(.55) blur(2px); }
+}
+@keyframes revealShelf {
+  0% { opacity: 0; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bookshelf-approach.active .approach-cabin,
+  .bookshelf-approach.active .approach-shelf { animation: none; }
+}
+
 </style>
 </head>
 <body>
@@ -453,6 +530,10 @@ body { overflow: hidden; }
     href="/map/"
     aria-label="지도 펼치기"
   ></a>
+    <!-- 랜턴 아래 책장으로 접근 -->
+  <a class="cabin-bookshelf-link" id="cabin-bookshelf-link"
+     href="/bookshelf/" aria-label="선실 책장으로 다가가기"
+     title="책장 살펴보기"></a>
   <!-- 선장 프로필 및 관리자 로그인 UI -->
   <div class="captain-ui" id="captain-ui">
     <nav class="captain-topbar" aria-label="선장실 메뉴">
@@ -476,6 +557,12 @@ body { overflow: hidden; }
     </section>
   </div>
 </main>
+<!-- 책장 접근 장면 전환 -->
+<div class="bookshelf-approach" id="bookshelf-approach" aria-hidden="true">
+  <img class="approach-cabin" id="approach-cabin" src="./captain-day.webp" alt="">
+  <img class="approach-shelf" id="approach-shelf" src="/assets/images/bookshelf-day.png" alt="">
+  <div class="approach-shadow"></div>
+</div>
 <!-- 갑판 전환 -->
 <div class="deck-transition" id="deck-transition" aria-hidden="true">
   <div class="deck-images">
@@ -601,6 +688,29 @@ cabinMap.addEventListener("click", (event) => {
     window.location.href = destination;
   }, 2500);
 });
+/* 선실 책장 클릭: 기존 랜턴, 갑판, 지도 기능과 독립 */
+const bookshelfLink = document.getElementById("cabin-bookshelf-link");
+const bookshelfApproach = document.getElementById("bookshelf-approach");
+const approachCabin = document.getElementById("approach-cabin");
+const approachShelf = document.getElementById("approach-shelf");
+bookshelfLink.addEventListener("click", (event) => {
+  event.preventDefault();
+  if (isLeaving) return;
+  isLeaving = true;
+  const destination = bookshelfLink.href;
+  if (reducedMotion.matches) {
+    window.location.assign(destination);
+    return;
+  }
+  approachCabin.src = isDark ? "./captain-night.webp" : "./captain-day.webp";
+  approachShelf.src = isDark
+    ? "/assets/images/bookshelf-night.png"
+    : "/assets/images/bookshelf-day.png";
+  bookshelfApproach.classList.add("active");
+  bookshelfApproach.setAttribute("aria-hidden", "false");
+  window.setTimeout(() => window.location.assign(destination), 2650);
+});
+
 createDust();
 if (window.matchMedia(
   "(hover: hover) and (prefers-reduced-motion: no-preference)"
