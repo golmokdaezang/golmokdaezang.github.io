@@ -1,136 +1,659 @@
+
 <!doctype html>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>항해 기록실 | 책장</title>
+
 <style>
-:root{color-scheme:dark;--paper:#eee0bd}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;overflow:hidden;background:#17100c;font-family:Georgia,'Noto Serif KR',serif}
-.scene{position:fixed;inset:0;overflow:hidden;background:#17100c}
-.stage{position:absolute;left:50%;top:50%;width:1600px;height:960px;transform:translate(-50%,-50%) scale(var(--scene-scale,1));transform-origin:center;overflow:hidden}
-.background{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
-.background.night{opacity:0;transition:opacity .7s ease}body.dark .background.night{opacity:1}
-.toolbar{position:fixed;top:20px;left:24px;z-index:30}.toolbar a{display:inline-block;padding:10px 16px;border-radius:10px;color:#f5e5bf;background:rgba(25,15,9,.75);text-decoration:none;border:1px solid rgba(245,220,170,.35)}
-.book{position:absolute;padding:0;margin:0;background:none;border:0;cursor:pointer;z-index:5;transform-origin:center bottom;transition:transform .22s ease,filter .22s ease;filter:drop-shadow(1px 3px 2px rgba(0,0,0,.35))}
-.book img{width:100%;height:100%;display:block;object-fit:fill;pointer-events:none}.book:hover{transform:translateY(-7px);z-index:8}.book.selected{transform:translateY(-24px);z-index:10;filter:drop-shadow(2px 9px 8px rgba(0,0,0,.65))}.book.selected:hover{transform:translateY(-27px)}.book:focus-visible{outline:3px solid #f8d88c;outline-offset:3px}
-.lantern-toggle{position:absolute;left:70.5%;top:70%;width:8%;height:24%;padding:0;border:0;background:transparent;cursor:default;z-index:15;appearance:none;-webkit-appearance:none;-webkit-tap-highlight-color:transparent}.lantern-toggle:hover,.lantern-toggle:active{background:transparent;filter:none}.lantern-toggle:focus-visible{outline:2px solid #e8cf9e;outline-offset:2px}
-.info{position:fixed;z-index:25;left:50%;bottom:22px;transform:translateX(-50%);min-width:220px;max-width:calc(100vw - 24px);padding:13px 24px;border:1px solid #c7a46a;border-radius:12px;background:rgba(38,24,15,.9);color:#f4dfb5;font:600 16px Georgia,'Noto Serif KR',serif;box-shadow:0 7px 24px #0008;cursor:pointer}.info:disabled{opacity:.75;cursor:default}.info:not(:disabled):hover{background:rgba(76,48,25,.96)}.info:focus-visible{outline:3px solid #ffe6a3;outline-offset:3px}
-.opening-overlay{position:fixed;inset:0;z-index:100;background:#140d09;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .2s ease,visibility .2s ease}.opening-overlay.active{opacity:1;visibility:visible}.realistic-book-animation{width:100vw;height:100vh;object-fit:contain;display:block}.realistic-book-animation[hidden]{display:none}.close-book{position:absolute;top:18px;right:20px;z-index:2;border:1px solid #d6b57d;border-radius:50%;width:42px;height:42px;background:#2c1d15;color:#fff0d0;font-size:24px;cursor:pointer}.close-book:focus-visible{outline:3px solid #fff0c0}
-.parchment-transition{position:fixed;inset:0;z-index:200;background:#eee0bd;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .16s ease}.parchment-transition.active{opacity:1;visibility:visible}
-@media(prefers-reduced-motion:reduce){.book,.background.night,.opening-overlay,.parchment-transition{transition-duration:.01ms}}
+:root {
+  color-scheme: dark;
+  --paper: #eee0bd;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  overflow: hidden;
+  background: #17100c;
+  font-family: Georgia, 'Noto Serif KR', serif;
+}
+
+/* 책장 */
+.scene {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #17100c;
+}
+
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1600px;
+  height: 960px;
+  transform:
+    translate(-50%, -50%)
+    scale(var(--scene-scale, 1));
+  transform-origin: center;
+  overflow: hidden;
+}
+
+.background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.background.night {
+  opacity: 0;
+  transition: opacity .7s ease;
+}
+
+body.dark .background.night {
+  opacity: 1;
+}
+
+/* 선장실 버튼 */
+.toolbar {
+  position: fixed;
+  top: 20px;
+  left: 24px;
+  z-index: 30;
+}
+
+.toolbar a {
+  display: inline-block;
+  padding: 10px 16px;
+  border-radius: 10px;
+  color: #f5e5bf;
+  background: rgba(25,15,9,.75);
+  text-decoration: none;
+  border: 1px solid rgba(245,220,170,.35);
+}
+
+/* 책 6권 */
+.book {
+  position: absolute;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  z-index: 5;
+  transform-origin: center bottom;
+  transition:
+    transform .22s ease,
+    filter .22s ease;
+  filter:
+    drop-shadow(1px 3px 2px rgba(0,0,0,.35));
+}
+
+.book img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.book:hover {
+  transform: translateY(-7px);
+  z-index: 8;
+}
+
+.book.selected {
+  transform: translateY(-24px);
+  z-index: 10;
+  filter:
+    drop-shadow(2px 9px 8px rgba(0,0,0,.65));
+}
+
+.book.selected:hover {
+  transform: translateY(-27px);
+}
+
+.book:focus-visible {
+  outline: 3px solid #f8d88c;
+  outline-offset: 3px;
+}
+
+/* 랜턴: 클릭으로 낮/밤 전환 */
+.lantern-toggle {
+  position: absolute;
+  left: 70.5%;
+  top: 70%;
+  width: 8%;
+  height: 24%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: default;
+  z-index: 15;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lantern-toggle:hover,
+.lantern-toggle:active {
+  background: transparent;
+  filter: none;
+}
+
+.lantern-toggle:focus-visible {
+  outline: 2px solid #e8cf9e;
+  outline-offset: 2px;
+}
+
+/* 책 펼치기 버튼 */
+.info {
+  position: fixed;
+  z-index: 25;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  min-width: 220px;
+  max-width: calc(100vw - 24px);
+  padding: 13px 24px;
+  border: 1px solid #c7a46a;
+  border-radius: 12px;
+  background: rgba(38,24,15,.9);
+  color: #f4dfb5;
+  font: 600 16px Georgia, 'Noto Serif KR', serif;
+  box-shadow: 0 7px 24px #0008;
+  cursor: pointer;
+}
+
+.info:disabled {
+  opacity: .75;
+  cursor: default;
+}
+
+.info:not(:disabled):hover {
+  background: rgba(76,48,25,.96);
+}
+
+.info:focus-visible {
+  outline: 3px solid #ffe6a3;
+  outline-offset: 3px;
+}
+
+/* 애니메이션 전체 화면 */
+.opening-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #140d09;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity .2s ease,
+    visibility .2s ease;
+}
+
+.opening-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 중요: 애니메이션을 추가 확대하지 않음 */
+.realistic-book-animation {
+  display: block;
+  width: min(90vw, 1100px);
+  height: auto;
+  max-height: 85vh;
+  object-fit: contain;
+  transform: none;
+  animation: none;
+  filter:
+    drop-shadow(0 16px 28px rgba(0,0,0,.35));
+}
+
+.realistic-book-animation[hidden] {
+  display: none;
+}
+
+/* 닫기 버튼 */
+.close-book {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  z-index: 2;
+  border: 1px solid #d6b57d;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  background: #2c1d15;
+  color: #fff0d0;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.close-book:focus-visible {
+  outline: 3px solid #fff0c0;
+}
+
+/* 양피지 화면 전환 */
+.parchment-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #eee0bd;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .16s ease;
+}
+
+.parchment-transition.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 작은 화면 */
+@media (max-width: 600px) {
+  .realistic-book-animation {
+    width: 96vw;
+    max-height: 80vh;
+  }
+}
+
+/* 모션 최소화 설정 */
+@media (prefers-reduced-motion: reduce) {
+  .book,
+  .background.night,
+  .opening-overlay,
+  .parchment-transition {
+    transition-duration: .01ms;
+  }
+}
 </style>
 </head>
+
 <body>
+
 <main class="scene" id="scene" aria-label="항해 기록 책장">
- <div class="stage" id="stage">
-  <img class="background day" src="/assets/images/bookshelf-day.png" alt="" aria-hidden="true">
-  <img class="background night" src="/assets/images/bookshelf-night.png" alt="" aria-hidden="true">
-  <div id="books"></div>
-  <button class="lantern-toggle" id="lanternToggle" type="button" aria-label="낮과 밤 전환"></button>
- </div>
+  <div class="stage" id="stage">
+
+    <img
+      class="background day"
+      src="/assets/images/bookshelf-day.png"
+      alt=""
+      aria-hidden="true"
+    >
+
+    <img
+      class="background night"
+      src="/assets/images/bookshelf-night.png"
+      alt=""
+      aria-hidden="true"
+    >
+
+    <div id="books"></div>
+
+    <button
+      class="lantern-toggle"
+      id="lanternToggle"
+      type="button"
+      aria-label="낮과 밤 전환"
+    ></button>
+
+  </div>
 </main>
-<nav class="toolbar"><a href="/cabin/">← 선장실</a></nav>
-<button class="info" id="info" type="button" disabled>책을 선택해 보세요.</button>
-<div class="opening-overlay" id="openingOverlay" role="dialog" aria-modal="true" aria-label="책 펼침 애니메이션" aria-hidden="true" inert>
- <img id="realisticBookAnimation" class="realistic-book-animation" src="/assets/animations/book-blue.webp" alt="책이 펼쳐지고 양피지 속으로 들어가는 애니메이션" hidden>
- <button class="close-book" id="closeBookButton" type="button" aria-label="닫기">×</button>
+
+<nav class="toolbar">
+  <a href="/cabin/">← 선장실</a>
+</nav>
+
+<button class="info" id="info" type="button" disabled>
+  책을 선택해 보세요.
+</button>
+
+<!-- 책 펼침 애니메이션 -->
+<div
+  class="opening-overlay"
+  id="openingOverlay"
+  role="dialog"
+  aria-modal="true"
+  aria-label="책 펼침 애니메이션"
+  aria-hidden="true"
+  inert
+>
+  <img
+    id="realisticBookAnimation"
+    class="realistic-book-animation"
+    src="/assets/animations/book-blue.webp"
+    alt="책이 펼쳐지고 양피지 속으로 들어가는 애니메이션"
+    hidden
+  >
+
+  <button
+    class="close-book"
+    id="closeBookButton"
+    type="button"
+    aria-label="닫기"
+  >×</button>
 </div>
-<div class="parchment-transition" id="parchmentTransition" aria-hidden="true"></div>
+
+<!-- 페이지 전환막 -->
+<div
+  class="parchment-transition"
+  id="parchmentTransition"
+  aria-hidden="true"
+></div>
+
 <script>
 'use strict';
+
+/* 책별 위치, 색상, 애니메이션, 이동 주소 */
 const bookData = [
- {name:'파란 책',file:'book-blue.png',x:29.8,y:18.7,w:3.3,h:20.9,color:'#173c65',symbol:'✧',animation:'/assets/animations/book-blue.webp',url:'/'},
- {name:'초록 책',file:'book-green.png',x:33.0,y:18.3,w:3.3,h:21.3,color:'#244b39',symbol:'⚓',animation:'/assets/animations/book-green.webp',url:'/'},
- {name:'보라 책',file:'book-purple.png',x:36.2,y:19.3,w:3.3,h:20.3,color:'#49305e',symbol:'✺',animation:'/assets/animations/book-purple.webp',url:'/'},
- {name:'갈색 책',file:'book-brown.png',x:39.4,y:18.1,w:3.3,h:21.5,color:'#704721',symbol:'◎',animation:'/assets/animations/book-brown.webp',url:'/'},
- {name:'아쿠아 책',file:'book-aqua.png',x:42.6,y:19.1,w:3.3,h:20.5,color:'#17646b',symbol:'⚓',animation:'/assets/animations/book-aqua.webp',url:'/'},
- {name:'검정 책',file:'book-black.png',x:45.8,y:17.7,w:3.3,h:21.9,color:'#242323',symbol:'☠',animation:'/assets/animations/book-black.webp',url:'/'}
+  {
+    name: '파란 책',
+    file: 'book-blue.png',
+    x: 29.8, y: 18.7, w: 3.3, h: 20.9,
+    color: '#173c65',
+    symbol: '✧',
+    animation: '/assets/animations/book-blue.webp',
+    url: '/'
+  },
+  {
+    name: '초록 책',
+    file: 'book-green.png',
+    x: 33.0, y: 18.3, w: 3.3, h: 21.3,
+    color: '#244b39',
+    symbol: '⚓',
+    animation: '/assets/animations/book-green.webp',
+    url: '/'
+  },
+  {
+    name: '보라 책',
+    file: 'book-purple.png',
+    x: 36.2, y: 19.3, w: 3.3, h: 20.3,
+    color: '#49305e',
+    symbol: '✺',
+    animation: '/assets/animations/book-purple.webp',
+    url: '/'
+  },
+  {
+    name: '갈색 책',
+    file: 'book-brown.png',
+    x: 39.4, y: 18.1, w: 3.3, h: 21.5,
+    color: '#704721',
+    symbol: '◎',
+    animation: '/assets/animations/book-brown.webp',
+    url: '/'
+  },
+  {
+    name: '아쿠아 책',
+    file: 'book-aqua.png',
+    x: 42.6, y: 19.1, w: 3.3, h: 20.5,
+    color: '#17646b',
+    symbol: '⚓',
+    animation: '/assets/animations/book-aqua.webp',
+    url: '/'
+  },
+  {
+    name: '검정 책',
+    file: 'book-black.png',
+    x: 45.8, y: 17.7, w: 3.3, h: 21.9,
+    color: '#242323',
+    symbol: '☠',
+    animation: '/assets/animations/book-black.webp',
+    url: '/'
+  }
 ];
-const scene=document.getElementById('scene');
-const stage=document.getElementById('stage');
-const books=document.getElementById('books');
-const info=document.getElementById('info');
-const overlay=document.getElementById('openingOverlay');
-const realisticAnimation=document.getElementById('realisticBookAnimation');
-const parchmentTransition=document.getElementById('parchmentTransition');
-const closeBookButton=document.getElementById('closeBookButton');
-let selectedIndex=-1;
-let animationTimer=null;
-let activeAnimation=null;
-let lastFocusedElement=null;
-const ANIMATION_MS=1800;
-function resizeBookshelf(){
- const scale=Math.max(scene.clientWidth/1600,scene.clientHeight/960);
- stage.style.setProperty('--scene-scale',String(scale));
+
+/* 요소 연결 */
+const scene = document.getElementById('scene');
+const stage = document.getElementById('stage');
+const books = document.getElementById('books');
+const info = document.getElementById('info');
+const overlay = document.getElementById('openingOverlay');
+
+const realisticAnimation =
+  document.getElementById('realisticBookAnimation');
+
+const parchmentTransition =
+  document.getElementById('parchmentTransition');
+
+const closeBookButton =
+  document.getElementById('closeBookButton');
+
+let selectedIndex = -1;
+let animationTimer = null;
+let activeAnimation = null;
+let lastFocusedElement = null;
+
+const ANIMATION_MS = 1750;
+
+/* 화면 크기에 맞춰 책장 조절 */
+function resizeBookshelf() {
+  const scale = Math.max(
+    scene.clientWidth / 1600,
+    scene.clientHeight / 960
+  );
+
+  stage.style.setProperty(
+    '--scene-scale',
+    String(scale)
+  );
 }
-window.addEventListener('resize',resizeBookshelf);
+
+window.addEventListener('resize', resizeBookshelf);
 resizeBookshelf();
-bookData.forEach((book,index)=>{
- const button=document.createElement('button');
- button.type='button';button.className='book';button.setAttribute('aria-label',book.name);
- button.style.left=book.x+'%';button.style.top=book.y+'%';button.style.width=book.w+'%';button.style.height=book.h+'%';
- const img=document.createElement('img');img.src='/assets/images/books/'+book.file;img.alt='';img.draggable=false;
- button.appendChild(img);
- button.addEventListener('click',()=>selectBook(index));
- books.appendChild(button);
+
+/* 책 6권 생성 */
+bookData.forEach((book, index) => {
+  const button = document.createElement('button');
+
+  button.type = 'button';
+  button.className = 'book';
+  button.setAttribute('aria-label', book.name);
+  button.setAttribute('aria-pressed', 'false');
+
+  button.style.left = book.x + '%';
+  button.style.top = book.y + '%';
+  button.style.width = book.w + '%';
+  button.style.height = book.h + '%';
+
+  const img = document.createElement('img');
+
+  img.src = '/assets/images/books/' + book.file;
+  img.alt = '';
+  img.draggable = false;
+
+  button.appendChild(img);
+
+  button.addEventListener('click', () => {
+    selectBook(index);
+  });
+
+  books.appendChild(button);
 });
-function selectBook(index){
- selectedIndex=selectedIndex===index?-1:index;
- Array.from(books.children).forEach((el,i)=>{
-  const selected=i===selectedIndex;
-  el.classList.toggle('selected',selected);
-  el.setAttribute('aria-pressed',String(selected));
- });
- info.disabled=selectedIndex<0;
- info.textContent=selectedIndex<0?'책을 선택해 보세요.':bookData[selectedIndex].name+' 펼치기';
+
+/* 책 선택 */
+function selectBook(index) {
+  selectedIndex =
+    selectedIndex === index ? -1 : index;
+
+  Array.from(books.children).forEach((el, i) => {
+    const selected = i === selectedIndex;
+
+    el.classList.toggle('selected', selected);
+    el.setAttribute(
+      'aria-pressed',
+      String(selected)
+    );
+  });
+
+  info.disabled = selectedIndex < 0;
+
+  info.textContent =
+    selectedIndex < 0
+      ? '책을 선택해 보세요.'
+      : bookData[selectedIndex].name + ' 펼치기';
 }
-function applyTheme(dark){
- document.body.classList.toggle('dark',dark);
- try{localStorage.setItem('bookshelf-theme',dark?'dark':'day')}catch(e){}
+
+/* 낮/밤 전환 */
+function applyTheme(dark) {
+  document.body.classList.toggle('dark', dark);
+
+  try {
+    localStorage.setItem(
+      'bookshelf-theme',
+      dark ? 'dark' : 'day'
+    );
+  } catch (e) {}
 }
-try{applyTheme(localStorage.getItem('bookshelf-theme')==='dark')}catch(e){applyTheme(false)}
-document.getElementById('lanternToggle').addEventListener('click',()=>applyTheme(!document.body.classList.contains('dark')));
-function stopPlayback(){
- if(animationTimer!==null){clearTimeout(animationTimer);animationTimer=null}
- if(activeAnimation){activeAnimation.onload=null;activeAnimation.onerror=null;activeAnimation=null}
+
+try {
+  applyTheme(
+    localStorage.getItem('bookshelf-theme') === 'dark'
+  );
+} catch (e) {
+  applyTheme(false);
 }
-function closeOpenedBook(){
- stopPlayback();
- parchmentTransition.classList.remove('active');
- overlay.classList.remove('active');overlay.setAttribute('aria-hidden','true');overlay.inert=true;
- realisticAnimation.hidden=true;realisticAnimation.removeAttribute('src');
- if(lastFocusedElement && typeof lastFocusedElement.focus==='function')lastFocusedElement.focus();
+
+document
+  .getElementById('lanternToggle')
+  .addEventListener('click', () => {
+    applyTheme(
+      !document.body.classList.contains('dark')
+    );
+  });
+
+/* 재생 중지 */
+function stopPlayback() {
+  if (animationTimer !== null) {
+    clearTimeout(animationTimer);
+    animationTimer = null;
+  }
+
+  if (activeAnimation) {
+    activeAnimation.onload = null;
+    activeAnimation.onerror = null;
+    activeAnimation = null;
+  }
 }
-function openSelectedBook(book){
- stopPlayback();
- lastFocusedElement=document.activeElement;
- parchmentTransition.classList.remove('active');
- overlay.classList.add('active');overlay.setAttribute('aria-hidden','false');overlay.inert=false;
- realisticAnimation.hidden=true;realisticAnimation.removeAttribute('src');
- closeBookButton.focus();
- // 파일은 펼치기 버튼을 누른 뒤에만 로드합니다.
- const loader=new Image();activeAnimation=loader;
- loader.onload=()=>{
-  if(activeAnimation!==loader)return;
-  activeAnimation=null;
-  realisticAnimation.src=book.animation;
-  realisticAnimation.hidden=false;
-  // WebP 프레임 길이 약 1.8초 이후 양피지 전환
-  animationTimer=setTimeout(()=>{
-   parchmentTransition.classList.add('active');
-   animationTimer=setTimeout(()=>{
-    if(book.url)window.location.assign(book.url);
-    else closeOpenedBook();
-   },180);
-  },ANIMATION_MS);
- };
- loader.onerror=()=>{if(activeAnimation!==loader)return;closeOpenedBook();alert('애니메이션 파일을 불러오지 못했습니다: '+book.animation)};
- loader.src=book.animation;
+
+/* 책 닫기 */
+function closeOpenedBook() {
+  stopPlayback();
+
+  parchmentTransition.classList.remove('active');
+
+  overlay.classList.remove('active');
+  overlay.setAttribute('aria-hidden', 'true');
+  overlay.inert = true;
+
+  realisticAnimation.hidden = true;
+
+  // 기본 src를 유지해 HTML 검사 오류 방지
+  realisticAnimation.src =
+    '/assets/animations/book-blue.webp';
+
+  if (
+    lastFocusedElement &&
+    typeof lastFocusedElement.focus === 'function'
+  ) {
+    lastFocusedElement.focus();
+  }
 }
-info.addEventListener('click',()=>{if(selectedIndex>=0)openSelectedBook(bookData[selectedIndex])});
-closeBookButton.addEventListener('click',closeOpenedBook);
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('active'))closeOpenedBook()});
+
+/* 책 펼치기 */
+function openSelectedBook(book) {
+  stopPlayback();
+
+  lastFocusedElement = document.activeElement;
+
+  parchmentTransition.classList.remove('active');
+
+  overlay.classList.add('active');
+  overlay.setAttribute('aria-hidden', 'false');
+  overlay.inert = false;
+
+  realisticAnimation.hidden = true;
+
+  closeBookButton.focus();
+
+  // 선택한 책의 애니메이션만 로드
+  const loader = new Image();
+
+  activeAnimation = loader;
+
+  loader.onload = () => {
+    if (activeAnimation !== loader) return;
+
+    activeAnimation = null;
+
+    // 재생 이미지 교체
+    realisticAnimation.src = book.animation;
+    realisticAnimation.hidden = false;
+
+    // 애니메이션이 끝나면 양피지 화면
+    animationTimer = setTimeout(() => {
+      parchmentTransition.classList.add('active');
+
+      animationTimer = setTimeout(() => {
+        if (book.url) {
+          window.location.assign(book.url);
+        } else {
+          closeOpenedBook();
+        }
+      }, 180);
+
+    }, ANIMATION_MS);
+  };
+
+  loader.onerror = () => {
+    if (activeAnimation !== loader) return;
+
+    closeOpenedBook();
+
+    alert(
+      '애니메이션 파일을 불러오지 못했습니다: ' +
+      book.animation
+    );
+  };
+
+  loader.src = book.animation;
+}
+
+/* 펼치기 버튼 */
+info.addEventListener('click', () => {
+  if (selectedIndex >= 0) {
+    openSelectedBook(bookData[selectedIndex]);
+  }
+});
+
+/* 닫기 */
+closeBookButton.addEventListener(
+  'click',
+  closeOpenedBook
+);
+
+document.addEventListener('keydown', e => {
+  if (
+    e.key === 'Escape' &&
+    overlay.classList.contains('active')
+  ) {
+    closeOpenedBook();
+  }
+});
 </script>
+
 </body>
 </html>
