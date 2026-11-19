@@ -5,10 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ page.title | escape }} | {{ site.title | escape }}</title>
   <style>
-    :root { color-scheme: dark; --gold:#c8a76b; --muted:#aa9b85; --ink:#e6d6b9; --edge:#665034; }
+    :root { color-scheme: dark; --gold:#c8a76b; --muted:#aa9b85; --ink:#e6d6b9; --edge:#665034; --bg-deep:#0d0b0a; --bg-mid:#17120f; --bg-glow:#302418; }
+    body[data-book="blue"] { --bg-deep:#0a121d; --bg-mid:#101f30; --bg-glow:#263c51; }
+    body[data-book="green"] { --bg-deep:#0c1611; --bg-mid:#14251d; --bg-glow:#2c4031; }
+    body[data-book="purple"] { --bg-deep:#130f1c; --bg-mid:#241b30; --bg-glow:#3c2c4b; }
+    body[data-book="brown"] { --bg-deep:#19100c; --bg-mid:#302219; --bg-glow:#4a3222; }
+    body[data-book="aqua"] { --bg-deep:#09191c; --bg-mid:#10282c; --bg-glow:#24464b; }
+    body[data-book="black"] { --bg-deep:#0b0b0e; --bg-mid:#19191d; --bg-glow:#303039; }
+    .compass { width:27px; height:27px; display:inline-block; vertical-align:middle; color:var(--gold); }
+    .brand { display:flex; align-items:center; gap:10px; }
+    .brand .compass { width:17px; height:17px; }
+    .intro .compass { width:34px; height:34px; }
+    .intro .symbol { display:flex; align-items:center; gap:14px; }
+    .intro .symbol::after { content:""; width:65px; height:1px; background:linear-gradient(90deg,var(--gold),transparent); opacity:.65; }
     * { box-sizing:border-box; }
     html { scroll-behavior:smooth; }
-    body { margin:0; min-height:100vh; color:var(--ink); font-family:Georgia,'Malgun Gothic',serif; background:radial-gradient(ellipse at 70% 0%,#302418 0%,#17120f 55%,#0d0b0a 100%); }
+    body { margin:0; min-height:100vh; color:var(--ink); font-family:Georgia,'Malgun Gothic',serif; background:radial-gradient(ellipse at 70% 0%,var(--bg-glow) 0%,var(--bg-mid) 55%,var(--bg-deep) 100%); }
     body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.15; background:repeating-linear-gradient(90deg,transparent 0 80px,#947349 81px,transparent 82px),repeating-linear-gradient(0deg,transparent 0 80px,#947349 81px,transparent 82px); }
     a { color:inherit; }
     .topbar { position:relative; display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:18px clamp(18px,4vw,70px); border-bottom:1px solid #6c52367a; background:#100e0bc9; }
@@ -49,12 +61,12 @@
     @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
   </style>
 </head>
-<body>
-  <header class="topbar"><span class="brand">✦ CAPTAIN'S ARCHIVE ✦</span><a class="return" href="{{ '/bookshelf/' | relative_url }}">← 책장으로 돌아가기</a></header>
+<body data-book="{{ page.book_key | escape }}">
+  <header class="topbar"><span class="brand"><svg class="compass" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="11.5" stroke="currentColor" stroke-width="1.25"/><path d="M16 2v5M16 25v5M2 16h5M25 16h5" stroke="currentColor" stroke-width="1.2"/><path d="m20.5 11.5-3 6-6 3 3-6 6-3Z" stroke="currentColor" stroke-width="1.3"/><circle cx="16" cy="16" r="1.4" fill="currentColor"/></svg><span>CAPTAIN'S ARCHIVE</span></span><a class="return" href="{{ '/bookshelf/' | relative_url }}">← 책장으로 돌아가기</a></header>
   <main class="shell">
     {% if page.book_key %}
       {% assign book = site.data.books | where: 'slug', page.book_key | first %}
-      <header class="intro"><div class="symbol">{% if book %}{{ book.symbol }}{% else %}✦{% endif %}</div><h1>{% if book %}{{ book.name }}{% else %}{{ page.title }}{% endif %}</h1><p>{% if book %}{{ book.description }}{% endif %}</p></header>
+      <header class="intro"><div class="symbol"><svg class="compass" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="11.5" stroke="currentColor" stroke-width="1.25"/><path d="M16 2v5M16 25v5M2 16h5M25 16h5" stroke="currentColor" stroke-width="1.2"/><path d="m20.5 11.5-3 6-6 3 3-6 6-3Z" stroke="currentColor" stroke-width="1.3"/><circle cx="16" cy="16" r="1.4" fill="currentColor"/></svg></div><h1>{% if book %}{{ book.name }}{% else %}{{ page.title }}{% endif %}</h1><p>{% if book %}{{ book.description }}{% endif %}</p></header>
       <div class="reading-grid">
         <nav class="toc" aria-label="게시글 목차"><h2>목차 · CONTENTS</h2><div class="toc-list" role="tablist" aria-label="기록 선택">
           {% assign entry_index = 0 %}
