@@ -1,692 +1,135 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>항해 기록실 | 책장</title>
-
-<style>
-:root {
-  color-scheme: dark;
-  --paper: #eee0bd;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html, body {
-  margin: 0;
-  min-height: 100%;
-  overflow: hidden;
-  background: #17100c;
-  font-family: Georgia, 'Noto Serif KR', serif;
-}
-
-/* 책장 */
-.scene {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  background: #17100c;
-}
-
-.stage {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 1600px;
-  height: 960px;
-  transform:
-    translate(-50%, -50%)
-    scale(var(--scene-scale, 1));
-  transform-origin: center;
-  overflow: hidden;
-}
-
-.background {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-  pointer-events: none;
-}
-
-.background.night {
-  opacity: 0;
-  transition: opacity .7s ease;
-}
-
-body.dark .background.night {
-  opacity: 1;
-}
-
-/* 선장실 버튼 */
-.toolbar {
-  position: fixed;
-  top: 20px;
-  left: 24px;
-  z-index: 30;
-}
-
-.toolbar a {
-  display: inline-block;
-  padding: 10px 16px;
-  border-radius: 10px;
-  color: #f5e5bf;
-  background: rgba(25,15,9,.75);
-  text-decoration: none;
-  border: 1px solid rgba(245,220,170,.35);
-}
-
-/* 책 6권 */
-.book {
-  position: absolute;
-  padding: 0;
-  margin: 0;
-  background: none;
-  border: 0;
-  cursor: pointer;
-  z-index: 5;
-  transform-origin: center bottom;
-  transition:
-    transform .22s ease,
-    filter .22s ease;
-  filter:
-    drop-shadow(1px 3px 2px rgba(0,0,0,.35));
-}
-
-.book img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: fill;
-  pointer-events: none;
-}
-
-.book:hover {
-  transform: translateY(-7px);
-  z-index: 8;
-}
-
-.book.selected {
-  transform: translateY(-24px);
-  z-index: 10;
-  filter:
-    drop-shadow(2px 9px 8px rgba(0,0,0,.65));
-}
-
-.book.selected:hover {
-  transform: translateY(-27px);
-}
-
-.book:focus-visible {
-  outline: 3px solid #f8d88c;
-  outline-offset: 3px;
-}
-
-/* 랜턴: 클릭으로 낮/밤 전환 */
-.lantern-toggle {
-  position: absolute;
-  left: 70.5%;
-  top: 70%;
-  width: 8%;
-  height: 24%;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: default;
-  z-index: 15;
-  appearance: none;
-  -webkit-appearance: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.lantern-toggle:hover,
-.lantern-toggle:active {
-  background: transparent;
-  filter: none;
-}
-
-.lantern-toggle:focus-visible {
-  outline: 2px solid #e8cf9e;
-  outline-offset: 2px;
-}
-
-/* 책 펼치기 버튼 */
-.info {
-  position: fixed;
-  z-index: 25;
-  left: 50%;
-  bottom: 22px;
-  transform: translateX(-50%);
-  min-width: 220px;
-  max-width: calc(100vw - 24px);
-  padding: 13px 24px;
-  border: 1px solid #c7a46a;
-  border-radius: 12px;
-  background: rgba(38,24,15,.9);
-  color: #f4dfb5;
-  font: 600 16px Georgia, 'Noto Serif KR', serif;
-  box-shadow: 0 7px 24px #0008;
-  cursor: pointer;
-}
-
-.info:disabled {
-  opacity: .75;
-  cursor: default;
-}
-
-.info:not(:disabled):hover {
-  background: rgba(76,48,25,.96);
-}
-
-.info:focus-visible {
-  outline: 3px solid #ffe6a3;
-  outline-offset: 3px;
-}
-
-/* 애니메이션 전체 화면 */
-.opening-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background: #140d09;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity .2s ease,
-    visibility .2s ease;
-}
-
-.opening-overlay.active {
-  opacity: 1;
-  visibility: visible;
-}
-
-/* 중요: 애니메이션을 추가 확대하지 않음 */
-.realistic-book-animation {
-  display: block;
-  width: min(90vw, 1100px);
-  height: auto;
-  max-height: 85vh;
-  object-fit: contain;
-  transform: none;
-  animation: none;
-  filter:
-    drop-shadow(0 16px 28px rgba(0,0,0,.35));
-}
-
-.realistic-book-animation[hidden] {
-  display: none;
-}
-
-/* 닫기 버튼 */
-.close-book {
-  position: absolute;
-  top: 18px;
-  right: 20px;
-  z-index: 2;
-  border: 1px solid #d6b57d;
-  border-radius: 50%;
-  width: 42px;
-  height: 42px;
-  background: #2c1d15;
-  color: #fff0d0;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.close-book:focus-visible {
-  outline: 3px solid #fff0c0;
-}
-
-/* 양피지 화면 전환 */
-.parchment-transition {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  background: #eee0bd;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity .16s ease;
-}
-
-.parchment-transition.active {
-  opacity: 1;
-  visibility: visible;
-}
-
-/* 작은 화면 */
-@media (max-width: 600px) {
-  .realistic-book-animation {
-    width: 96vw;
-    max-height: 80vh;
-  }
-}
-
-/* 모션 최소화 설정 */
-@media (prefers-reduced-motion: reduce) {
-  .book,
-  .background.night,
-  .opening-overlay,
-  .parchment-transition {
-    transition-duration: .01ms;
-  }
-}
-
-
-/* 책 펼침 애니메이션 전체 화면 */
-.opening-overlay {
-  width: 100vw;
-  height: 100dvh;
-  overflow: hidden;
-  background: #382317;
-}
-
-.realistic-book-animation {
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  max-height: none;
-  object-fit: cover;
-  object-position: center;
-  transform: none;
-}
-
-.realistic-book-animation[hidden] {
-  display: none;
-}
-
-/* 모바일 화면 대응 */
-@media (max-width: 768px) {
-  .realistic-book-animation {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-}
-
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1b140e">
+  <title>선장의 서재 | 책장</title>
+  <style>
+    :root { color-scheme: dark; font-family: Georgia, 'Noto Serif KR', serif; }
+    * { box-sizing: border-box; }
+    html,body { margin:0; width:100%; height:100%; overflow:hidden; background:#100e0b; }
+    button { font:inherit; }
+    .scene { position:fixed; inset:0; overflow:hidden; isolation:isolate; }
+    .stage { position:absolute; width:1600px; height:960px; left:50%; top:50%; transform-origin:center; }
+    .background { position:absolute; inset:0; width:100%; height:100%; object-fit:fill; pointer-events:none; user-select:none; }
+    .background.night { opacity:0; transition:opacity .65s ease; }
+    .scene.is-night .background.night { opacity:1; }
+    .scene.is-night .background.day { opacity:0; }
+    .background.day { opacity:1; transition:opacity .65s ease; }
+    .book { position:absolute; border:0; background:transparent; padding:0; cursor:pointer; z-index:4; transform-origin:bottom center; transition:transform .28s ease,filter .28s ease; }
+    .book img { display:block; width:100%; height:100%; object-fit:fill; filter:drop-shadow(2px 4px 4px rgba(0,0,0,.42)); pointer-events:none; }
+    .book:hover { transform:translateY(-10px); filter:brightness(1.12); }
+    .book.selected { transform:translateY(-26px) scale(1.035); filter:brightness(1.2) drop-shadow(0 0 12px rgba(255,205,107,.5)); z-index:6; }
+    .lantern-hotspot { position:absolute; z-index:8; left:68%; top:11%; width:17%; height:29%; border:0; padding:0; background:transparent; cursor:pointer; }
+    .lantern-hotspot:focus-visible, .book:focus-visible { outline:3px solid #f1d18b; outline-offset:4px; }
+    .controls { position:absolute; left:50%; bottom:6%; z-index:12; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:10px; white-space:nowrap; }
+    .selection-label { color:#f0dfb6; text-shadow:0 2px 9px #000; font-size:19px; letter-spacing:.08em; min-height:25px; }
+    .open-button { border:1px solid rgba(248,216,145,.7); border-radius:6px; background:linear-gradient(180deg,#6a4725,#382317); box-shadow:0 4px 18px #0009, inset 0 1px #cda36d77; color:#f8e4b9; padding:14px 36px; font-size:22px; font-weight:bold; cursor:pointer; transition:filter .2s,transform .2s; }
+    .open-button:hover:not(:disabled) { filter:brightness(1.2); transform:translateY(-2px); }
+    .open-button:disabled { opacity:.65; cursor:default; }
+    .parchment-reveal { position:fixed; inset:0; z-index:1000; pointer-events:none; visibility:hidden; background-color:#e8c99b; background-image:url('/assets/images/parchment-bg.webp'); background-size:cover; background-position:center; clip-path:circle(0% at 50% 50%); }
+    .parchment-reveal.expanding { visibility:visible; animation:parchment-expand 1.2s cubic-bezier(.22,.75,.25,1) forwards; }
+    @keyframes parchment-expand { from {clip-path:circle(0% at 50% 50%)} to {clip-path:circle(150vmax at 50% 50%)} }
+    @media (prefers-reduced-motion:reduce) { .book,.background {transition:none;} .parchment-reveal.expanding {animation-duration:.01s;} }
+  </style>
 </head>
-
 <body>
-
-<main class="scene" id="scene" aria-label="항해 기록 책장">
-  <div class="stage" id="stage">
-
-    <img
-      class="background day"
-      src="/assets/images/bookshelf-day.png"
-      alt=""
-      aria-hidden="true"
-    >
-
-    <img
-      class="background night"
-      src="/assets/images/bookshelf-night.png"
-      alt=""
-      aria-hidden="true"
-    >
-
-    <div id="books"></div>
-
-    <button
-      class="lantern-toggle"
-      id="lanternToggle"
-      type="button"
-      aria-label="낮과 밤 전환"
-    ></button>
-
-  </div>
-</main>
-
-<nav class="toolbar">
-  <a href="/cabin/">← 선장실</a>
-</nav>
-
-<button class="info" id="info" type="button" disabled>
-  책을 선택해 보세요.
-</button>
-
-<!-- 책 펼침 애니메이션 -->
-<div
-  class="opening-overlay"
-  id="openingOverlay"
-  role="dialog"
-  aria-modal="true"
-  aria-label="책 펼침 애니메이션"
-  aria-hidden="true"
-  inert
->
-  <img
-    id="realisticBookAnimation"
-    class="realistic-book-animation"
-    src="/assets/animations/book-blue.webp"
-    alt="책이 펼쳐지고 양피지 속으로 들어가는 애니메이션"
-    hidden
-  >
-
-  <button
-    class="close-book"
-    id="closeBookButton"
-    type="button"
-    aria-label="닫기"
-  >×</button>
-</div>
-
-<!-- 페이지 전환막 -->
-<div
-  class="parchment-transition"
-  id="parchmentTransition"
-  aria-hidden="true"
-></div>
-
-<script>
-'use strict';
-
-/* 책별 위치, 색상, 애니메이션, 이동 주소 */
-const bookData = [
-  {
-    name: '파란 책',
-    file: 'book-blue.png',
-    x: 29.8, y: 18.7, w: 3.3, h: 20.9,
-    color: '#173c65',
-    symbol: '✧',
-    animation: '/assets/animations/book-blue.webp',
-    url: '/'
-  },
-  {
-    name: '초록 책',
-    file: 'book-green.png',
-    x: 33.0, y: 18.3, w: 3.3, h: 21.3,
-    color: '#244b39',
-    symbol: '⚓',
-    animation: '/assets/animations/book-green.webp',
-    url: '/'
-  },
-  {
-    name: '보라 책',
-    file: 'book-purple.png',
-    x: 36.2, y: 19.3, w: 3.3, h: 20.3,
-    color: '#49305e',
-    symbol: '✺',
-    animation: '/assets/animations/book-purple.webp',
-    url: '/'
-  },
-  {
-    name: '갈색 책',
-    file: 'book-brown.png',
-    x: 39.4, y: 18.1, w: 3.3, h: 21.5,
-    color: '#704721',
-    symbol: '◎',
-    animation: '/assets/animations/book-brown.webp',
-    url: '/'
-  },
-  {
-    name: '아쿠아 책',
-    file: 'book-aqua.png',
-    x: 42.6, y: 19.1, w: 3.3, h: 20.5,
-    color: '#17646b',
-    symbol: '⚓',
-    animation: '/assets/animations/book-aqua.webp',
-    url: '/'
-  },
-  {
-    name: '검정 책',
-    file: 'book-black.png',
-    x: 45.8, y: 17.7, w: 3.3, h: 21.9,
-    color: '#242323',
-    symbol: '☠',
-    animation: '/assets/animations/book-black.webp',
-    url: '/'
-  }
-];
-
-/* 요소 연결 */
-const scene = document.getElementById('scene');
-const stage = document.getElementById('stage');
-const books = document.getElementById('books');
-const info = document.getElementById('info');
-const overlay = document.getElementById('openingOverlay');
-
-const realisticAnimation =
-  document.getElementById('realisticBookAnimation');
-
-const parchmentTransition =
-  document.getElementById('parchmentTransition');
-
-const closeBookButton =
-  document.getElementById('closeBookButton');
-
-let selectedIndex = -1;
-let animationTimer = null;
-let activeAnimation = null;
-let lastFocusedElement = null;
-
-const ANIMATION_MS = 2160;
-
-/* 화면 크기에 맞춰 책장 조절 */
-function resizeBookshelf() {
-  const scale = Math.max(
-    scene.clientWidth / 1600,
-    scene.clientHeight / 960
-  );
-
-  stage.style.setProperty(
-    '--scene-scale',
-    String(scale)
-  );
-}
-
-window.addEventListener('resize', resizeBookshelf);
-resizeBookshelf();
-
-/* 책 6권 생성 */
-bookData.forEach((book, index) => {
-  const button = document.createElement('button');
-
-  button.type = 'button';
-  button.className = 'book';
-  button.setAttribute('aria-label', book.name);
-  button.setAttribute('aria-pressed', 'false');
-
-  button.style.left = book.x + '%';
-  button.style.top = book.y + '%';
-  button.style.width = book.w + '%';
-  button.style.height = book.h + '%';
-
-  const img = document.createElement('img');
-
-  img.src = '/assets/images/books/' + book.file;
-  img.alt = '';
-  img.draggable = false;
-
-  button.appendChild(img);
-
-  button.addEventListener('click', () => {
-    selectBook(index);
-  });
-
-  books.appendChild(button);
-});
-
-/* 책 선택 */
-function selectBook(index) {
-  selectedIndex =
-    selectedIndex === index ? -1 : index;
-
-  Array.from(books.children).forEach((el, i) => {
-    const selected = i === selectedIndex;
-
-    el.classList.toggle('selected', selected);
-    el.setAttribute(
-      'aria-pressed',
-      String(selected)
-    );
-  });
-
-  info.disabled = selectedIndex < 0;
-
-  info.textContent =
-    selectedIndex < 0
-      ? '책을 선택해 보세요.'
-      : bookData[selectedIndex].name + ' 펼치기';
-}
-
-/* 낮/밤 전환 */
-function applyTheme(dark) {
-  document.body.classList.toggle('dark', dark);
-
-  try {
-    localStorage.setItem(
-      'bookshelf-theme',
-      dark ? 'dark' : 'day'
-    );
-  } catch (e) {}
-}
-
-try {
-  applyTheme(
-    localStorage.getItem('bookshelf-theme') === 'dark'
-  );
-} catch (e) {
-  applyTheme(false);
-}
-
-document
-  .getElementById('lanternToggle')
-  .addEventListener('click', () => {
-    applyTheme(
-      !document.body.classList.contains('dark')
-    );
-  });
-
-/* 재생 중지 */
-function stopPlayback() {
-  if (animationTimer !== null) {
-    clearTimeout(animationTimer);
-    animationTimer = null;
-  }
-
-  if (activeAnimation) {
-    activeAnimation.onload = null;
-    activeAnimation.onerror = null;
-    activeAnimation = null;
-  }
-}
-
-/* 책 닫기 */
-function closeOpenedBook() {
-  stopPlayback();
-
-  parchmentTransition.classList.remove('active');
-
-  overlay.classList.remove('active');
-  overlay.setAttribute('aria-hidden', 'true');
-  overlay.inert = true;
-
-  realisticAnimation.hidden = true;
-
-  // 기본 src를 유지해 HTML 검사 오류 방지
-  realisticAnimation.src =
-    '/assets/animations/book-blue.webp';
-
-  if (
-    lastFocusedElement &&
-    typeof lastFocusedElement.focus === 'function'
-  ) {
-    lastFocusedElement.focus();
-  }
-}
-
-/* 책 펼치기 */
-function openSelectedBook(book) {
-  stopPlayback();
-
-  lastFocusedElement = document.activeElement;
-
-  parchmentTransition.classList.remove('active');
-
-  overlay.classList.add('active');
-  overlay.setAttribute('aria-hidden', 'false');
-  overlay.inert = false;
-
-  realisticAnimation.hidden = true;
-
-  closeBookButton.focus();
-
-  // 선택한 책의 애니메이션만 로드
-  const loader = new Image();
-
-  activeAnimation = loader;
-
-  loader.onload = () => {
-    if (activeAnimation !== loader) return;
-
-    activeAnimation = null;
-
-    // 재생 이미지 교체
-    realisticAnimation.src = book.animation;
-    realisticAnimation.hidden = false;
-
-    // 애니메이션이 끝나면 양피지 화면
-    animationTimer = setTimeout(() => {
-      parchmentTransition.classList.add('active');
-
-      animationTimer = setTimeout(() => {
-        if (book.url) {
-          window.location.assign(book.url);
-        } else {
-          closeOpenedBook();
-        }
-      }, 180);
-
-    }, ANIMATION_MS);
-  };
-
-  loader.onerror = () => {
-    if (activeAnimation !== loader) return;
-
-    closeOpenedBook();
-
-    alert(
-      '애니메이션 파일을 불러오지 못했습니다: ' +
-      book.animation
-    );
-  };
-
-  loader.src = book.animation;
-}
-
-/* 펼치기 버튼 */
-info.addEventListener('click', () => {
-  if (selectedIndex >= 0) {
-    openSelectedBook(bookData[selectedIndex]);
-  }
-});
-
-/* 닫기 */
-closeBookButton.addEventListener(
-  'click',
-  closeOpenedBook
-);
-
-document.addEventListener('keydown', e => {
-  if (
-    e.key === 'Escape' &&
-    overlay.classList.contains('active')
-  ) {
-    closeOpenedBook();
-  }
-});
-</script>
-
+  <main class="scene" id="scene" aria-label="선장의 서재 책장">
+    <div class="stage" id="stage">
+      <img class="background day" src="/assets/images/bookshelf-day.png" alt="" draggable="false">
+      <img class="background night" src="/assets/images/bookshelf-night.png" alt="" draggable="false">
+      <div id="books"></div>
+      <button class="lantern-hotspot" id="lantern" type="button" aria-label="랜턴으로 낮과 밤 전환" aria-pressed="false"></button>
+      <div class="controls">
+        <div class="selection-label" id="selectionLabel" aria-live="polite">책을 선택해 주세요</div>
+        <button class="open-button" id="openButton" type="button" disabled>책을 선택해 주세요</button>
+      </div>
+    </div>
+  </main>
+  <div class="parchment-reveal" id="parchmentReveal" aria-hidden="true"></div>
+  <script>
+    'use strict';
+    const bookData = [
+      {name:'파란 책',file:'book-blue.png',x:29.8,y:18.7,w:3.3,h:20.9,color:'#173c65',symbol:'✧',url:'/'},
+      {name:'초록 책',file:'book-green.png',x:33.0,y:18.3,w:3.3,h:21.3,color:'#244b39',symbol:'⚓',url:'/'},
+      {name:'보라 책',file:'book-purple.png',x:36.2,y:19.3,w:3.3,h:20.3,color:'#49305e',symbol:'✺',url:'/'},
+      {name:'갈색 책',file:'book-brown.png',x:39.4,y:18.1,w:3.3,h:21.5,color:'#704721',symbol:'◎',url:'/'},
+      {name:'아쿠아 책',file:'book-aqua.png',x:42.6,y:19.1,w:3.3,h:20.5,color:'#17646b',symbol:'⚓',url:'/'},
+      {name:'검정 책',file:'book-black.png',x:45.8,y:17.7,w:3.3,h:21.9,color:'#242323',symbol:'☠',url:'/'}
+    ];
+    const scene=document.getElementById('scene');
+    const stage=document.getElementById('stage');
+    const booksContainer=document.getElementById('books');
+    const lantern=document.getElementById('lantern');
+    const label=document.getElementById('selectionLabel');
+    const openButton=document.getElementById('openButton');
+    const parchment=document.getElementById('parchmentReveal');
+    let selectedIndex=-1;
+    let transitioning=false;
+
+    function resizeStage() {
+      const scale=Math.max(scene.clientWidth/1600,scene.clientHeight/960);
+      stage.style.transform=`translate(-50%, -50%) scale(${scale})`;
+    }
+    window.addEventListener('resize',resizeStage,{passive:true});
+    resizeStage();
+
+    bookData.forEach((book,index)=>{
+      const button=document.createElement('button');
+      button.type='button';
+      button.className='book';
+      button.setAttribute('aria-label',`${book.name} 선택`);
+      button.setAttribute('aria-pressed','false');
+      button.style.left=book.x+'%';
+      button.style.top=book.y+'%';
+      button.style.width=book.w+'%';
+      button.style.height=book.h+'%';
+      const img=document.createElement('img');
+      img.src='/assets/images/books/'+book.file;
+      img.alt='';
+      img.draggable=false;
+      button.appendChild(img);
+      button.addEventListener('click',()=>selectBook(index));
+      booksContainer.appendChild(button);
+    });
+
+    function selectBook(index) {
+      if(transitioning)return;
+      selectedIndex=index;
+      const book=bookData[index];
+      booksContainer.querySelectorAll('.book').forEach((el,i)=>{
+        const active=i===index;
+        el.classList.toggle('selected',active);
+        el.setAttribute('aria-pressed',String(active));
+      });
+      label.textContent=book.name;
+      openButton.textContent=book.name+' 펼치기';
+      openButton.disabled=false;
+    }
+
+    lantern.addEventListener('click',()=>{
+      const isNight=scene.classList.toggle('is-night');
+      lantern.setAttribute('aria-pressed',String(isNight));
+    });
+
+    function openSelectedBook() {
+      if(transitioning||selectedIndex<0)return;
+      transitioning=true;
+      openButton.disabled=true;
+      const destination=bookData[selectedIndex].url||'/';
+      let completed=false;
+      const navigate=()=>{
+        if(completed)return;
+        completed=true;
+        window.location.assign(destination);
+      };
+      parchment.addEventListener('animationend',navigate,{once:true});
+      parchment.classList.add('expanding');
+      // 애니메이션 이벤트가 발생하지 않는 환경을 위한 예비 처리
+      window.setTimeout(navigate,1600);
+    }
+    openButton.addEventListener('click',openSelectedBook);
+  </script>
 </body>
 </html>
