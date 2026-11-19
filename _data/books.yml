@@ -1,0 +1,38 @@
+# 책 이름(name)과 소개(description)를 변경하면 전체 기록실에 반영됩니다.
+# id는 게시글 분류 및 주소에 사용하므로 변경하지 마세요.
+- id: blue
+  name: "파란 책"
+  description: "첫 번째 기록"
+  color: "#315a87"
+  symbol: "✧"
+  image: "/assets/images/books/book-blue.png"
+- id: green
+  name: "초록 책"
+  description: "두 번째 기록"
+  color: "#467657"
+  symbol: "⚓"
+  image: "/assets/images/books/book-green.png"
+- id: purple
+  name: "보라 책"
+  description: "세 번째 기록"
+  color: "#78538a"
+  symbol: "✺"
+  image: "/assets/images/books/book-purple.png"
+- id: brown
+  name: "갈색 책"
+  description: "네 번째 기록"
+  color: "#97643a"
+  symbol: "◎"
+  image: "/assets/images/books/book-brown.png"
+- id: aqua
+  name: "아쿠아 책"
+  description: "다섯 번째 기록"
+  color: "#2a929a"
+  symbol: "⚓"
+  image: "/assets/images/books/book-aqua.png"
+- id: black
+  name: "검정 책"
+  description: "여섯 번째 기록"
+  color: "#46484b"
+  symbol: "☠"
+  image: "/assets/images/books/book-black.png"

@@ -54,17 +54,21 @@ title: 선장의 중앙 기록실
     <div class="section-heading"><h2 id="shelfTitle">⚓ 기록의 서가</h2><small>← 좌우로 드래그 →</small></div>
     <div class="shelf-viewport" id="shelfViewport" tabindex="0" aria-label="책 목록, 좌우로 스크롤 가능">
       <div class="shelf-track">
-        <a class="book-tile" href="/blog/blue/" style="background:linear-gradient(125deg,#102b4b,#315a87)"><span class="book-symbol">✧</span><strong>파란 책</strong><span>첫 번째 기록 열람</span></a>
-        <a class="book-tile" href="/blog/green/" style="background:linear-gradient(125deg,#193a2b,#467657)"><span class="book-symbol">⚓</span><strong>초록 책</strong><span>두 번째 기록 열람</span></a>
-        <a class="book-tile" href="/blog/purple/" style="background:linear-gradient(125deg,#362242,#78538a)"><span class="book-symbol">✺</span><strong>보라 책</strong><span>세 번째 기록 열람</span></a>
-        <a class="book-tile" href="/blog/brown/" style="background:linear-gradient(125deg,#4d2d17,#97643a)"><span class="book-symbol">◎</span><strong>갈색 책</strong><span>네 번째 기록 열람</span></a>
-        <a class="book-tile" href="/blog/aqua/" style="background:linear-gradient(125deg,#10434c,#2a929a)"><span class="book-symbol">⚓</span><strong>아쿠아 책</strong><span>다섯 번째 기록 열람</span></a>
-        <a class="book-tile" href="/blog/black/" style="background:linear-gradient(125deg,#17181b,#46484b)"><span class="book-symbol">☠</span><strong>검정 책</strong><span>여섯 번째 기록 열람</span></a>
-      </div>
+        {% for book in site.data.books %}
+        <a class="book-tile" href="{{ '/blog/' | append: book.id | append: '/' | relative_url }}" style="background:linear-gradient(125deg,#182335,{{ book.color }})">
+          <span class="book-symbol">{{ book.symbol }}</span><strong>{{ book.name | escape }}</strong><span>{{ book.description | escape }}</span>
+        </a>
+        {% endfor %}</div>
     </div>
-    <p class="archive-note">책별 페이지는 다음 단계에서 만들 예정이야. 지금은 링크를 눌러도 404가 나올 수 있어.</p>
+    <p class="archive-note">Book names can be edited in the settings section below.</p>
   </section>
 
+  <section class="archive-section" aria-labelledby="manageBooksTitle">
+    <div class="section-heading"><h2 id="manageBooksTitle">⚙ 책 이름 관리</h2><small>BOOK SETTINGS</small></div>
+    <p>책 이름과 소개를 한 곳에서 관리해. <code>id</code>는 주소와 게시글 분류에 사용하므로 그대로 유지해 줘.</p>
+    <a class="action-link" href="https://github.com/golmokdaezang/golmokdaezang.github.io/edit/main/_data/books.yml" target="_blank" rel="noopener noreferrer"><span class="action-icon">✎</span><strong>책 이름 수정하기</strong><small>GitHub 로그인 → name 수정 → Commit changes</small></a>
+    <p class="archive-note">현재는 GitHub 편집 화면에서 저장하는 방식이야. 중앙 기록실 안에서 바로 저장하는 기능은 GitHub 인증을 연결한 뒤 구현할 수 있어.</p>
+  </section>
   <section class="archive-section" aria-labelledby="createTitle">
     <div class="section-heading"><h2 id="createTitle">✒ 새로운 항해 기록</h2><small>NEW ENTRY</small></div>
     <div class="action-grid">
