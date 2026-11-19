@@ -982,21 +982,10 @@ body { overflow: hidden; }
 
 
 
-/* 고풍스러운 돋보기: 클릭 가능한 부분에만 표시 */
-
-.cabin .lantern, .cabin .cabin-door, .cabin .cabin-map,
-
-.cabin .cabin-bookshelf-link, .cabin .captain-ui a,
-
-.cabin .captain-ui button, .cabin .captain-profile {
-
-  cursor: url('/assets/images/antique-magnifier-cursor.svg') 16 16, pointer;
-
+/* 선장실 전체: 모든 위치에서 동일한 고풍스러운 돋보기 커서 */
+html, body, body *, body *::before, body *::after {
+  cursor: url('/assets/images/antique-magnifier-cursor.svg') 16 16, pointer !important;
 }
-
-
-
-
 
 </style>
 
