@@ -1,145 +1,289 @@
 ---
+
 layout: default
+
 permalink: /blog/
+
 title: 선장의 중앙 기록실
+
 ---
 
+
+
 <style>
+
   .captains-archive { --ink:#49321e; --gold:#c5a16a; --navy:#142238; --paper:#f0dfbd; color:var(--ink); font-family: 'Noto Serif KR', Georgia, serif; }
+
   .captains-archive * { box-sizing:border-box; }
+
   .captains-archive .archive-hero { position:relative; padding:clamp(25px,5vw,52px); background:linear-gradient(135deg,rgba(16,29,49,.96),rgba(37,47,56,.96)); color:#f5e6c6; border:1px solid #b5945c; border-radius:16px; box-shadow:0 12px 30px #0003; overflow:hidden; }
+
   .captains-archive .archive-hero::after { content:'✦'; position:absolute; right:25px; top:8px; font-size:100px; color:#d4b57a1f; pointer-events:none; }
+
   .captains-archive .eyebrow { color:#d4b27b; letter-spacing:.2em; font-size:.75rem; font-weight:700; }
+
   .captains-archive h1 { margin:.5rem 0 .6rem; font-size:clamp(1.6rem,4vw,2.5rem); font-weight:800; color:inherit; }
+
   .captains-archive .archive-hero p { color:#dfd1ba; margin:0; }
+
   .captains-archive .archive-section { margin-top:24px; padding:clamp(18px,3vw,30px); border:1px solid #bd9e70; border-radius:14px; background:linear-gradient(#f4e6c9eF,#e8d3aceF),url('/assets/images/parchment-bg.webp') center/cover; box-shadow:0 7px 24px #0002; }
+
   .captains-archive .section-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; }
+
   .captains-archive .section-heading h2 { margin:0; color:#56391f; font-size:1.3rem; }
+
   .captains-archive .section-heading small { color:#866747; }
+
   .captains-archive .shelf-viewport { overflow-x:auto; overflow-y:hidden; cursor:grab; user-select:none; scrollbar-width:thin; scrollbar-color:#aa8555 transparent; padding:8px 2px 18px; touch-action:pan-x; }
+
   .captains-archive .shelf-viewport.dragging { cursor:grabbing; scroll-behavior:auto; }
+
   .captains-archive .shelf-track { display:flex; gap:15px; width:max-content; }
-  .captains-archive .book-tile { width:168px; min-height:205px; display:flex; flex-direction:column; justify-content:space-between; padding:18px 15px; border-radius:8px 15px 15px 8px; color:#f5e4bf!important; text-decoration:none!important; border-left:10px solid #ffffff29; border-right:3px solid #d8b97c; box-shadow:7px 9px 12px #3d271d50,inset 3px 0 9px #0003; transition:transform .2s,filter .2s; }
+
+  .captains-archive .book-tile { width:168px; min-height:205px; display:flex; flex-direction:column; justify-content:space-between; padding:18px 15px; border-radius:8px 15px 15px 8px; color:#f5e4bf!important; text-decoration:none!important; border-left:10px solid #ffffff29; border-right:3px solid #d8b97c; box-shadow:7px 9px 12px #3d271d50,inset 3px 0 9px #0003; background:linear-gradient(125deg,#182335,var(--book-color,#49305e)); transition:transform .2s,filter .2s; }
+
   .captains-archive .book-tile:hover,.captains-archive .book-tile:focus-visible { transform:translateY(-5px); filter:brightness(1.13); }
+
   .captains-archive .book-symbol { font-size:2rem; color:#e9c780; text-align:center; }
+
   .captains-archive .book-tile strong { display:block; font-size:1.12rem; color:#f5e4bf; }
+
   .captains-archive .book-tile span:last-child { font-size:.72rem; color:#e5d1b3; }
+
   .captains-archive .action-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+
   .captains-archive .action-link { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; min-height:100px; padding:14px 8px; text-align:center; border:1px solid #b5966c; border-radius:10px; background:#fffaee9e; color:#563a21!important; text-decoration:none!important; transition:background .2s,transform .2s; }
+
   .captains-archive .action-link:hover { background:#fff6e4; transform:translateY(-2px); }
+
   .captains-archive .action-link .action-icon { font-size:1.7rem; }
+
   .captains-archive .archive-note { font-size:.81rem; color:#785d3d; margin:12px 0 0; }
+
   .captains-archive .archive-search { width:100%; border:1px solid #b99a70; background:#fffaf0; color:#49321e; border-radius:9px; padding:11px 14px; margin:0 0 14px; outline-offset:2px; }
+
   .captains-archive .post-entry { display:block; padding:18px 2px; border-bottom:1px solid #b89b7359; text-decoration:none!important; color:#48311f!important; }
+
   .captains-archive .post-entry:hover h3 { text-decoration:underline; }
+
   .captains-archive .post-entry h3 { color:#4a2f1c; font-size:1.12rem; margin:5px 0 6px; }
+
   .captains-archive .post-entry p { margin:0; color:#806648; font-size:.88rem; }
+
   .captains-archive .post-meta { display:flex; flex-wrap:wrap; gap:8px; color:#907150; font-size:.77rem; }
+
   .captains-archive .post-tag { border:1px solid #c8ac82; border-radius:30px; padding:1px 8px; }
+
   .captains-archive .empty-posts { padding:26px 0; color:#806648; }
+
   .captains-archive .pager { display:flex; justify-content:center; align-items:center; gap:12px; margin-top:18px; }
+
   .captains-archive .pager button { padding:7px 14px; background:#59402b; color:#fff0d5; border:0; border-radius:7px; cursor:pointer; }
+
   .captains-archive .pager button:disabled { opacity:.35; cursor:default; }
+
   @media(max-width:620px) { .captains-archive .action-grid { grid-template-columns:1fr; } .captains-archive .action-link { min-height:64px; flex-direction:row; } .captains-archive .book-tile { width:142px; min-height:185px; } }
+
 </style>
 
+
+
 <div class="captains-archive" id="captainsArchive">
+
   <header class="archive-hero">
+
     <div class="eyebrow">THE CAPTAIN'S ARCHIVE</div>
+
     <h1>선장의 중앙 기록실</h1>
+
     <p>여섯 권의 항해일지에 담긴 모든 기록을 모아 둔 곳.</p>
+
   </header>
 
+
+
   <section class="archive-section" aria-labelledby="shelfTitle">
+
     <div class="section-heading"><h2 id="shelfTitle">⚓ 기록의 서가</h2><small>← 좌우로 드래그 →</small></div>
+
     <div class="shelf-viewport" id="shelfViewport" tabindex="0" aria-label="책 목록, 좌우로 스크롤 가능">
+
       <div class="shelf-track">
+
         {% for book in site.data.books %}
-        <a class="book-tile" href="{{ '/blog/' | append: book.id | append: '/' | relative_url }}" style="background:linear-gradient(125deg,#182335,{{ book.color }})">
+
+        <a class="book-tile" href="{{ book.url | relative_url }}" style="--book-color: {{ book.color | escape }}">
+
           <span class="book-symbol">{{ book.symbol }}</span><strong>{{ book.name | escape }}</strong><span>{{ book.description | escape }}</span>
+
         </a>
+
         {% endfor %}</div>
+
     </div>
-    <p class="archive-note">Book names can be edited in the settings section below.</p>
+
+    <p class="archive-note">책 이름과 설명은 아래 관리 메뉴에서 수정할 수 있어요.</p>
+
   </section>
+
+
 
   <section class="archive-section" aria-labelledby="manageBooksTitle">
+
     <div class="section-heading"><h2 id="manageBooksTitle">⚙ 책 이름 관리</h2><small>BOOK SETTINGS</small></div>
+
     <p>책 이름과 소개를 한 곳에서 관리해. <code>id</code>는 주소와 게시글 분류에 사용하므로 그대로 유지해 줘.</p>
+
     <a class="action-link" href="https://github.com/golmokdaezang/golmokdaezang.github.io/edit/main/_data/books.yml" target="_blank" rel="noopener noreferrer"><span class="action-icon">✎</span><strong>책 이름 수정하기</strong><small>GitHub 로그인 → name 수정 → Commit changes</small></a>
+
     <p class="archive-note">현재는 GitHub 편집 화면에서 저장하는 방식이야. 중앙 기록실 안에서 바로 저장하는 기능은 GitHub 인증을 연결한 뒤 구현할 수 있어.</p>
+
   </section>
+
   <section class="archive-section" aria-labelledby="createTitle">
+
     <div class="section-heading"><h2 id="createTitle">✒ 새로운 항해 기록</h2><small>NEW ENTRY</small></div>
+
     <div class="action-grid">
+
       <a class="action-link" href="https://github.com/golmokdaezang/golmokdaezang.github.io/new/main/_posts" target="_blank" rel="noopener noreferrer"><span class="action-icon">✍</span><strong>새 글 작성</strong><small>GitHub에서 Markdown 작성</small></a>
+
       <a class="action-link" href="https://github.com/golmokdaezang/golmokdaezang.github.io/upload/main/_posts" target="_blank" rel="noopener noreferrer"><span class="action-icon">▤</span><strong>MD 가져오기</strong><small>GitHub에서 Markdown 업로드</small></a>
+
       <a class="action-link" href="https://github.com/golmokdaezang/golmokdaezang.github.io/upload/main/assets" target="_blank" rel="noopener noreferrer"><span class="action-icon">▣</span><strong>PDF 가져오기</strong><small>GitHub에 PDF 파일 업로드</small></a>
+
     </div>
+
     <p class="archive-note">GitHub 로그인 및 저장소 쓰기 권한이 필요해. MD는 Jekyll 게시글 형식으로 작성해야 하며, PDF는 업로드 후 게시글에 링크를 추가해야 목록에 나타나.</p>
+
   </section>
+
+
 
   <section class="archive-section" aria-labelledby="postsTitle">
+
     <div class="section-heading"><h2 id="postsTitle">☷ 모든 항해 기록</h2><small>ALL ENTRIES</small></div>
+
     <input class="archive-search" id="archiveSearch" type="search" placeholder="제목과 기록 내용 검색" aria-label="기록 검색">
+
     <div id="archivePosts">
+
       {% assign sorted_posts = site.posts | sort: 'date' | reverse %}
+
       {% for post in sorted_posts %}
+
         <a class="post-entry" href="{{ post.url | relative_url }}" data-search="{{ post.title | strip_html | escape }} {{ post.excerpt | strip_html | normalize_whitespace | escape }} {{ post.categories | join: ' ' | escape }} {{ post.tags | join: ' ' | escape }}">
+
           <div class="post-meta"><time datetime="{{ post.date | date: '%Y-%m-%d' }}">{{ post.date | date: '%Y.%m.%d' }}</time>{% for category in post.categories %}<span class="post-tag">{{ category | escape }}</span>{% endfor %}</div>
+
           <h3>{{ post.title | escape }}</h3>
+
           <p>{{ post.description | default: post.excerpt | strip_html | normalize_whitespace | truncate: 140 | escape }}</p>
+
         </a>
+
       {% endfor %}
+
       {% if sorted_posts.size == 0 %}<p class="empty-posts">아직 등록된 기록이 없어. 첫 번째 항해일지를 작성해 봐!</p>{% endif %}
+
     </div>
+
     <div class="pager" id="archivePager" hidden><button type="button" id="archivePrev">이전</button><span id="archivePageInfo" aria-live="polite"></span><button type="button" id="archiveNext">다음</button></div>
+
   </section>
+
 </div>
 
+
+
 <script>
+
 (() => {
+
   const shelf = document.getElementById('shelfViewport');
+
   let startX = 0, startScroll = 0, dragging = false, moved = false;
+
   shelf.addEventListener('pointerdown', e => {
+
     if (e.pointerType === 'mouse' && e.button !== 0) return;
+
     dragging = true; moved = false; startX = e.clientX; startScroll = shelf.scrollLeft;
+
   });
+
   shelf.addEventListener('pointermove', e => {
+
     if (!dragging) return;
+
     const dx = e.clientX - startX;
+
     if (Math.abs(dx) > 6) { moved = true; shelf.classList.add('dragging'); shelf.scrollLeft = startScroll - dx; }
+
   });
+
   const stopDrag = () => { dragging = false; shelf.classList.remove('dragging'); };
+
   shelf.addEventListener('pointerup', stopDrag);
+
   shelf.addEventListener('pointercancel', stopDrag);
+
   shelf.addEventListener('pointerleave', stopDrag);
+
   shelf.addEventListener('click', e => { if (moved) { e.preventDefault(); moved = false; } }, true);
+
   shelf.addEventListener('wheel', e => { if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && !e.ctrlKey) { shelf.scrollLeft += e.deltaY; e.preventDefault(); } }, { passive:false });
 
+
+
   const input = document.getElementById('archiveSearch');
+
   const entries = [...document.querySelectorAll('#archivePosts .post-entry')];
+
   const pager = document.getElementById('archivePager');
+
   const prev = document.getElementById('archivePrev');
+
   const next = document.getElementById('archiveNext');
+
   const pageInfo = document.getElementById('archivePageInfo');
+
   const perPage = 8;
+
   let page = 1;
+
   function render() {
+
     const term = input.value.trim().toLocaleLowerCase();
+
     const filtered = entries.filter(el => (el.dataset.search || '').toLocaleLowerCase().includes(term));
+
     const total = Math.max(1, Math.ceil(filtered.length / perPage));
+
     page = Math.min(page, total);
+
     entries.forEach(el => { el.hidden = true; el.style.display = 'none'; });
+
     filtered.slice((page - 1) * perPage, page * perPage).forEach(el => { el.hidden = false; el.style.display = 'block'; });
+
     pager.hidden = filtered.length <= perPage;
+
     pageInfo.textContent = `${page} / ${total}`;
+
     prev.disabled = page === 1;
+
     next.disabled = page === total;
+
   }
+
   input.addEventListener('input', () => { page = 1; render(); });
+
   prev.addEventListener('click', () => { page--; render(); });
+
   next.addEventListener('click', () => { page++; render(); });
+
   render();
+
 })();
+
 </script>

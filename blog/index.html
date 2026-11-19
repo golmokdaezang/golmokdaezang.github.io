@@ -1,0 +1,18 @@
+---
+layout: book-archive
+title: 전체 항해 기록
+permalink: /blog/
+---
+<header class="heading"><div class="ornament">✦ ⚓ ✦</div><h1>선장의 항해 기록</h1><p>여섯 권의 책에 담긴 기록을 한곳에서 관리합니다.</p></header>
+<section class="books" aria-label="책 목록">
+{% for book in site.data.books %}
+<a class="bookcard bookcard-{{ book.slug }}" href="{{ book.url | relative_url }}"><div class="symbol">{{ book.symbol }}</div><h2>{{ book.name }}</h2><p>{{ book.description }}</p></a>
+{% endfor %}
+</section>
+<header class="heading"><h1>최근 기록</h1></header>
+<section class="posts">
+{% for post in site.posts limit:10 %}
+<a class="postcard" href="{{ post.url | relative_url }}"><h2>{{ post.title }}</h2><div class="meta">{{ post.date | date: '%Y.%m.%d' }} · {% for c in post.categories %}{{ c }} {% endfor %}</div><p>{{ post.excerpt | strip_html | truncate: 140 }}</p></a>
+{% else %}<div class="empty">아직 등록된 기록이 없습니다. <code>_posts/</code>에 첫 글을 작성해 보세요.</div>
+{% endfor %}
+</section>

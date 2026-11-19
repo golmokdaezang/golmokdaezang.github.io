@@ -1,0 +1,18 @@
+---
+layout: book-archive
+title: 검정 책
+book_key: black
+permalink: /books/black/
+---
+{% assign book = site.data.books | where: 'slug', page.book_key | first %}
+<header class="heading"><div class="ornament">{{ book.symbol }}</div><h1>{{ book.name }}</h1><p>{{ book.description }}</p></header>
+<section class="posts" aria-label="게시글 목록">
+{% assign matched_count = 0 %}
+{% for post in site.posts %}
+  {% if post.categories contains page.book_key %}
+    {% assign matched_count = matched_count | plus: 1 %}
+    <a class="postcard" href="{{ post.url | relative_url }}"><h2>{{ post.title }}</h2><div class="meta">{{ post.date | date: '%Y.%m.%d' }}</div><p>{{ post.excerpt | strip_html | truncate: 150 }}</p></a>
+  {% endif %}
+{% endfor %}
+{% if matched_count == 0 %}<div class="empty">이 책에는 아직 기록이 없습니다.</div>{% endif %}
+</section>

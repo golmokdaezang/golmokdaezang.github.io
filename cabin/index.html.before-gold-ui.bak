@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<link rel="icon" type="image/png" href="/assets/images/favicon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grand Security Line | 선장실</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap");
+@font-face {
+  font-family: "YoonChoWooSan";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2408@1.0/YoonChildfundkoreaManSeh.woff2")
+    format("woff2");
+  font-weight: normal;
+  font-display: swap;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background: #100b08;
+}
+body { overflow: hidden; }
+.cabin {
+  position: relative;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  isolation: isolate;
+}
+/* 낮과 밤 이미지 */
+.scene-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+}
+.day { z-index: 0; }
+.night {
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+}
+.cabin.dark .night { opacity: 1; }
+.darkness {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: rgba(3, 8, 20, 0);
+  transition: background 1.5s ease-in-out;
+}
+.cabin.dark .darkness {
+  background: rgba(3, 8, 20, 0.08);
+}
+/* 랜턴 빛 */
+.lantern-glow {
+  position: absolute;
+  z-index: 3;
+  left: 48%;
+  top: -14%;
+  width: 40%;
+  height: 70%;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 40%,
+    rgba(255,195,105,0.28),
+    rgba(255,165,65,0.12) 30%,
+    rgba(255,130,30,0.03) 60%,
+    transparent 75%
+  );
+  opacity: 0;
+  mix-blend-mode: screen;
+  transition: opacity 1.5s ease-in-out;
+}
+.cabin.dark .lantern-glow {
+  opacity: 1;
+  animation: lanternFlicker 4s ease-in-out infinite;
+}
+@keyframes lanternFlicker {
+  0%, 100% { opacity: 0.85; }
+  35% { opacity: 1; }
+  65% { opacity: 0.9; }
+}
+/* 공기 중 먼지 */
+.dust-container {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  overflow: hidden;
+  pointer-events: none;
+}
+.dust-particle {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: rgba(255,235,185,0.9);
+  box-shadow: 0 0 7px rgba(255,216,143,0.6);
+  opacity: 0;
+  animation: dustFloat var(--duration) ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+@keyframes dustFloat {
+  0% {
+    transform: translate3d(0,25px,0);
+    opacity: 0;
+  }
+  20% { opacity: 0.7; }
+  50% {
+    transform: translate3d(35px,-25px,0);
+    opacity: 0.85;
+  }
+  80% { opacity: 0.5; }
+  100% {
+    transform: translate3d(-15px,-75px,0);
+    opacity: 0;
+  }
+}
+.cabin.dark .dust-particle {
+  background: rgba(255,195,110,0.8);
+  box-shadow: 0 0 9px rgba(255,160,60,0.5);
+}
+/* 마우스 후광 */
+.cursor-glow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 6;
+  background: radial-gradient(
+    circle,
+    rgba(255,217,125,0.23),
+    rgba(255,177,64,0.11) 30%,
+    rgba(255,153,50,0.04) 55%,
+    transparent 75%
+  );
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.5s ease;
+  will-change: transform;
+}
+.cabin.dark .cursor-glow.active {
+  opacity: 1;
+}
+/* 랜턴 클릭 영역 */
+.lantern {
+  position: absolute;
+  z-index: 10;
+  left: 61.8%;
+  top: 0.2%;
+  width: 8.2%;
+  height: 25%;
+  padding: 0;
+  border: none;
+  border-radius: 45%;
+  background: transparent;
+  cursor: pointer;
+}
+/* 갑판으로 나가는 오른쪽 문 */
+.cabin-door {
+  position: absolute;
+  z-index: 11;
+  left: 89%;
+  top: 18%;
+  width: 11%;
+  height: 75%;
+  display: block;
+  background: transparent;
+  text-decoration: none;
+  cursor: pointer;
+}
+/*
+  지도 클릭 영역
+  현재는 임시 위치입니다.
+  실제 선장실 이미지의 지도 위치에 맞춰
+  아래 숫자 네 개를 조정하세요.
+*/
+.cabin-map {
+  position: absolute;
+  z-index: 12;
+  left: 32%;
+  top: 57%;
+  width: 18%;
+  height: 19%;
+  display: block;
+  background: transparent;
+  text-decoration: none;
+  cursor: pointer;
+}
+/* 평소에는 클릭 영역이 보이지 않음 */
+.lantern:focus-visible,
+.cabin-door:focus-visible,
+.cabin-map:focus-visible {
+  outline: 2px solid #f3d18b;
+  outline-offset: 3px;
+}
+/* 입장 및 전환 공통 글씨 */
+.entrance,
+.deck-transition,
+.map-transition {
+  position: fixed;
+  inset: 0;
+  background: #100e0b;
+}
+.entrance {
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  animation: entranceFade 3.4s ease-in-out forwards;
+}
+.entrance-title,
+.deck-title,
+.map-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  font-family: "YoonChoWooSan", sans-serif;
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: normal;
+  color: #f3d18b;
+  letter-spacing: 0.45em;
+  padding-left: 0.45em;
+  text-shadow:
+    0 0 10px rgba(255,199,91,0.45),
+    0 0 25px rgba(220,145,40,0.2);
+}
+.entrance-title::before,
+.entrance-title::after,
+.deck-title::before,
+.deck-title::after,
+.map-title::before,
+.map-title::after {
+  content: "";
+  display: block;
+  width: clamp(230px,30vw,380px);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #d8ae62 20%,
+    #f3d18b 50%,
+    #d8ae62 80%,
+    transparent
+  );
+  box-shadow: 0 0 8px rgba(255,195,90,0.35);
+}
+.entrance-title {
+  animation: titleAppear 2.5s ease-in-out forwards;
+}
+@keyframes titleAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(4px);
+  }
+  12%, 85% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px);
+    filter: blur(2px);
+  }
+}
+@keyframes entranceFade {
+  0%, 65% { opacity: 1; }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+/* 갑판 전환 */
+.deck-transition {
+  z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.deck-transition.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.deck-intro {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #100e0b;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+.deck-title { opacity: 0; }
+.deck-transition.active .deck-title {
+  animation: titleAppear 2.5s ease-in-out forwards;
+}
+.deck-transition.show-images .deck-intro {
+  opacity: 0;
+  pointer-events: none;
+}
+.deck-images {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.deck-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1);
+  transition:
+    opacity 0.2s ease-in-out,
+    transform 0.6s ease-out;
+}
+.deck-image.visible {
+  opacity: 1;
+  transform: scale(1.06);
+}
+.deck-image.past {
+  opacity: 0;
+  transform: scale(1.12);
+}
+.deck-blackout {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: #100e0b;
+  opacity: 0;
+  transition: opacity 0.35s ease-in-out;
+}
+.deck-transition.blackout .deck-blackout {
+  opacity: 1;
+}
+/* 지도 전환: 글씨가 나온 뒤 지도 페이지 이동 */
+.map-transition {
+  z-index: 210;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.map-transition.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.map-title { opacity: 0; }
+.map-transition.active .map-title {
+  animation: titleAppear 2.5s ease-in-out forwards;
+}
+@media (hover: none) {
+  .cursor-glow { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .entrance,
+  .dust-particle,
+  .cursor-glow {
+    display: none;
+  }
+  .night,
+  .darkness,
+  .lantern-glow,
+  .deck-image {
+    transition: none;
+  }
+  .lantern-glow { animation: none; }
+}
+/* 선장 프로필: 빈티지 포스터와 가로 슬라이드 */
+.captain-ui { position:absolute; inset:0; z-index:30; pointer-events:none; font-family:"YoonChoWooSan","Malgun Gothic",sans-serif; }
+.captain-ui a,.captain-ui button { pointer-events:auto; }
+.captain-ui [hidden] { display:none!important; }
+.captain-topbar { position:absolute; top:0; left:0; right:0; height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 16px; border-bottom:1px solid rgba(222,179,104,.52); background:rgba(24,16,12,.28); backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px); }
+.captain-top-left { display:flex; align-items:center; gap:12px; }
+.captain-profile-toggle { border:0; background:transparent; color:#f3d18b; font:inherit; font-size:15px; padding:14px 8px; cursor:pointer; }
+.captain-profile-toggle:hover { color:#fff0c7; }
+.captain-auth,.captain-edit { display:inline-block; padding:8px 14px; border:1px solid rgba(218,179,105,.65); border-radius:5px; background:rgba(31,20,13,.36); color:#f2d69c; text-decoration:none; cursor:pointer; font:inherit; font-size:14px; }
+.captain-auth:hover,.captain-edit:hover { background:rgba(105,70,30,.55); }
+.captain-profile { position:absolute; top:72px; left:20px; width:min(315px,calc(100vw - 40px)); max-height:calc(100dvh - 85px); overflow-y:auto; overflow-x:hidden; scrollbar-width:thin; pointer-events:auto; cursor:pointer; filter:drop-shadow(0 12px 15px rgba(0,0,0,.35)); opacity:0; transform:translate3d(calc(-100% - 30px),0,0); visibility:hidden; transition:transform .78s cubic-bezier(.22,1,.36,1),opacity .62s ease,visibility 0s linear .78s; }
+.captain-ui.is-ready:not(.is-collapsed) .captain-profile { opacity:1; transform:translate3d(0,0,0); visibility:visible; transition:transform .88s cubic-bezier(.22,1,.36,1),opacity .65s ease,visibility 0s; }
+.captain-poster { position:relative; width:100%; aspect-ratio:1046/1504; background:url('/assets/images/wanted-poster.png') center top/100% 100% no-repeat; color:#2a170c; isolation:isolate; }
+.captain-poster::after { content:""; position:absolute; inset:0; background:linear-gradient(165deg, rgba(255,218,148,0) 42%, rgba(255,207,118,.035) 65%, rgba(255,193,105,.17) 100%); mix-blend-mode:screen; pointer-events:none; z-index:3; }
+.captain-poster { filter:brightness(.91) saturate(.94); }
+.captain-avatar { position:absolute; left:16%; top:16.7%; width:68%; height:30.7%; object-fit:cover; object-position:center; background:#5b3a20; filter:sepia(.18) contrast(1.06); border:0; }
+.captain-nickname { position:absolute; top:55%; left:12%; width:76%; margin:0; text-align:center; font-family:"Gowun Batang",serif; font-size:22px; font-weight:700; overflow-wrap:anywhere; line-height:1.2; }
+.captain-major { position:absolute; top:60%; left:12%; width:76%; margin:0; text-align:center; font-size:12px; overflow-wrap:anywhere; }
+.captain-bio { position:absolute; top:64%; left:12%; width:76%; margin:0; text-align:center; font-family:"Gowun Batang",serif; font-size:12px; line-height:1.45; white-space:pre-wrap; overflow-wrap:anywhere; max-height:9%; overflow:auto; }
+.captain-bounty { position:absolute; top:77.2%; left:29%; width:52%; margin:0; text-align:center; font-family:Georgia,serif; font-size:23px; font-weight:bold; overflow-wrap:anywhere; }
+
+.captain-profile:focus-visible,.captain-profile-toggle:focus-visible { outline:2px solid #f3d18b; outline-offset:2px; }
+@media(max-width:600px) { .captain-topbar { height:52px; padding:0 10px; } .captain-top-left { gap:4px; } .captain-profile { top:67px; left:18px; width:min(285px,calc(100vw - 36px)); max-height:calc(100dvh - 80px); } .captain-edit { padding:7px 9px; font-size:12px; } }
+@media(prefers-reduced-motion:reduce) { .captain-profile,.captain-ui.is-ready:not(.is-collapsed) .captain-profile { transition:none; } }
+
+/* 선실 책장: 랜턴 아래 책등 부분만 클릭 */
+.cabin-bookshelf-link {
+  position: absolute;
+  z-index: 13;
+  left: 64%;
+  top: 26%;
+  width: 13%;
+  height: 25%;
+  display: block;
+  background: transparent;
+  cursor: zoom-in;
+  border-radius: 5px;
+}
+.cabin-bookshelf-link:focus-visible {
+  outline: 2px solid #f3d18b;
+  outline-offset: 3px;
+}
+/* 실제 선실 이미지에서 책장 쪽으로 걸어가는 화면 */
+.bookshelf-approach {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  overflow: hidden;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  background: #100b08;
+}
+.bookshelf-approach.active {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+.bookshelf-approach .approach-cabin,
+.bookshelf-approach .approach-shelf {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+}
+.bookshelf-approach .approach-cabin {
+  transform-origin: 70% 38%;
+  transform: scale(1);
+}
+.bookshelf-approach.active .approach-cabin {
+  animation: walkToShelf 2s cubic-bezier(.18,.72,.24,1) forwards;
+}
+.bookshelf-approach .approach-shelf {
+  opacity: 0;
+  transform: scale(1.1);
+}
+.bookshelf-approach.active .approach-shelf {
+  animation: revealShelf 1.45s ease-out 1.05s forwards;
+}
+.bookshelf-approach .approach-shadow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% 38%, transparent 28%, rgba(10,6,4,.65) 100%);
+  pointer-events: none;
+}
+@keyframes walkToShelf {
+  0% { transform: scale(1); filter: brightness(1); }
+  100% { transform: scale(3.1); filter: brightness(.55) blur(2px); }
+}
+@keyframes revealShelf {
+  0% { opacity: 0; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bookshelf-approach.active .approach-cabin,
+  .bookshelf-approach.active .approach-shelf { animation: none; }
+}
+
+</style>
+</head>
+<body>
+<!-- 선장실 입장 -->
+<div class="entrance" aria-hidden="true">
+  <div class="entrance-title">선장실</div>
+</div>
+<main class="cabin" id="cabin">
+  <img
+    class="scene-image day"
+    src="./captain-day.webp"
+    alt="낮의 선장실"
+  >
+  <img
+    class="scene-image night"
+    src="./captain-night.webp"
+    alt="밤의 선장실"
+  >
+  <div class="darkness" aria-hidden="true"></div>
+  <div class="lantern-glow" aria-hidden="true"></div>
+  <div class="dust-container" id="dust-container" aria-hidden="true"></div>
+  <div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
+  <button
+    class="lantern"
+    id="lantern"
+    type="button"
+    aria-label="랜턴 켜기 또는 끄기"
+    aria-pressed="false"
+  ></button>
+  <!-- 기존 갑판 이동 -->
+  <a
+    class="cabin-door"
+    href="/crew.html"
+    aria-label="갑판으로 나가기"
+  ></a>
+  <!-- 새 지도 이동 -->
+  <a
+    class="cabin-map"
+    href="/map/"
+    aria-label="지도 펼치기"
+  ></a>
+    <!-- 랜턴 아래 책장으로 접근 -->
+  <a class="cabin-bookshelf-link" id="cabin-bookshelf-link"
+     href="/bookshelf/" aria-label="선실 책장으로 다가가기"
+     title="책장 살펴보기"></a>
+  <!-- 선장 프로필 및 관리자 로그인 UI -->
+  <div class="captain-ui" id="captain-ui">
+    <nav class="captain-topbar" aria-label="선장실 메뉴">
+        <div class="captain-top-left">
+          <button class="captain-profile-toggle" id="captain-profile-toggle" type="button" aria-expanded="true" aria-controls="captain-profile">⚜ 선장 프로필</button>
+          <a class="captain-edit" id="captain-edit" href="/profile/settings/" hidden>프로필 수정</a>
+        </div>
+        <div>
+          <a class="captain-auth" id="captain-login" href="/login/">로그인</a>
+          <button class="captain-auth" id="captain-logout" type="button" hidden>로그아웃</button>
+        </div>
+      </nav>
+    <section class="captain-profile" id="captain-profile" aria-label="선장 현상금 포스터" role="button" tabindex="0" title="클릭하면 포스터를 숨깁니다">
+      <div class="captain-poster">
+        <img class="captain-avatar" id="captain-avatar" src="/assets/images/default-avatar.png" alt="선장 프로필 사진">
+        <h2 class="captain-nickname" id="captain-nickname">골목대장</h2>
+        <p class="captain-major" id="captain-major" hidden></p>
+        <p class="captain-bio" id="captain-bio">선장의 항해 기록을 준비하고 있습니다.</p>
+        <p class="captain-bounty" id="captain-bounty">0</p>
+      </div>
+    </section>
+  </div>
+</main>
+<!-- 책장 접근 장면 전환 -->
+<div class="bookshelf-approach" id="bookshelf-approach" aria-hidden="true">
+  <img class="approach-cabin" id="approach-cabin" src="./captain-day.webp" alt="">
+  <img class="approach-shelf" id="approach-shelf" src="/assets/images/bookshelf-day.png" alt="">
+  <div class="approach-shadow"></div>
+</div>
+<!-- 갑판 전환 -->
+<div class="deck-transition" id="deck-transition" aria-hidden="true">
+  <div class="deck-images">
+    <img class="deck-image" src="./deck-01.png" alt="">
+    <img class="deck-image" src="./deck-02.png" alt="">
+  </div>
+  <div class="deck-intro">
+    <div class="deck-title">갑판</div>
+  </div>
+  <div class="deck-blackout"></div>
+</div>
+<!-- 지도 전환 -->
+<div class="map-transition" id="map-transition" aria-hidden="true">
+  <div class="map-title">지도</div>
+</div>
+<script>
+"use strict";
+/* 랜턴 */
+const cabin = document.getElementById("cabin");
+const lantern = document.getElementById("lantern");
+const reducedMotion = window.matchMedia(
+  "(prefers-reduced-motion: reduce)"
+);
+let isDark = false;
+lantern.addEventListener("click", () => {
+  isDark = !isDark;
+  cabin.classList.toggle("dark", isDark);
+  lantern.setAttribute("aria-pressed", String(isDark));
+});
+/* 먼지 */
+function createDust() {
+  if (reducedMotion.matches) return;
+  const container = document.getElementById("dust-container");
+  for (let i = 0; i < 75; i++) {
+    const dust = document.createElement("span");
+    dust.className = "dust-particle";
+    dust.style.setProperty("--x", Math.random() * 100 + "%");
+    dust.style.setProperty("--y", Math.random() * 100 + "%");
+    dust.style.setProperty("--size", (Math.random() * 2.5 + 1) + "px");
+    dust.style.setProperty("--duration", (Math.random() * 10 + 9) + "s");
+    dust.style.setProperty("--delay", (-Math.random() * 20) + "s");
+    container.appendChild(dust);
+  }
+}
+/* 마우스 후광 */
+const cursorGlow = document.getElementById("cursor-glow");
+let mouseX = 0;
+let mouseY = 0;
+let glowX = 0;
+let glowY = 0;
+let glowStarted = false;
+cabin.addEventListener("pointermove", (event) => {
+  if (event.pointerType !== "mouse") return;
+  const rect = cabin.getBoundingClientRect();
+  mouseX = event.clientX - rect.left;
+  mouseY = event.clientY - rect.top;
+  if (!glowStarted) {
+    glowX = mouseX;
+    glowY = mouseY;
+    glowStarted = true;
+  }
+  cursorGlow.classList.add("active");
+});
+cabin.addEventListener("pointerleave", () => {
+  cursorGlow.classList.remove("active");
+});
+function animateGlow() {
+  if (glowStarted) {
+    glowX += (mouseX - glowX) * 0.45;
+    glowY += (mouseY - glowY) * 0.45;
+    cursorGlow.style.transform =
+      `translate(${glowX - 95}px, ${glowY - 95}px)`;
+  }
+  requestAnimationFrame(animateGlow);
+}
+/* 갑판 이동 */
+const cabinDoor = document.querySelector(".cabin-door");
+const deckTransition = document.getElementById("deck-transition");
+const deckImages = document.querySelectorAll(".deck-image");
+/* 지도 이동 */
+const cabinMap = document.querySelector(".cabin-map");
+const mapTransition = document.getElementById("map-transition");
+let isLeaving = false;
+cabinDoor.addEventListener("click", (event) => {
+  event.preventDefault();
+  if (isLeaving) return;
+  isLeaving = true;
+  const destination = cabinDoor.href;
+  if (reducedMotion.matches) {
+    window.location.href = destination;
+    return;
+  }
+  deckTransition.classList.add("active");
+  deckTransition.setAttribute("aria-hidden", "false");
+  deckImages[0].classList.add("visible");
+  setTimeout(() => {
+    deckTransition.classList.add("show-images");
+  }, 2500);
+  setTimeout(() => {
+    deckImages[0].classList.remove("visible");
+    deckImages[0].classList.add("past");
+    deckImages[1].classList.add("visible");
+  }, 2900);
+  setTimeout(() => {
+    deckTransition.classList.add("blackout");
+  }, 3400);
+  setTimeout(() => {
+    window.location.href = destination;
+  }, 3800);
+});
+cabinMap.addEventListener("click", (event) => {
+  event.preventDefault();
+  if (isLeaving) return;
+  isLeaving = true;
+  const destination = cabinMap.href;
+  if (reducedMotion.matches) {
+    window.location.href = destination;
+    return;
+  }
+  mapTransition.classList.add("active");
+  mapTransition.setAttribute("aria-hidden", "false");
+  setTimeout(() => {
+    window.location.href = destination;
+  }, 2500);
+});
+/* 선실 책장 클릭: 기존 랜턴, 갑판, 지도 기능과 독립 */
+const bookshelfLink = document.getElementById("cabin-bookshelf-link");
+const bookshelfApproach = document.getElementById("bookshelf-approach");
+const approachCabin = document.getElementById("approach-cabin");
+const approachShelf = document.getElementById("approach-shelf");
+bookshelfLink.addEventListener("click", (event) => {
+  event.preventDefault();
+  if (isLeaving) return;
+  isLeaving = true;
+  const destination = bookshelfLink.href;
+  if (reducedMotion.matches) {
+    window.location.assign(destination);
+    return;
+  }
+  approachCabin.src = isDark ? "./captain-night.webp" : "./captain-day.webp";
+  approachShelf.src = isDark
+    ? "/assets/images/bookshelf-night.png"
+    : "/assets/images/bookshelf-day.png";
+  bookshelfApproach.classList.add("active");
+  bookshelfApproach.setAttribute("aria-hidden", "false");
+  window.setTimeout(() => window.location.assign(destination), 2650);
+});
+
+createDust();
+if (window.matchMedia(
+  "(hover: hover) and (prefers-reduced-motion: no-preference)"
+).matches) {
+  animateGlow();
+}
+</script>
+<!-- Supabase 라이브러리와 기존 프로젝트 설정 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/assets/js/supabase-config.js"></script>
+<script>
+(async function initCaptainProfile() {
+  const $ = (id) => document.getElementById(id);
+  const panel = $("captain-ui");
+  const toggle = $("captain-profile-toggle");
+  const fallbackAvatar = "/assets/images/default-avatar.png";
+  const posterPanel = $("captain-profile");
+  // 입장 화면이 사라진 후 포스터가 왼쪽에서 오른쪽으로 등장합니다.
+  const showPoster = (visible) => {
+    panel.classList.toggle("is-collapsed", !visible);
+    toggle.setAttribute("aria-expanded", String(visible));
+    posterPanel.setAttribute("aria-hidden", String(!visible));
+    posterPanel.tabIndex = visible ? 0 : -1;
+  };
+  showPoster(true);
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    panel.classList.add("is-ready");
+  } else {
+    window.setTimeout(() => panel.classList.add("is-ready"), 3400);
+  }
+  toggle.addEventListener("click", () => showPoster(true));
+  posterPanel.addEventListener("click", () => showPoster(false));
+  posterPanel.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      showPoster(false);
+      toggle.focus();
+    }
+  });
+  $("captain-avatar").addEventListener("error", function () {
+    if (!this.dataset.fallbackTried) {
+      this.dataset.fallbackTried = "1";
+      this.src = fallbackAvatar;
+    }
+  });
+  function showStatus(message) {
+    console.warn("선장 프로필:", message);
+  }
+  if (!window.supabase || !window.SUPABASE_URL || !window.SUPABASE_PUBLISHABLE_KEY) {
+    showStatus("프로필 연결 설정을 확인해 주세요.");
+    return;
+  }
+  const client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_PUBLISHABLE_KEY);
+  $("captain-logout").addEventListener("click", async () => {
+    const { error } = await client.auth.signOut();
+    if (error) { alert("로그아웃에 실패했습니다: " + error.message); return; }
+    window.location.reload();
+  });
+  try {
+    const { data: userData, error: authError } = await client.auth.getUser();
+    if (authError && !/session missing/i.test(authError.message)) {
+      console.warn("로그인 상태 확인:", authError.message);
+    }
+    const loggedIn = !authError && !!userData?.user;
+    $("captain-login").hidden = loggedIn;
+    $("captain-logout").hidden = !loggedIn;
+    $("captain-edit").hidden = !loggedIn;
+  } catch (error) {
+    console.warn("로그인 상태 확인 실패:", error);
+  }
+  // 공개 프로필은 로그인 여부와 관계없이 조회합니다.
+  try {
+    const { data: profile, error: profileError } = await client
+      .from("profiles")
+      .select("nickname, major, bio, avatar_url, bounty")
+      .limit(1)
+      .maybeSingle();
+    if (profileError) throw profileError;
+    if (!profile) {
+      showStatus("저장된 프로필이 없습니다. 로그인 후 프로필 설정에서 저장해 주세요.");
+      return;
+    }
+    $("captain-nickname").textContent = profile.nickname || "골목대장";
+    $("captain-bounty").textContent = Number(profile.bounty || 0).toLocaleString("ko-KR");
+    $("captain-bio").textContent = profile.bio || "선장의 항해 기록을 준비하고 있습니다.";
+    $("captain-major").hidden = true;
+    if (profile.major) {
+      $("captain-major").textContent = profile.major;
+      $("captain-major").hidden = false;
+    }
+    if (profile.avatar_url && /^https?:\/\//i.test(profile.avatar_url)) {
+      $("captain-avatar").src = profile.avatar_url;
+    }
+  } catch (error) {
+    console.error("선장 프로필 로딩 오류:", error);
+    showStatus("프로필 조회 오류: " + (error.message || "알 수 없는 오류"));
+  }
+})();
+</script>
+</body>
+</html>

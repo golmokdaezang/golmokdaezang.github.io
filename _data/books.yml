@@ -1,38 +1,68 @@
-# 책 이름(name)과 소개(description)를 변경하면 전체 기록실에 반영됩니다.
-# id는 게시글 분류 및 주소에 사용하므로 변경하지 마세요.
-- id: blue
-  name: "파란 책"
-  description: "첫 번째 기록"
-  color: "#315a87"
+# 이 파일만 수정하면 책장과 /blog/ 및 각 책 페이지에 공통 반영됩니다.
+# slug 변경 시 기존 링크가 깨질 수 있으므로 주의하세요.
+- slug: blue
+  name: 파란 책
+  file: book-blue.png
+  x: 29.8
+  y: 18.7
+  w: 3.3
+  h: 20.9
+  color: "#173c65"
   symbol: "✧"
-  image: "/assets/images/books/book-blue.png"
-- id: green
-  name: "초록 책"
-  description: "두 번째 기록"
-  color: "#467657"
+  url: "/books/blue/"
+  description: "파란 책에 담긴 항해 기록"
+- slug: green
+  name: 초록 책
+  file: book-green.png
+  x: 33.0
+  y: 18.3
+  w: 3.3
+  h: 21.3
+  color: "#244b39"
   symbol: "⚓"
-  image: "/assets/images/books/book-green.png"
-- id: purple
-  name: "보라 책"
-  description: "세 번째 기록"
-  color: "#78538a"
+  url: "/books/green/"
+  description: "초록 책에 담긴 항해 기록"
+- slug: purple
+  name: 보라 책
+  file: book-purple.png
+  x: 36.2
+  y: 19.3
+  w: 3.3
+  h: 20.3
+  color: "#49305e"
   symbol: "✺"
-  image: "/assets/images/books/book-purple.png"
-- id: brown
-  name: "갈색 책"
-  description: "네 번째 기록"
-  color: "#97643a"
+  url: "/books/purple/"
+  description: "보라 책에 담긴 항해 기록"
+- slug: brown
+  name: 갈색 책
+  file: book-brown.png
+  x: 39.4
+  y: 18.1
+  w: 3.3
+  h: 21.5
+  color: "#704721"
   symbol: "◎"
-  image: "/assets/images/books/book-brown.png"
-- id: aqua
-  name: "아쿠아 책"
-  description: "다섯 번째 기록"
-  color: "#2a929a"
+  url: "/books/brown/"
+  description: "갈색 책에 담긴 항해 기록"
+- slug: aqua
+  name: 아쿠아 책
+  file: book-aqua.png
+  x: 42.6
+  y: 19.1
+  w: 3.3
+  h: 20.5
+  color: "#17646b"
   symbol: "⚓"
-  image: "/assets/images/books/book-aqua.png"
-- id: black
-  name: "검정 책"
-  description: "여섯 번째 기록"
-  color: "#46484b"
+  url: "/books/aqua/"
+  description: "아쿠아 책에 담긴 항해 기록"
+- slug: black
+  name: 검정 책
+  file: book-black.png
+  x: 45.8
+  y: 17.7
+  w: 3.3
+  h: 21.9
+  color: "#242323"
   symbol: "☠"
-  image: "/assets/images/books/book-black.png"
+  url: "/books/black/"
+  description: "검정 책에 담긴 항해 기록"
