@@ -541,6 +541,210 @@ body { overflow: hidden; }
 </style>
 </head>
 <body>
+
+<!-- ===== 커서를 따라다니는 금색 안내 문구 ===== -->
+<style>
+  /* 기존 클릭 영역에 고정되어 나타나는 문구 숨기기 */
+  .cabin [data-hint]::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  /* 커서를 따라다니는 공통 안내 문구 */
+  #gold-cursor-tooltip {
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    padding: 5px 11px;
+
+    border-top: 1px solid rgba(201, 161, 94, 0.65);
+    border-bottom: 1px solid rgba(201, 161, 94, 0.65);
+
+    background: rgba(24, 17, 12, 0.85);
+    color: #d9b982;
+
+    font-family: "Gowun Batang", Georgia, serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.09em;
+    white-space: nowrap;
+
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+
+    transition: opacity 0.15s ease, visibility 0.15s;
+  }
+
+  #gold-cursor-tooltip.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  @media (hover: none) {
+    #gold-cursor-tooltip {
+      display: none;
+    }
+  }
+</style>
+
+<div id="gold-cursor-tooltip" role="tooltip" aria-hidden="true"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  const cabin = document.getElementById("cabin");
+  const tooltip = document.getElementById("gold-cursor-tooltip");
+
+  if (!cabin || !tooltip) return;
+
+  const lantern = document.getElementById("lantern");
+
+  // 클릭 가능한 물건과 안내 문구
+  const targets = [
+    { selector: ".cabin-map", label: "항해 지도 펼치기" },
+    { selector: ".cabin-bookshelf-link", label: "책장 살펴보기" },
+    { selector: ".cabin-door", label: "갑판으로 나가기" }
+  ];
+
+  let activeTarget = null;
+  let mouseX = 0;
+  let mouseY = 0;
+
+  function getLabel(element) {
+    if (!element) return "";
+
+    if (element === lantern) {
+      const isOn = cabin.classList.contains("dark");
+      return isOn ? "랜턴 끄기" : "랜턴 켜기";
+    }
+
+    for (const target of targets) {
+      if (element.matches(target.selector)) {
+        return target.label;
+      }
+    }
+
+    return "";
+  }
+
+  function findTarget(element) {
+    if (!(element instanceof Element)) return null;
+
+    return element.closest(
+      ".lantern, .cabin-map, .cabin-bookshelf-link, .cabin-door"
+    );
+  }
+
+  function positionTooltip() {
+    if (!activeTarget) return;
+
+    const margin = 10;
+    const gap = 16;
+
+    const width = tooltip.offsetWidth;
+    const height = tooltip.offsetHeight;
+
+    // 기본 위치: 커서 왼쪽
+    let left = mouseX - width - gap;
+    let top = mouseY - height / 2;
+
+    // 왼쪽 화면 밖으로 나가면 커서 오른쪽으로
+    if (left < margin) {
+      left = mouseX + gap;
+    }
+
+    // 오른쪽 화면 밖으로 나가지 않도록
+    if (left + width > window.innerWidth - margin) {
+      left = window.innerWidth - width - margin;
+    }
+
+    // 위아래 화면 경계 처리
+    top = Math.max(
+      margin,
+      Math.min(top, window.innerHeight - height - margin)
+    );
+
+    tooltip.style.left = left + "px";
+    tooltip.style.top = top + "px";
+  }
+
+  function showTooltip(element) {
+    const label = getLabel(element);
+
+    if (!label) {
+      hideTooltip();
+      return;
+    }
+
+    activeTarget = element;
+    tooltip.textContent = label;
+    tooltip.classList.add("visible");
+
+    positionTooltip();
+  }
+
+  function hideTooltip() {
+    activeTarget = null;
+    tooltip.classList.remove("visible");
+  }
+
+  // 커서 이동에 따라 문구도 함께 이동
+  cabin.addEventListener("pointermove", function (event) {
+    if (event.pointerType !== "mouse") {
+      hideTooltip();
+      return;
+    }
+
+    mouseX = event.clientX;
+    mouseY = event.clientY;
+
+    const target = findTarget(event.target);
+
+    if (!target) {
+      hideTooltip();
+      return;
+    }
+
+    showTooltip(target);
+  });
+
+  // 클릭 영역에서 벗어나면 숨기기
+  cabin.addEventListener("pointerleave", hideTooltip);
+
+  // 랜턴 클릭 직후 안내 문구 변경
+  if (lantern) {
+    lantern.addEventListener("click", function () {
+      if (activeTarget === lantern) {
+        tooltip.textContent = getLabel(lantern);
+        positionTooltip();
+      }
+    });
+  }
+
+  // 키보드 접근성
+  cabin.addEventListener("focusin", function (event) {
+    const target = findTarget(event.target);
+    if (!target) return;
+
+    const rect = target.getBoundingClientRect();
+
+    mouseX = rect.left + rect.width / 2;
+    mouseY = rect.top + rect.height / 2;
+
+    showTooltip(target);
+  });
+
+  cabin.addEventListener("focusout", hideTooltip);
+})();
+</script>
+<!-- ===== 금색 안내 문구 끝 ===== -->
+
 <!-- 선장실 입장 -->
 <div class="entrance" aria-hidden="true">
   <div class="entrance-title">선장실</div>
