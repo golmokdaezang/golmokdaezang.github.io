@@ -115,5 +115,124 @@
       });
     }());
   </script>
+  <script src="/assets/js/supabase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/lib/marked.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.3.1/dist/purify.min.js"></script>
+  <script>
+(async function () {
+  if (!document.querySelector('.reading-grid')) return;
+  const toc = document.querySelector('.toc-list');
+  const paper = document.querySelector('.paper');
+  const legacyTabs = Array.from(toc.children);
+  const legacyPanels = Array.from(paper.querySelectorAll('.article'));
+  const adminId = '6e6288e5-3612-4d2f-8d8b-fb08007d86a9';
+  const notice = document.createElement('p');
+  notice.setAttribute('role', 'status');
+  toc.before(notice);
+  notice.textContent = '기록 불러오는 중…';
+  let generation = 0;
+  try {
+    const client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_PUBLISHABLE_KEY);
+    const key = document.body.dataset.book;
+    function checked(result) {
+      if (result.error) throw result.error;
+      return result.data;
+    }
+    const book = checked(await client.from('books').select('*').eq('slug', key).maybeSingle());
+    if (book) {
+      document.querySelector('.intro h1').textContent = book.name;
+      document.querySelector('.intro p').textContent = book.description || '';
+      document.title = book.name + ' | 선장의 기록실';
+      if (book.symbol) document.querySelector('.intro .symbol').textContent = book.symbol;
+      if (/^#[0-9a-f]{6}$/i.test(book.color)) document.body.style.setProperty('--bg-glow', book.color);
+      if (/^#[0-9a-f]{6}$/i.test(book.text_color)) document.querySelector('.intro h1').style.color = book.text_color;
+    }
+    let admin = false;
+    const auth = await client.auth.getUser();
+    admin = !auth.error && auth.data.user?.id === adminId;
+    const rows = checked(await client.from('posts').select('id,title,is_public,created_at,sort_order').eq('book_key', key));
+    rows.sort((a,b) => (a.sort_order || Infinity) - (b.sort_order || Infinity) || a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id));
+    const dynamic = [];
+    if (rows.length) paper.querySelector('.empty')?.remove();
+    function select(tab, panel) {
+      generation++;
+      for (const t of toc.querySelectorAll('button')) {
+        t.setAttribute('aria-selected', String(t === tab));
+        t.tabIndex = t === tab ? 0 : -1;
+      }
+      for (const p of paper.querySelectorAll('.article')) p.hidden = p !== panel;
+      for (const item of dynamic) if (item.panel !== panel) item.body.replaceChildren();
+      return generation;
+    }
+    legacyTabs.forEach((tab,i) => tab.addEventListener('click', () => select(tab, legacyPanels[i])));
+    for (const row of rows) {
+      const tab = document.createElement('button');
+      tab.type = 'button';
+      tab.className = 'toc-button';
+      tab.id = 'db-tab-' + row.id;
+      tab.setAttribute('role','tab');
+      tab.setAttribute('aria-selected','false');
+      tab.tabIndex = -1;
+      tab.textContent = (row.is_public ? '' : '🔒 ') + row.title;
+      tab.setAttribute('aria-controls','db-panel-' + row.id);
+      const date = document.createElement('span');
+      date.className = 'toc-date';
+      date.textContent = row.created_at.slice(0,10);
+      tab.append(date);
+      const panel = document.createElement('article');
+      panel.className = 'article';
+      panel.id = 'db-panel-' + row.id;
+      panel.setAttribute('role','tabpanel');
+      panel.setAttribute('aria-labelledby',tab.id);
+      panel.hidden = true;
+      const title = document.createElement('h2');
+      title.textContent = row.title;
+      const meta = document.createElement('div');
+      meta.className = 'article-date';
+      meta.textContent = date.textContent + (row.is_public ? ' · 공개' : ' · 봉인');
+      const body = document.createElement('div');
+      body.className = 'article-body';
+      panel.append(title,meta,body);
+      toc.insertBefore(tab, legacyTabs[0] || null);
+      paper.append(panel);
+      dynamic.push({tab,panel,body,row});
+      tab.addEventListener('click', async () => {
+        const request = select(tab,panel);
+        body.textContent = '본문 불러오는 중…';
+        if (!row.is_public && !admin) { body.textContent = '🔒 봉인된 기록입니다. 관리자만 열람할 수 있습니다.'; return; }
+        try {
+          const content = checked(await client.from('post_contents').select('content').eq('post_id',row.id).maybeSingle());
+          if (request !== generation) return;
+          if (!content) { body.textContent = '본문이 없거나 열람 권한이 없습니다.'; return; }
+          if (window.marked && window.DOMPurify) {
+            body.innerHTML = DOMPurify.sanitize(marked.parse(content.content || ''),{USE_PROFILES:{html:true}});
+          } else { body.textContent = content.content; body.style.whiteSpace = 'pre-wrap'; }
+        } catch (error) { if (request === generation) body.textContent = '본문을 불러오지 못했습니다: ' + error.message; }
+      });
+    }
+    notice.textContent = '';
+    toc.addEventListener('keydown', event => {
+      if (!['ArrowDown','ArrowUp','Home','End'].includes(event.key)) return;
+      const tabs = Array.from(toc.querySelectorAll('button'));
+      const i = tabs.indexOf(event.target);
+      if (i < 0) return;
+      event.preventDefault(); event.stopPropagation();
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length-1 : (i + (event.key === 'ArrowDown' ? 1 : -1) + tabs.length) % tabs.length;
+      tabs[next].focus(); tabs[next].click();
+    }, true);
+    if (dynamic.length) dynamic[0].tab.click();
+    client.auth.onAuthStateChange((event,session) => {
+      const next = session?.user?.id === adminId;
+      if (next !== admin) {
+        admin = next; generation++;
+        for (const item of dynamic) item.body.replaceChildren();
+        const current = dynamic.find(item => !item.panel.hidden);
+        if (current) setTimeout(() => current.tab.click(),0);
+      }
+    });
+  } catch (error) { notice.textContent = '중앙 기록실 연결 오류: ' + (error.message || String(error)); }
+})();
+  </script>
 </body>
 </html>
