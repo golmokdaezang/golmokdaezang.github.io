@@ -734,6 +734,18 @@ renderList();
 
             });
 
+            // Ruled paper: align the background with each text line.
+            Object.assign(content.style, {
+                lineHeight: "24px",
+                paddingTop: "8px",
+                paddingBottom: "8px",
+                backgroundImage: "linear-gradient(to bottom, transparent 23px, color-mix(in srgb, currentColor 16%, transparent) 23px)",
+                backgroundSize: "100% 24px",
+                backgroundPosition: "0 8px",
+                backgroundAttachment: "local",
+                backgroundRepeat: "repeat"
+            });
+
 
             const status = node(
                 "small",
@@ -1446,6 +1458,18 @@ renderList();
 
                 boxSizing: "border-box"
 
+            });
+
+            // Ruled paper: align the background with each text line.
+            Object.assign(body.style, {
+                lineHeight: "24px",
+                paddingTop: "8px",
+                paddingBottom: "8px",
+                backgroundImage: "linear-gradient(to bottom, transparent 23px, color-mix(in srgb, #292929 16%, transparent) 23px)",
+                backgroundSize: "100% 24px",
+                backgroundPosition: "0 8px",
+                backgroundAttachment: "local",
+                backgroundRepeat: "repeat"
             });
 
 
