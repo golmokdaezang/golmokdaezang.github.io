@@ -5,11 +5,11 @@
    설정
 ========================== */
 
-const ZOOM = 1.5;
+const ZOOM = 1.65;
 
 /* 돋보기 이미지의 렌즈 중심 */
-const LENS_X = 0.395;
-const LENS_Y = 0.355;
+const LENS_X = 0.5;
+const LENS_Y = 0.5;
 
 /* 섬 목록 */
 const ISLANDS = [
