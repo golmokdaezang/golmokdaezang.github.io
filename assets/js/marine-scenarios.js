@@ -163,6 +163,11 @@
             try {
                 const desktop = window.parent.document.getElementById("desktop");
                 if (!desktop) return;
+                const parentStyle = window.parent.getComputedStyle(desktop);
+                for (const [source, destination] of [["--ui-font", "--ms-font"], ["--ui-font-size", "--ms-font-size"], ["--ui-font-weight", "--ms-font-weight"]]) {
+                    const value = parentStyle.getPropertyValue(source).trim();
+                    if (value) document.documentElement.style.setProperty(destination, value);
+                }
                 const mode = desktop.dataset.uiMode || "light";
                 document.documentElement.dataset.scenarioMode = mode;
                 const bar = desktop.querySelector(".mw-titlebar");
@@ -796,7 +801,9 @@
             border: "1px solid var(--ms-border, #d3d3d3)",
             borderRadius: "12px",
             padding: "24px",
-            fontFamily: '"Malgun Gothic", sans-serif'
+            fontFamily: 'var(--ms-font, "Noto Sans KR", sans-serif)',
+            fontSize: "var(--ms-font-size, 14px)",
+            fontWeight: "var(--ms-font-weight, 400)"
         });
 
         dialog.appendChild(
