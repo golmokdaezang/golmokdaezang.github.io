@@ -8,7 +8,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&amp;family=Gowun+Batang:wght@400;700&amp;display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/static/woff2/SUIT.css">
-  <style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/MaruBuri/MaruBuri.css">
+<style>
     :root { color-scheme: dark; --gold:#c8a76b; --muted:#aa9b85; --ink:#e6d6b9; --edge:#665034; --bg-deep:#0d0b0a; --bg-mid:#17120f; --bg-glow:#302418; }
     body[data-book="blue"] { --bg-deep:#0a121d; --bg-mid:#101f30; --bg-glow:#263c51; }
     body[data-book="green"] { --bg-deep:#0c1611; --bg-mid:#14251d; --bg-glow:#2c4031; }
@@ -138,10 +139,46 @@
     .reader-panel select,.reader-panel button {font:inherit;color:inherit;background:#303e4d;border:1px solid #ffffff35;border-radius:6px;padding:8px;}
     .reader-panel input {width:100%;accent-color:var(--gold);}
     @media(max-width:600px){.reader-panel{left:0;right:auto;}.reader-actions{gap:8px;}}
+/* Archive atmosphere: neutral charcoal with a restrained book-specific tint. */
+body {background:radial-gradient(ellipse at 78% 3%,var(--bg-glow),transparent 72%),#171615;background:radial-gradient(ellipse at 78% 3%,color-mix(in srgb,var(--bg-glow) 28%,transparent),transparent 70%),linear-gradient(145deg,#25221d,#141719 70%,#161411);background-attachment:fixed;isolation:isolate;}
+.archive-atmosphere {position:fixed;inset:0;pointer-events:none;z-index:-1;overflow:hidden;}
+.archive-atmosphere::before {content:"";position:absolute;inset:0;background:radial-gradient(circle 340px at var(--mx,50%) var(--my,25%),#e9bd7620,transparent 75%);opacity:.85;}
+.archive-atmosphere::after {content:"";position:absolute;inset:0;background:repeating-radial-gradient(circle at 88% 32%,transparent 0 89px,#c8ad7510 90px 91px,transparent 92px 120px);mask-image:linear-gradient(100deg,transparent 35%,black);}
+.archive-dust {position:absolute;width:3px;height:3px;border-radius:50%;background:#e6be79;box-shadow:0 0 8px #d9a958;opacity:0;animation:archive-drift var(--duration) linear infinite;animation-delay:var(--delay);}
+@keyframes archive-drift {0%{transform:translate(0,30px);opacity:0}25%{opacity:.6}75%{opacity:.35}100%{transform:translate(35px,-100px);opacity:0}}
+.topbar {background:#17161555;}
+.overview-entry,.toc-button {transition:background .25s,transform .25s;}
+.overview-entry:hover {background:#d8bc7d12;transform:translateX(3px);}
+.article {box-sizing:border-box;max-width:100%;min-height:320px;padding:clamp(22px,4vw,54px);border:1px solid #c6b38c;border-radius:7px;background:radial-gradient(ellipse at 10% 0%,#fffaf0,transparent 65%),linear-gradient(120deg,#f1e8d6,#e9dcc2);color:#302a22;box-shadow:0 20px 55px #0005;color-scheme:light;}
+.article h2 {color:#302a22;}.article-date {color:#75644c;border-color:#cbbd9f;}.article-body {color:#362e25;line-height:1.95;}.article-body a {color:#75501e;}.article-body :not(pre)>code {background:#dfd0b3;color:#49351e;}.article-body blockquote {color:#63533d;border-color:#ad8952;}.article-body th,.article-body td {border-color:#bcae91;}.article-body pre {background:#292722;color:#f4ead7;}
+@media(prefers-reduced-motion:reduce){.archive-dust{animation:none;opacity:.25}.archive-atmosphere::before{display:none}.overview-entry,.toc-button{transition:none}.overview-entry:hover{transform:none}}
+
+
+/* Moving book-coloured atmosphere */
+body { background:var(--bg-deep); }
+.archive-atmosphere { background:linear-gradient(150deg,var(--bg-mid),var(--bg-deep)); }
+.archive-parallax { position:absolute; inset:-12%; transform:translate(var(--px,0px),var(--py,0px)); transition:transform .9s ease-out; }
+.archive-flow { position:absolute; inset:-18%; background:radial-gradient(ellipse at 25% 35%,color-mix(in srgb,var(--bg-glow) 72%,transparent),transparent 54%),radial-gradient(ellipse at 76% 60%,color-mix(in srgb,var(--bg-glow) 48%,transparent),transparent 55%),radial-gradient(ellipse at 65% 5%,#c8a76b18,transparent 45%); animation:archive-flow 18s ease-in-out infinite alternate; }
+@keyframes archive-flow {0%{transform:translate(-6%,-4%) rotate(-9deg) scale(1)}50%{transform:translate(7%,5%) rotate(8deg) scale(1.13)}100%{transform:translate(-3%,9%) rotate(-4deg) scale(1.06)}}
+.archive-atmosphere::before {z-index:1;}
+.archive-atmosphere::after {z-index:2;opacity:.65;}
+.archive-dust {z-index:3;}
+.intro .symbol::before,.intro .symbol::after {content:none;display:none;}
+.intro .symbol {animation:archive-symbol 5s ease-in-out infinite;}
+@keyframes archive-symbol {0%,100%{opacity:.8}50%{opacity:1;text-shadow:0 0 12px #c8a76b66}}
+@media(prefers-reduced-motion:reduce){.archive-flow,.intro .symbol{animation:none}.archive-parallax{transform:none;transition:none}}
+
+
+.archive-atmosphere::before,.archive-atmosphere::after,body::before{display:none!important}
+#archiveBackground,#archiveInk{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+#archiveInk{z-index:40} .intro h1{color:#fff1d4!important;text-shadow:0 2px 12px #000,0 1px 3px #000;font-weight:700}
+.intro p{color:#ded5c6;text-shadow:0 1px 5px #000}.toc-button{color:#eee2cb}.overview-entry{color:#f1e5ce;background:#0b0b0c55}.toc-button{background:#0b0b0c55}.reader-panel{max-height:70vh;overflow:auto;background:#24211e}.reader-panel .reader-check{display:flex;align-items:center;gap:8px}.reader-panel .reader-check input{width:auto}.topbar{position:relative;z-index:30}.intro .symbol{animation:none}
+@media(pointer:fine){body.pen-cursor,body.pen-cursor a,body.pen-cursor button,body.pen-cursor summary{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'%3E%3Cpath d='M1 17L3 10L10 3L15 8L8 15Z' fill='%23e4e5e7' stroke='%235c6269' stroke-width='.6'/%3E%3Cpath d='M1 17L8 10' stroke='%23484c53'/%3E%3Ccircle cx='8' cy='10' r='.9' fill='%23484c53'/%3E%3Cpath d='M10 3L13 0L18 5L15 8Z' fill='%23272b32' stroke='%23b7c0ca' stroke-width='.6'/%3E%3C/svg%3E") 1 17,auto}}
 </style>
 </head>
 <body data-book="{{ page.book_key | escape }}">
-  <header class="topbar"><span class="brand"><svg class="compass" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="11.5" stroke="currentColor" stroke-width="1.25"/><path d="M16 2v5M16 25v5M2 16h5M25 16h5" stroke="currentColor" stroke-width="1.2"/><path d="m20.5 11.5-3 6-6 3 3-6 6-3Z" stroke="currentColor" stroke-width="1.3"/><circle cx="16" cy="16" r="1.4" fill="currentColor"/></svg><span>CAPTAIN'S ARCHIVE</span></span><div class="reader-actions"><details class="reader-settings" id="readerSettings"><summary class="return">Aa 읽기 설정</summary><div class="reader-panel"><label>글꼴<select id="readerFont"><option value="pretendard">Pretendard</option><option value="suit">SUIT</option><option value="noto">Noto Sans KR</option><option value="myeongjo">나눔명조</option><option value="gowun">고운바탕</option><option value="malgun">맑은 고딕</option></select></label><label>글자 크기 <output id="readerSizeLabel">16px</output><input id="readerSize" type="range" min="12" max="24" step="1" value="16"></label><button type="button" id="readerReset">기본 설정 복원</button></div></details><a class="return" href="{{ '/bookshelf/' | relative_url }}">← 책장으로 돌아가기</a></div></header>
+  <div class="archive-atmosphere" aria-hidden="true"><canvas id="archiveBackground"></canvas></div><canvas id="archiveInk" aria-hidden="true"></canvas>
+  <header class="topbar"><span class="brand"><svg class="compass" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="11.5" stroke="currentColor" stroke-width="1.25"/><path d="M16 2v5M16 25v5M2 16h5M25 16h5" stroke="currentColor" stroke-width="1.2"/><path d="m20.5 11.5-3 6-6 3 3-6 6-3Z" stroke="currentColor" stroke-width="1.3"/><circle cx="16" cy="16" r="1.4" fill="currentColor"/></svg><span>CAPTAIN'S ARCHIVE</span></span><div class="reader-actions"><details class="reader-settings" id="readerSettings"><summary class="return">Aa 읽기 설정</summary><div class="reader-panel"><label>글꼴<select id="readerFont"><option value="pretendard">Pretendard</option><option value="suit">SUIT</option><option value="noto">Noto Sans KR</option><option value="myeongjo">나눔명조</option><option value="gowun">고운바탕</option><option value="maru">마루부리</option><option value="malgun">맑은 고딕</option></select></label><label>글자 크기 <output id="readerSizeLabel">16px</output><input id="readerSize" type="range" min="12" max="24" step="1" value="16"></label><label>배경 테마<select id="readerMode"><option value="wave">잔잔한 밤바다</option><option value="fog">흐르는 안개</option><option value="star">별이 빛나는 밤</option><option value="map">황금빛 해도</option><option value="deep">심해</option><option value="light">빛의 장막</option><option value="static">정적인 배경</option></select></label><label>배경 움직임 <output id="speedLabel"></output><input id="readerSpeed" type="range" min="0" max="100" value="10"></label><label class="reader-check"><input id="readerPen" type="checkbox" checked> 만년필 커서</label><label class="reader-check"><input id="readerInk" type="checkbox" checked> 잉크 흔적</label><label class="reader-check"><input id="readerStars" type="checkbox" checked> 별빛 효과</label><button type="button" id="readerReset">기본 설정 복원</button></div></details><a class="return" href="{{ '/bookshelf/' | relative_url }}">← 책장으로 돌아가기</a></div></header>
   <main class="shell">
     {% if page.book_key %}
       {% assign book = site.data.books | where: 'slug', page.book_key | first %}
@@ -258,8 +295,8 @@
       document.querySelector('.intro p').textContent = book.description || '';
       document.title = book.name + ' | 선장의 기록실';
       if (book.symbol) document.querySelector('.intro .symbol').textContent = book.symbol;
-      if (/^#[0-9a-f]{6}$/i.test(book.color)) document.body.style.setProperty('--bg-glow', book.color);
-      if (/^#[0-9a-f]{6}$/i.test(book.text_color)) document.querySelector('.intro h1').style.color = book.text_color;
+      if (/^#[0-9a-f]{6}$/i.test(book.color)) { document.body.style.setProperty('--bg-glow', book.color); document.body.style.setProperty('--bg-mid', `color-mix(in srgb, ${book.color} 30%, #141414)`); document.body.style.setProperty('--bg-deep', `color-mix(in srgb, ${book.color} 12%, #101010)`); }
+      // Reading contrast uses a fixed warm ivory title.
     }
     let admin = false;
     const auth = await client.auth.getUser();
@@ -350,17 +387,24 @@
   </script>
 <script src="/assets/js/marine-common.js"></script>
 <script>
-(() => {
- const fonts = {pretendard:"Pretendard, 'Noto Sans KR', sans-serif",suit:"SUIT, 'Noto Sans KR', sans-serif",noto:"'Noto Sans KR', sans-serif",myeongjo:"'Nanum Myeongjo', serif",gowun:"'Gowun Batang', serif",malgun:"'Malgun Gothic', sans-serif"};
- const key='captain-archive-reading-v1';
- const font=document.getElementById('readerFont'), size=document.getElementById('readerSize'), label=document.getElementById('readerSizeLabel');
- let saved={}; try {saved=JSON.parse(localStorage.getItem(key)||'{}')||{};} catch(e){}
- font.value=Object.prototype.hasOwnProperty.call(fonts,saved.font)?saved.font:'pretendard';
- size.value=Number.isFinite(Number(saved.size))?Math.max(12,Math.min(24,Number(saved.size))):16;
- function apply(){document.documentElement.style.setProperty('--reader-font',fonts[font.value]);document.documentElement.style.setProperty('--reader-size',size.value+'px');label.textContent=size.value+'px';try{localStorage.setItem(key,JSON.stringify({font:font.value,size:Number(size.value)}));}catch(e){}}
- font.addEventListener('change',apply);size.addEventListener('input',apply);
- document.getElementById('readerReset').addEventListener('click',()=>{font.value='pretendard';size.value=16;apply();});
- document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('readerSettings').open=false;});apply();
+(()=>{
+const $=id=>document.getElementById(id), ids=['readerFont','readerSize','readerMode','readerSpeed','readerPen','readerInk','readerStars'], reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const defaults=['gowun','16',reduced?'static':'wave','10',true,!reduced,!reduced], fonts={gowun:"'Gowun Batang',serif",maru:"MaruBuri,'Gowun Batang',serif",pretendard:'Pretendard,sans-serif',suit:'SUIT,sans-serif',noto:"'Noto Sans KR',sans-serif",myeongjo:"'Nanum Myeongjo',serif",malgun:"'Malgun Gothic',sans-serif"};
+const key='captain-archive-reading-v2';let saved={};try{saved=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){};
+function load(values){ids.forEach((id,i)=>{let el=$(id),v=values[id]??defaults[i];if(el.type==='checkbox')el.checked=!!v;else{el.value=v;if(!el.value)el.value=defaults[i]}})}
+function apply(){document.documentElement.style.setProperty('--reader-font',fonts[$('readerFont').value]||fonts.gowun);document.documentElement.style.setProperty('--reader-size',$('readerSize').value+'px');$('readerSizeLabel').textContent=$('readerSize').value+'px';$('speedLabel').textContent=$('readerSpeed').value+'%';document.body.classList.toggle('pen-cursor',$('readerPen').checked);try{localStorage.setItem(key,JSON.stringify(Object.fromEntries(ids.map(id=>[id,$(id).type==='checkbox'?$(id).checked:$(id).value]))))}catch(e){}}
+load(saved||{});apply();ids.forEach(id=>$(id).addEventListener('input',apply));$('readerReset').onclick=()=>{load({});apply()};document.addEventListener('keydown',e=>{if(e.key==='Escape')$('readerSettings').open=false});
+const bg=$('archiveBackground'),ink=$('archiveInk'),ctx=bg.getContext('2d'),ic=ink.getContext('2d');if(!ctx||!ic)return;let t=0,last=0,pts=[],prev=null;const stars=Array.from({length:65},()=>({x:Math.random(),y:Math.random(),p:Math.random()*6.28,s:.16+Math.random()*.5,r:.35+Math.random()*.9}));
+function fit(c,k,w,h){let d=Math.min(devicePixelRatio||1,2);if(c.width!==Math.round(w*d)||c.height!==Math.round(h*d)){c.width=Math.round(w*d);c.height=Math.round(h*d)}k.setTransform(d,0,0,d,0,0)}
+window.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse'||!$('readerInk').checked)return;let x=e.clientX,y=e.clientY,n=performance.now();if(prev&&n-prev.t<70){let count=Math.min(30,Math.ceil(Math.hypot(x-prev.x,y-prev.y)/3));for(let i=1;i<=count;i++)pts.push({x:prev.x+(x-prev.x)*i/count,y:prev.y+(y-prev.y)*i/count,t:n,r:.5+Math.random()*.8})}else pts.push({x,y,t:n,r:1});prev={x,y,t:n};pts=pts.slice(-400)},{passive:true});
+function frame(now){let w=innerWidth,h=innerHeight;fit(bg,ctx,w,h);fit(ink,ic,w,h);let dt=Math.min((now-last)/1000,.05);last=now;let mode=$('readerMode').value,speed=+$('readerSpeed').value/100;if(mode!=='static')t+=dt*speed;let st=getComputedStyle(document.body),color=st.getPropertyValue('--bg-glow').trim();if(!/^#[0-9a-f]{6}$/i.test(color))color='#816b4e';let c=a=>color+Math.round(a*255).toString(16).padStart(2,'0');ctx.clearRect(0,0,w,h);
+function glow(x,y,r,a){let g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,c(a));g.addColorStop(1,c(0));ctx.fillStyle=g;ctx.fillRect(0,0,w,h)}glow(w*.7,h*.1,w*.75,.35);
+if(mode==='wave'||mode==='light'){for(let j=0;j<6;j++){ctx.beginPath();for(let x=-5;x<=w+5;x+=5){let y=h*(.40+j*.1)+Math.sin(x/w*6+t*.2+j*.7)*h*.065+Math.sin(x/w*11-t*.13)*9;x===-5?ctx.moveTo(x,y):ctx.lineTo(x,y)}if(mode==='wave'){ctx.lineTo(w+5,h);ctx.lineTo(-5,h);ctx.closePath();ctx.fillStyle=c(.15);ctx.fill();ctx.strokeStyle=c(.45);ctx.lineWidth=.8}else{ctx.strokeStyle=c(.18);ctx.lineWidth=20+j*4}ctx.stroke()}}
+if(mode==='fog')for(let j=0;j<6;j++)glow(w*(.5+.6*Math.sin(t*.12+j*1.8)),h*(.5+.3*Math.cos(t*.16+j)),w*.5,.23);
+if(mode==='map'){ctx.save();ctx.translate(w*.8,h*.55);ctx.rotate(t*.022);ctx.strokeStyle='#c8a76b30';ctx.lineWidth=1;for(let j=1;j<=5;j++){ctx.beginPath();ctx.arc(0,0,j*45,0,Math.PI*2);ctx.stroke()}for(let j=0;j<16;j++){ctx.rotate(Math.PI/8);ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(225,0);ctx.stroke()}ctx.restore()}
+if(mode==='deep')for(let j=0;j<5;j++){let x=w*(j/5+.08*Math.sin(t*.1+j)),g=ctx.createLinearGradient(0,0,0,h);g.addColorStop(0,c(.35));g.addColorStop(1,c(0));ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(x-8,0);ctx.lineTo(x+12,0);ctx.lineTo(x+w*.29,h);ctx.lineTo(x-w*.1,h);ctx.fill()}
+if($('readerStars').checked&&mode!=='static')for(let s of stars){ctx.fillStyle='rgba(233,210,167,'+Math.pow(Math.max(0,Math.sin(t*s.s*8+s.p)),2)*.55+')';ctx.beginPath();ctx.arc(s.x*w,s.y*h,s.r,0,Math.PI*2);ctx.fill()}
+ic.clearRect(0,0,w,h);pts=$('readerInk').checked?pts.filter(p=>now-p.t<650):[];for(let p of pts){let a=1-(now-p.t)/650;ic.beginPath();ic.fillStyle='rgba(185,166,132,'+a*.65+')';ic.ellipse(p.x,p.y,p.r,p.r*.7,0,0,Math.PI*2);ic.fill()}requestAnimationFrame(frame)}requestAnimationFrame(frame);
 })();
 </script>
 </body>
