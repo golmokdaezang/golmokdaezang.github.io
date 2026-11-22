@@ -1,109 +1,33 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>선장의 중앙 기록실</title><style>
-* { box-sizing: border-box; }
-body { margin: 0; background: #181611; color: #e1cda4; font: 16px/1.6 Georgia, "Malgun Gothic", serif; }
-main { max-width: 1200px; margin: auto; padding: 30px 20px; }
-a { color: #d5b77c; }
-header, .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-header a:first-child { margin-right: auto; }
-section, article { border: 1px solid #67543b; background: #241e17; padding: 20px; border-radius: 8px; margin: 16px 0; }
-label { display: block; margin: 12px 0 4px; }
-input, select, textarea, button { font: inherit; color: inherit; background: #31271d; border: 1px solid #786044; border-radius: 5px; padding: 9px; }
-input, select, textarea { width: 100%; }
-input[type=checkbox] { width: auto; }
-textarea { min-height: 360px; resize: vertical; }
-button { cursor: pointer; }
-button:disabled { opacity: .5; cursor: wait; }
-button:hover { background: #51402b; }
-[hidden] { display: none !important; }
-.columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.preview { overflow-wrap: anywhere; min-width: 0; background: #181611; padding: 15px; border: 1px solid #67543b; }
-img { max-width: 100%; }
-pre { overflow: auto; background: #15110d; padding: 12px; }
-td, th { border: 1px solid #67543b; padding: 6px; }
-table { border-collapse: collapse; }
-@media(max-width: 700px) { .columns { grid-template-columns: 1fr; } }
-
-.container { display: grid; grid-template-columns: 230px minmax(0,1fr); gap: 40px; margin: 30px auto; }
-aside { border-right: 1px solid #67543b; padding-right: 20px; align-self: start; position: sticky; top: 20px; }
-aside button { display: flex; gap: 10px; align-items: center; width: 100%; margin: 8px 0; background: transparent; text-align: left; }
-aside button.active { background: #51402b; }
-.symbol { display: inline-grid; place-items: center; width: 30px; height: 36px; border: 1px solid #a48958; border-radius: 3px; overflow: hidden; }
-.menus { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0; background: transparent; border: 0; }
-.menus a, .menus button { text-decoration: none; text-align: center; padding: 24px 10px; border: 1px solid #75603e; background: #30251a; border-radius: 6px; color: inherit; }
-.menus h2 { font-size: 20px; font-weight: normal; }
-.preview { margin-top: 15px; }
-@media(max-width:700px) { .container { grid-template-columns: 1fr; gap: 15px; } aside { position: static; border-right: 0; } }
-</style></head>
-<body><main>
-<header><span>⚓ CAPTAIN'S ARCHIVE</span><a id="login" href="/login/">로그인</a><button id="logout" hidden>로그아웃</button></header>
-<div class="container"><aside><h3>기록 보관소</h3><button id="allBooks">전체 기록</button><div id="bookList"></div><a href="/bookshelf/">← 책장으로 돌아가기</a></aside>
-<div><h1>선장의 중앙 기록실</h1><p>여섯 권의 책에 담긴 항해 기록</p>
-<section id="adminMenus" class="menus" hidden>
-<a href="/blog/write/">✒<h2>새 기록 작성</h2>게시글 작성 및 공개</a>
-<a href="/blog/admin/">▤<h2>기존 기록 관리</h2>게시글 수정 및 삭제</a>
-<a href="/blog/design/">❖<h2>책 디자인 관리</h2>책 이름, 색상, 장식 수정</a>
-<button id="orderMenu">☷<h2>목차 관리</h2>게시글 순서 변경</button>
-</section><h2 id="recordTitle">전체 항해 기록</h2><div id="postList">기록을 불러오는 중...</div></div></div>
-</main>
-<script src="/assets/js/supabase-config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.3.1/dist/purify.min.js"></script>
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MARINE OS | 중앙 기록국</title>
+<style>
+*{box-sizing:border-box} [hidden]{display:none!important} :root{--accent:#bb4035;--wall:#263747;--bar:#192531} body{margin:0;font:14px/1.6 'Malgun Gothic','Noto Sans KR',sans-serif;color:#e5ebf0;background:#10171f} button,input,select,textarea{font:inherit} button,a{cursor:pointer} button{border:1px solid #687787;background:#edf0f3;color:#243343;padding:7px 12px;border-radius:2px} button:hover{filter:brightness(.91)} button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px} a{color:inherit} #gate{min-height:100dvh;display:grid;place-items:center;padding:24px} .gatebox{width:min(680px,100%);border:1px solid #394a5a;background:#0b1118;padding:32px} .brand{font-size:30px;letter-spacing:5px;font-weight:700;line-height:1.4} .muted{color:#99aaba;font-size:12px} .gatebox input{width:100%;padding:12px;background:#161f29;color:white;border:1px solid #526275;margin:8px 0 12px} .gatebox button{background:#26394a;color:#fff} #logs{font:13px/1.8 D2Coding,Consolas,'Malgun Gothic',monospace;margin-top:22px} .log{display:flex;justify-content:space-between;gap:10px}.done{color:#98d0ab;white-space:nowrap} #identity{display:flex;align-items:center;gap:18px;border:1px solid var(--accent);padding:12px;margin-top:16px} #avatar{width:80px;height:100px;object-fit:cover} #status{min-height:24px;color:#e6b4a9} #desktop{height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:var(--wall)} header,footer{display:flex;align-items:center;gap:12px;background:var(--bar);padding:9px 14px;border-bottom:2px solid var(--accent);z-index:10000} header strong{letter-spacing:2px} .spacer{flex:1} #work{position:relative;flex:1;min-height:0;background-position:center;background-size:cover;overflow:hidden} #icons{display:grid;grid-template-columns:108px;gap:8px;padding:16px;width:max-content;position:relative;z-index:2} .app{display:grid;justify-items:center;gap:4px;background:transparent;border:1px solid transparent;color:white;padding:9px;text-shadow:0 1px 4px #000} .app:hover{border-color:#a4b4c5;background:#ffffff20} .app svg{width:32px;height:32px;stroke:#e1e5e9;fill:none;stroke-width:1.5} .watermark{position:absolute;inset:0;display:grid;place-content:center;text-align:center;pointer-events:none;color:#ffffff28;font-size:clamp(30px,7vw,90px);font-weight:bold;letter-spacing:7px}.watermark small{font-size:14px;letter-spacing:3px} #portrait{position:absolute;right:20px;top:20px;width:160px;text-align:center;background:#17222cdd;padding:12px;border-top:3px solid var(--accent)} #commanderPhoto{width:85px;height:108px;object-fit:cover;border:1px solid var(--accent)} #portrait p{font-size:12px;margin:8px 0} #portrait hr{border:0;border-top:1px solid #697887} footer{border:0;border-top:2px solid var(--accent);min-height:44px;flex-wrap:wrap} #tasks{display:flex;gap:5px;flex:1;overflow:auto} footer button{background:#304252;color:white;border-color:#637687;white-space:nowrap} .win{position:absolute;display:flex;flex-direction:column;background:#f0f2f5;color:#263443;border:1px solid var(--accent);box-shadow:0 12px 38px #0007;min-width:260px;min-height:150px;resize:both;overflow:hidden;max-width:100%;max-height:100%} .titlebar{display:flex;align-items:center;background:#222f3d;color:white;gap:8px;padding:5px 8px;border-bottom:2px solid var(--accent);touch-action:none;cursor:move;user-select:none}.titlebar button{background:transparent;color:white;padding:0;width:29px;height:27px;border:1px solid #526273}.body{flex:1;min-height:0;overflow:auto;padding:18px}.body iframe{width:100%;height:100%;border:0;background:white}.body.frame{padding:0}.body label{display:block;margin:13px 0 4px}.body input:not([type=checkbox]),.body select{max-width:100%;padding:7px;border:1px solid #92a0ae;background:white}.body h2{margin:0 0 12px;font-size:19px}.body article{border:1px solid #bec8d1;padding:12px;margin:10px 0;background:white}.body pre{white-space:pre-wrap;overflow-wrap:anywhere}.body img{max-width:100%}.record-content{overflow-wrap:anywhere}.body table{border-collapse:collapse}.body td,.body th{border:1px solid #aab5bd;padding:5px} @media(max-width:600px){#icons{grid-template-columns:86px;padding:8px;gap:2px} #portrait{width:130px;right:8px;top:8px}.gatebox{padding:18px}.win{min-width:0}.watermark{font-size:30px}header{gap:5px;font-size:12px}}
+</style></head><body>
+<section id="gate"><div class="gatebox"><div class="brand">MARINE OS</div><div>해군 본부 통합 행정 전산망</div><div class="muted">버전 1.0.0 · 관계자 전용 업무 시스템</div><hr style="border:0;border-top:1px solid #344658;margin:24px 0"><form id="access"><label for="code">해군 인사 식별 코드</label><input id="code" autocomplete="off" spellcheck="false" required placeholder="개인 식별 코드 입력"><button type="submit" id="connect">전산망 접속</button> <a href="/login/">관리자 로그인</a> · <a href="/bookshelf/">서가로 돌아가기</a></form><div id="status" role="status"></div><div id="logs" aria-live="polite"></div><div id="identity" hidden><img id="avatar" src="/assets/images/default-avatar.png" alt="인사 사진"><div><strong id="person"></strong><div>M-CAR-24-1004</div><div>소속 : 해군 본부 중앙 기록국</div><div id="division"></div><div>직책 : 기록관리관</div><div class="done">상태 : 인증 완료</div></div></div></div></section>
+<section id="desktop" hidden><header><strong>MARINE OS</strong><span class="muted">중앙 기록국</span><span class="spacer"></span><span id="divisionTop"></span></header><div id="work"><div class="watermark">MARINE<small>해군 본부 중앙 기록국</small></div><nav id="icons" aria-label="업무 프로그램"></nav><aside id="portrait"><img id="commanderPhoto" alt="소속 대장 초상화" hidden><div id="portraitName"></div><hr><p>오늘의 훈시</p><p>모든 기록은 정의의 증거다.</p></aside></div><footer><button id="home">바탕화면</button><div id="tasks"></div><span id="clock"></span><button id="exit">업무 종료</button></footer></section>
+<script src="/assets/js/supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script><script src="https://cdn.jsdelivr.net/npm/dompurify@3.3.1/dist/purify.min.js"></script>
 <script>
-const $ = id => document.getElementById(id);
-const ADMIN_UID = '6e6288e5-3612-4d2f-8d8b-fb08007d86a9';
-const client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_PUBLISHABLE_KEY);
-let books = [], posts = [], selected = null, isAdmin = false;
-function el(tag, text) { const n = document.createElement(tag); n.textContent = text; return n; }
-function check(r) { if (r.error) throw r.error; return r.data; }
-function render() {
-    $('bookList').replaceChildren();
-    $('allBooks').classList.toggle('active', !selected);
-    for (const b of books) {
-        const btn = el('button', '');
-        const symbol = el('span', b.symbol);
-        symbol.className = 'symbol'; symbol.style.backgroundColor = b.color; symbol.style.color = b.text_color;
-        btn.append(symbol, el('span', b.name)); btn.classList.toggle('active', selected === b.slug);
-        btn.onclick = () => { selected = b.slug; render(); }; $('bookList').append(btn);
-    }
-    $('recordTitle').textContent = selected ? (books.find(b => b.slug === selected)?.name || selected) + ' · 항해 기록' : '전체 항해 기록';
-    const root = $('postList'); root.replaceChildren();
-    const rows = posts.filter(p => !selected || p.book_key === selected);
-    if (selected) rows.sort((a, b) => (a.sort_order || Infinity) - (b.sort_order || Infinity) || a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id));
-    if (!rows.length) root.textContent = '아직 등록된 기록이 없습니다.';
-    for (const p of rows) {
-        const card = el('article', '');
-        const meta = el('small', (books.find(b => b.slug === p.book_key)?.name || p.book_key) + ' · ' + (p.is_public ? '🔓 공개' : '🔒 봉인'));
-        const read = el('button', '기록 열기'); const body = el('div', ''); body.hidden = true; body.className = 'preview';
-        read.onclick = async () => {
-            if (!body.hidden) { body.hidden = true; body.replaceChildren(); return; }
-            body.hidden = false;
-            if (!p.is_public && !isAdmin) { body.textContent = '🔒 봉인된 기록입니다.'; return; }
-            body.textContent = '불러오는 중...';
-            try {
-                const row = check(await client.from('post_contents').select('content').eq('post_id', p.id).maybeSingle());
-                if (!row) { body.textContent = '열람할 수 없는 기록입니다.'; return; }
-                if (body.hidden) return;
-                if (window.marked && window.DOMPurify) body.innerHTML = DOMPurify.sanitize(marked.parse(row.content), {USE_PROFILES: {html: true}});
-                else body.textContent = row.content;
-            } catch (e) { body.textContent = '기록을 불러오지 못했습니다.'; }
-        };
-        card.append(meta, el('h3', p.title), el('p', new Date(p.created_at).toLocaleDateString('ko-KR')), read, body); root.append(card);
-    }
-}
-$('allBooks').onclick = () => { selected = null; render(); };
-$('orderMenu').onclick = () => location.href = '/blog/order/';
-$('logout').onclick = async () => { try { check(await client.auth.signOut()); location.reload(); } catch(e) { alert(e.message); } };
-async function init() {
-    const {data} = await client.auth.getUser(); isAdmin = data.user?.id === ADMIN_UID;
-    $('adminMenus').hidden = !isAdmin; $('login').hidden = !!data.user; $('logout').hidden = !data.user;
-    books = check(await client.from('books').select('*').order('sort_order'));
-    posts = check(await client.from('posts').select('id,title,book_key,is_public,created_at,sort_order').order('created_at',{ascending:false}).order('id'));
-    render();
-    client.auth.onAuthStateChange((event, session) => { if (isAdmin && session?.user.id !== ADMIN_UID) location.reload(); });
-}
-init().catch(e => $('postList').textContent = '기록실 연결 오류: ' + e.message);
-</script>
-</body></html>
+'use strict';
+const $=id=>document.getElementById(id), ADMIN_UID='6e6288e5-3612-4d2f-8d8b-fb08007d86a9', CODE='M-CAR-24-1004';
+const themes={akainu:['아카이누','#bb4035','#30343c'],kizaru:['키자루','#c8a33a','#383831'],aokiji:['아오키지','#5298ce','#263b50']};
+const defaults={leader:'akainu',wall:'',photos:{},portraitSize:85};let prefs={...defaults,photos:{}},client,db,authorized=false,z=10;const windows=new Map();
+function el(tag,text,cls){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n}function check(r){if(r.error)throw r.error;return r.data}const delay=ms=>new Promise(r=>setTimeout(r,ms));
+function loadPrefs(){try{const p=JSON.parse(localStorage.getItem('marine-os-v1')||'{}');prefs={...defaults,...p,photos:{...p.photos}};if(!themes[prefs.leader])prefs.leader='akainu'}catch{prefs={...defaults,photos:{}}}}
+function savePrefs(){localStorage.setItem('marine-os-v1',JSON.stringify(prefs));applyTheme()}
+function applyTheme(){const [name,color,wall]=themes[prefs.leader];document.documentElement.style.setProperty('--accent',color);document.documentElement.style.setProperty('--wall',wall);for(const id of ['divisionTop','portraitName','division'])$(id).textContent=name+' 대장 소속';$('work').style.backgroundImage=prefs.wall?`url(${JSON.stringify(prefs.wall)})`:'';const img=$('commanderPhoto');const src=prefs.photos[prefs.leader];img.hidden=!src; if(src)img.src=src;else img.removeAttribute('src');img.style.width=Math.max(55,Math.min(120,Number(prefs.portraitSize)||85))+'px';img.style.height='auto';img.style.aspectRatio='3/4'}
+loadPrefs();applyTheme();
+try{client=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_PUBLISHABLE_KEY)}catch(e){$('status').textContent='전산망 라이브러리를 불러오지 못했습니다. 새로고침해 주세요.';$('connect').disabled=true}
+async function authenticate(){const r=await client.auth.getUser();if(r.error||r.data.user?.id!==ADMIN_UID)throw new Error('기존 관리자 계정으로 먼저 로그인해 주세요.');return r.data.user}
+$('access').addEventListener('submit',async e=>{e.preventDefault();if(!client)return;if($('code').value.trim().toUpperCase()!==CODE){$('status').textContent='등록되지 않은 식별 코드입니다.';return} $('connect').disabled=true;$('status').textContent='실제 관리자 권한 확인 중...';try{await authenticate();$('status').textContent='';$('access').hidden=true;$('logs').replaceChildren();for(const line of ['운영체제 초기화','마린포드 중앙 전산망 연결','개인 식별 코드 조회','관리자 접근 권한 검증','해군 인사 기록 불러오기','소속 지휘 계통 확인']){const row=el('div',undefined,'log');row.append(el('span',line+' ........'),el('span','처리 중','muted'));$('logs').append(row);await delay(260);row.lastChild.textContent='[ 완료 ]';row.lastChild.className='done'}const r=await client.from('profiles').select('nickname,avatar_url').limit(1).maybeSingle();const p=r.data;$('person').textContent=p?.nickname||'기록관리관';if(p?.avatar_url&&/^https?:\/\//i.test(p.avatar_url))$('avatar').src=p.avatar_url;$('avatar').onerror=()=>{$('avatar').onerror=null;$('avatar').src='/assets/images/default-avatar.png'};if(r.error)$('logs').append(el('div','인사 사진 조회 실패 — 기본 사진 사용','muted'));$('identity').hidden=false;await delay(1000);await authenticate();$('logs').append(el('div','[ 승인 ] 중앙 기록국 전산망 접속을 허가합니다.','done'));await delay(700);authorized=true;$('gate').hidden=true;$('desktop').hidden=false}catch(err){$('access').hidden=false;$('identity').hidden=true;$('status').textContent=err.message;$('logs').replaceChildren()}finally{$('connect').disabled=false}});
+if(client)client.auth.onAuthStateChange((event,session)=>{if(authorized&&session?.user?.id!==ADMIN_UID)location.reload()});
+const paths={write:'M5 3h10l4 4v14H5z M9 12h6 M9 16h6 M15 3v5h4',folder:'M3 6h7l2 3h9v11H3z',books:'M4 4h4v16H4z M10 4h4v16h-4z M16 5l4-1 3 15-4 1z',order:'M4 5h2 M4 12h2 M4 19h2 M9 5h12 M9 12h12 M9 19h12',terminal:'M3 4h18v16H3z M6 8l4 4-4 4 M13 16h5',settings:'M4 6h16 M4 12h16 M4 18h16 M8 4v4 M16 10v4 M10 16v4',read:'M3 5h8v15H3z M13 5h8v15h-8z'};
+const apps=[['write','보고서 작성','/blog/write/'],['folder','기록물 관리','/blog/admin/'],['books','분류 체계','/blog/design/'],['order','문서 편철','/blog/order/'],['read','기록 열람',null],['terminal','명령 프롬프트',null],['settings','환경 설정',null]];
+function icon(key){const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg'),p=document.createElementNS(ns,'path');svg.setAttribute('viewBox','0 0 24 24');p.setAttribute('d',paths[key]);svg.append(p);return svg}
+for(const a of apps){const b=el('button',undefined,'app');b.append(icon(a[0]),el('span',a[1]));b.onclick=()=>openApp(a);$('icons').append(b)}
+function focus(w){w.style.zIndex=++z}function openApp(a){if(!authorized)return;if(windows.has(a[0])){const w=windows.get(a[0]);w.hidden=false;focus(w);return}const work=$('work'),w=el('section',undefined,'win'),bar=el('div',undefined,'titlebar'),body=el('div',undefined,'body'),task=el('button',a[1]);w.style.width=Math.min(850,work.clientWidth)+'px';w.style.height=Math.min(620,work.clientHeight)+'px';w.style.left=Math.max(0,Math.min(120+windows.size*20,work.clientWidth-parseInt(w.style.width)))+'px';w.style.top=Math.max(0,Math.min(24+windows.size*15,work.clientHeight-parseInt(w.style.height)))+'px';bar.append(el('strong',a[1]),el('span',undefined,'spacer'));const bMin=el('button','−'),bMax=el('button','□'),bClose=el('button','×');for(const [b,label] of [[bMin,'최소화'],[bMax,'최대화 또는 복원'],[bClose,'닫기']])b.setAttribute('aria-label',label);bar.append(bMin,bMax,bClose);w.append(bar,body);work.append(w);$('tasks').append(task);windows.set(a[0],w);focus(w);w.addEventListener('pointerdown',()=>focus(w));task.onclick=()=>{w.hidden=!w.hidden;if(!w.hidden)focus(w)};bMin.onclick=()=>w.hidden=true;bClose.onclick=()=>{if(a[2]&&!confirm('저장하지 않은 작업이 있을 수 있습니다. 창을 닫을까요?'))return;w.remove();task.remove();windows.delete(a[0])};let restore=null;bMax.onclick=()=>{if(restore){Object.assign(w.style,restore);restore=null}else{restore={left:w.style.left,top:w.style.top,width:w.style.width,height:w.style.height};Object.assign(w.style,{left:'0px',top:'0px',width:work.clientWidth+'px',height:work.clientHeight+'px'})}};let drag;bar.onpointerdown=e=>{if(e.target.closest('button')||restore)return;drag={x:e.clientX,y:e.clientY,l:w.offsetLeft,t:w.offsetTop};bar.setPointerCapture(e.pointerId)};bar.onpointermove=e=>{if(!drag)return;w.style.left=Math.max(0,Math.min(work.clientWidth-w.offsetWidth,drag.l+e.clientX-drag.x))+'px';w.style.top=Math.max(0,Math.min(work.clientHeight-w.offsetHeight,drag.t+e.clientY-drag.y))+'px'};bar.onpointerup=bar.onpointercancel=()=>drag=null;if(a[2]){body.classList.add('frame');const f=el('iframe');f.src=a[2];f.title=a[1];body.append(f)}else if(a[0]==='settings')settings(body);else if(a[0]==='read')records(body);else terminal(body)}
+$('home').onclick=()=>{for(const w of windows.values())w.hidden=true};$('exit').onclick=async()=>{if(!confirm('업무를 종료하고 로그아웃할까요? 저장하지 않은 작업은 사라집니다.'))return;try{check(await client.auth.signOut());location.reload()}catch(e){alert(e.message)}};function tick(){$('clock').textContent=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}tick();setInterval(tick,15000);
+function field(root,label,node){const l=el('label',label);l.append(document.createElement('br'),node);root.append(l)}
+function settings(root){root.append(el('h2','시스템 개인 설정'));const sel=el('select');for(const [key,t] of Object.entries(themes)){const o=el('option',t[0]+' 대장 소속');o.value=key;sel.append(o)}sel.value=prefs.leader;field(root,'소속 지휘관',sel);sel.onchange=()=>{prefs.leader=sel.value;persist();};const msg=el('p','설정은 현재 브라우저에 저장됩니다.');function persist(){try{savePrefs();msg.textContent='개인 설정 저장 완료'}catch(e){applyTheme();msg.textContent='저장 공간 부족: 현재 화면에만 적용됩니다.'}}function upload(label,callback){const inp=el('input');inp.type='file';inp.accept='image/png,image/jpeg,image/webp';field(root,label,inp);inp.onchange=async()=>{const file=inp.files[0];if(!file)return;if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>12*1024*1024){msg.textContent='PNG, JPEG, WebP 이미지(12MB 이하)를 선택하세요.';return}try{const bitmap=await createImageBitmap(file),canvas=el('canvas'),scale=Math.min(1,1400/Math.max(bitmap.width,bitmap.height));canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();callback(canvas.toDataURL('image/webp',.82));persist()}catch(e){msg.textContent='이미지를 읽지 못했습니다.'}}}upload('바탕화면 이미지',v=>prefs.wall=v);upload('현재 소속 대장 초상화',v=>prefs.photos[prefs.leader]=v);const size=el('input');size.type='range';size.min=55;size.max=120;size.value=prefs.portraitSize;field(root,'초상화 너비',size);size.onchange=()=>{prefs.portraitSize=Number(size.value);persist()};const reset=el('button','기본 배경으로 복원');reset.onclick=()=>{prefs.wall='';persist()};const remove=el('button','초상화 제거');remove.onclick=()=>{delete prefs.photos[prefs.leader];persist()};root.append(reset,remove,msg)}
+function terminal(root){root.style.background='#0b1118';root.style.color='#d0d9e2';const out=el('pre','MARINE OS [버전 1.0.0]\n가상 업무 콘솔입니다. 도움말: help\n'),form=el('form'),inp=el('input');inp.placeholder='명령어 입력';form.append(inp);root.append(out,form);form.onsubmit=e=>{e.preventDefault();const cmd=inp.value.trim().toLowerCase();inp.value='';if(cmd==='clear'){out.textContent='';return}const result=({help:'help / tree / whoami / clear',tree:'C:\\MARINE\\중앙기록국\n├── 보고서\n│   ├── 열람허가\n│   └── 기밀문서\n├── 기록물보관소\n└── 시스템환경설정',whoami:CODE+' | '+themes[prefs.leader][0]+' 대장 소속'})[cmd]||'지원하지 않는 명령입니다.';out.textContent+='\n> '+cmd+'\n'+result+'\n'}}
+async function records(root){root.append(el('h2','기록물 열람'),el('p','기록 조회 중...'));try{const books=check(await client.from('books').select('slug,name').order('sort_order')),posts=check(await client.from('posts').select('id,title,book_key,is_public,created_at,sort_order').order('created_at',{ascending:false}));root.replaceChildren(el('h2','기록물 열람'));const sel=el('select');const all=el('option','전체 기록');all.value='';sel.append(all);for(const b of books){const o=el('option',b.name);o.value=b.slug;sel.append(o)}root.append(sel);const list=el('div');root.append(list);function render(){list.replaceChildren();let rows=posts.filter(p=>!sel.value||p.book_key===sel.value);if(sel.value)rows.sort((a,b)=>(a.sort_order||Infinity)-(b.sort_order||Infinity)||a.created_at.localeCompare(b.created_at));for(const p of rows){const card=el('article'),b=el('button','기록 열기'),content=el('div',undefined,'record-content');content.hidden=true;card.append(el('small',(books.find(x=>x.slug===p.book_key)?.name||p.book_key)+' · '+(p.is_public?'열람 허가':'기밀 문서')),el('h3',p.title),b,content);b.onclick=async()=>{content.hidden=!content.hidden;if(content.hidden)return;content.textContent='조회 중...';try{const r=check(await client.from('post_contents').select('content').eq('post_id',p.id).maybeSingle());if(!r){content.textContent='열람 불가';return}if(window.marked&&window.DOMPurify)content.innerHTML=DOMPurify.sanitize(marked.parse(r.content),{USE_PROFILES:{html:true}});else content.textContent=r.content}catch(e){content.textContent='조회 실패: '+e.message}};list.append(card)}if(!rows.length)list.textContent='등록된 기록이 없습니다.'}sel.onchange=render;render()}catch(e){root.lastChild.textContent='기록 조회 실패: '+e.message}}
+</script></body></html>
