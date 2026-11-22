@@ -1,0 +1,396 @@
+/* ========================================
+   MARINE OS - 해군 통신 시나리오 관리
+   ======================================== */
+
+#marine-scenario-window {
+    --ms-border: #dedede;
+    --ms-sidebar: #f2f4f7;
+    --ms-selected: #dee5ef;
+    --ms-text: #181818;
+    --ms-muted: #777777;
+
+    position: fixed;
+    top: 5vh;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: min(1100px, 94vw);
+    height: 90vh;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #ffffff;
+    color: var(--ms-text);
+
+    border: 1px solid #d4d4d4;
+    border-radius: 14px;
+
+    font-family: "Malgun Gothic", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+
+    box-shadow: 0 15px 60px rgba(0,0,0,.25);
+    overflow: hidden;
+    z-index: 10000;
+}
+
+#marine-scenario-window,
+#marine-scenario-window * {
+    box-sizing: border-box;
+}
+
+#marine-scenario-window[hidden] {
+    display: none !important;
+}
+
+/* 상단 타이틀바 */
+
+.ms-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    min-height: 48px;
+    padding: 10px 16px;
+
+    background: linear-gradient(
+        180deg,
+        #795351,
+        #562e2b 55%
+    );
+
+    color: #ffffff;
+    flex-shrink: 0;
+}
+
+.ms-window-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.ms-window-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+#marine-scenario-window .ms-window-controls button {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: 5px;
+    background: transparent;
+    color: white;
+    font-size: 19px;
+}
+
+#marine-scenario-window .ms-window-controls button:hover {
+    background: rgba(255,255,255,.18);
+}
+
+/* 전체 레이아웃 */
+
+.ms-layout {
+    display: grid;
+    grid-template-columns: 32% minmax(0, 1fr);
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* 왼쪽 시나리오 목록 */
+
+.ms-sidebar {
+    background: var(--ms-sidebar);
+    padding: 14px 12px;
+    overflow-y: auto;
+}
+
+#marine-scenario-window h2,
+#marine-scenario-window h3 {
+    color: var(--ms-text);
+    margin: 0 0 16px;
+}
+
+.ms-sidebar h2 {
+    font-size: 20px;
+}
+
+.ms-scenario-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#marine-scenario-window .ms-scenario-item {
+    display: block;
+    width: 100%;
+    padding: 12px;
+
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+
+#marine-scenario-window .ms-scenario-item:hover {
+    background: #e6eaf0;
+}
+
+#marine-scenario-window .ms-scenario-item.active {
+    background: var(--ms-selected);
+}
+
+#marine-scenario-window .ms-add-scenario {
+    width: 100%;
+    margin-top: 14px;
+    border-radius: 24px;
+    background: transparent;
+}
+
+/* 오른쪽 편집 영역 */
+
+.ms-editor {
+    min-width: 0;
+    padding: 20px;
+    background: #ffffff;
+    overflow-y: auto;
+}
+
+.ms-editor-heading {
+    font-size: 23px;
+    font-weight: 700;
+}
+
+#marine-scenario-window label {
+    display: block;
+    margin: 16px 0 8px;
+    color: var(--ms-muted);
+    font-size: 15px;
+}
+
+/* 입력창 공통 디자인 */
+
+#marine-scenario-window input,
+#marine-scenario-window select,
+#marine-scenario-window textarea,
+#marine-scenario-window button {
+    font: inherit;
+    color: var(--ms-text);
+    background: #ffffff;
+    border: 1px solid #d3d3d3;
+    box-shadow: none;
+}
+
+#marine-scenario-window input,
+#marine-scenario-window select {
+    width: 100%;
+    padding: 13px 18px;
+    border-radius: 30px;
+}
+
+#marine-scenario-window textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    resize: vertical;
+}
+
+#marine-scenario-window button {
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+#marine-scenario-window button:hover {
+    background: #f1f3f5;
+}
+
+#marine-scenario-window button:disabled {
+    opacity: .5;
+    cursor: wait;
+}
+
+#marine-scenario-window input:focus,
+#marine-scenario-window select:focus,
+#marine-scenario-window textarea:focus {
+    outline: 2px solid #c2cfdf;
+    outline-offset: 1px;
+}
+
+/* 자동 실행 체크박스 */
+
+#marine-scenario-window .ms-enabled {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 18px 0;
+    color: var(--ms-text);
+}
+
+#marine-scenario-window input[type="checkbox"] {
+    width: 23px;
+    height: 23px;
+    margin: 0;
+    accent-color: #181818;
+    cursor: pointer;
+}
+
+/* 대화 순서 */
+
+.ms-dialogue-section {
+    border-top: 1px solid var(--ms-border);
+    margin-top: 26px;
+    padding-top: 24px;
+}
+
+.ms-dialogue-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.ms-dialogue-card {
+    border: 1px solid var(--ms-border);
+    border-radius: 10px;
+    background: #ffffff;
+    padding: 12px;
+}
+
+.ms-dialogue-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    color: var(--ms-muted);
+}
+
+.ms-dialogue-card select {
+    margin-bottom: 10px;
+}
+
+#marine-scenario-window .ms-icon-button {
+    border: none;
+    background: transparent;
+    padding: 4px 6px;
+    color: #777777;
+}
+
+#marine-scenario-window .ms-icon-button:hover {
+    background: #eeeeee;
+    color: #181818;
+}
+
+/* 메시지 발송 시간 */
+
+.ms-delay-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+    color: var(--ms-muted);
+}
+
+#marine-scenario-window .ms-delay-input {
+    width: 80px;
+    padding: 9px;
+    text-align: center;
+}
+
+/* 하단 버튼 */
+
+.ms-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    padding: 14px 18px;
+    border-top: 1px solid var(--ms-border);
+    background: #ffffff;
+}
+
+#marine-scenario-window .ms-primary {
+    background: #262626;
+    border-color: #262626;
+    color: #ffffff;
+}
+
+#marine-scenario-window .ms-primary:hover {
+    background: #444444;
+}
+
+#marine-scenario-window .ms-danger {
+    color: #ad3838;
+    border-color: #e1b8b8;
+}
+
+.ms-status {
+    margin: 10px 0;
+    color: #777777;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+/* 최대화 */
+
+#marine-scenario-window.ms-maximized {
+    top: 0;
+    left: 0;
+    transform: none;
+    width: 100vw;
+    height: 100dvh;
+    border-radius: 0;
+}
+
+/* 최소화 */
+
+#marine-scenario-window.ms-minimized {
+    top: auto;
+    bottom: 12px;
+    left: 12px;
+    transform: none;
+    width: min(360px, 94vw);
+    height: auto;
+    border-radius: 8px;
+}
+
+.ms-minimized .ms-layout,
+.ms-minimized .ms-footer {
+    display: none;
+}
+
+/* 모바일 대응 */
+
+@media (max-width: 650px) {
+    #marine-scenario-window {
+        top: 0;
+        width: 100vw;
+        height: 100dvh;
+        border-radius: 0;
+    }
+
+    .ms-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .ms-sidebar {
+        max-height: 200px;
+        border-bottom: 1px solid var(--ms-border);
+    }
+
+    .ms-editor {
+        padding: 16px;
+    }
+}

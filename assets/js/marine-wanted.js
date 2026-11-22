@@ -99,6 +99,7 @@
         }
 
 
+        root.classList.add("mw-wanted-page");
         let records = [];
 
         let keyword = "";
@@ -243,7 +244,7 @@
             subtitle.style.opacity = "0.6";
 
 
-            const toolbar = node("div");
+            const toolbar = node("div", null, "mw-wanted-toolbar");
 
             Object.assign(toolbar.style, {
 
@@ -324,9 +325,9 @@
             );
 
 
-            const count = node("p");
+            const count = node("p", null, "mw-wanted-count");
 
-            const grid = node("div");
+            const grid = node("div", null, "mw-wanted-grid");
 
 
             Object.assign(grid.style, {
@@ -397,6 +398,7 @@
             };
 
 
+            add.classList.add("ui-primary");
             add.onclick = () => {
 
                 editForm();
@@ -451,7 +453,7 @@
 
         function poster(item) {
 
-            const card = node("button");
+            const card = node("button", null, "mw-wanted-poster");
 
             card.type = "button";
 
@@ -707,7 +709,7 @@
             );
 
 
-            const right = node("section");
+            const right = node("section", null, "mw-wanted-detail");
 
             right.style.flex = "1";
 
@@ -762,7 +764,7 @@
 
             if (item.profile_linked) {
 
-                const secret = node("section");
+                const secret = node("section", null, "mw-wanted-secret");
 
                 Object.assign(secret.style, {
 
@@ -973,7 +975,7 @@
             );
 
 
-            const form = node("form");
+            const form = node("form", null, "mw-wanted-form");
 
             Object.assign(form.style, {
 
@@ -1060,6 +1062,12 @@
 
             );
 
+
+            window.MarineImages.attach(
+                image,
+                client,
+                "wanted"
+            );
 
             const description = node("textarea");
 

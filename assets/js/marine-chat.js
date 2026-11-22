@@ -1096,6 +1096,120 @@
         // 12. 채팅 기록 화면 표시
         // =====================================
 
+function renderQuickReplies(shown) {
+
+    let panel = root.querySelector(
+        ".mc-quick-replies"
+    );
+
+    if (!panel) {
+
+        panel = node(
+            "section",
+            null,
+            "mc-quick-replies"
+        );
+
+        form.insertAdjacentElement(
+            "beforebegin",
+            panel
+        );
+
+    }
+
+    panel.replaceChildren();
+
+
+    // 가장 최근에 받은 메시지
+
+    const latest = [...shown]
+        .reverse()
+        .find(m => m.direction === "incoming");
+
+
+    const choices = Array.isArray(latest?.choices)
+        ? latest.choices
+        : [];
+
+
+    // 이미 답장했는지 확인
+
+    const answered = latest && shown
+        .slice(shown.indexOf(latest) + 1)
+        .some(m => m.direction === "outgoing");
+
+
+    if (!latest || !choices.length || answered) {
+
+        panel.hidden = true;
+
+        return;
+
+    }
+
+
+    panel.hidden = false;
+
+
+    panel.append(
+        node(
+            "small",
+            "추천 답장",
+            "mc-quick-title"
+        )
+    );
+
+
+    const buttons = node(
+        "div",
+        null,
+        "mc-quick-buttons"
+    );
+
+
+    for (const choice of choices) {
+
+        const label =
+            typeof choice === "string"
+                ? choice
+                : choice?.label || choice?.text;
+
+
+        if (
+            typeof label !== "string"
+            || !label.trim()
+        ) {
+            continue;
+        }
+
+
+        const b = node("button", label);
+
+        b.type = "button";
+
+
+        b.onclick = () => {
+
+            replyTo(latest);
+
+            input.value = label;
+
+            input.focus();
+
+        };
+
+
+        buttons.append(b);
+
+    }
+
+
+    panel.append(buttons);
+
+    panel.hidden = !buttons.children.length;
+
+}
+
         function render() {
 
             renderSide();
@@ -1126,7 +1240,7 @@
                 m => matches(m, active)
 
             );
-
+renderQuickReplies(shown);
 
             const signature = JSON.stringify([
 
@@ -1553,59 +1667,6 @@
                 // =================================
                 // 17. 선택형 답장
                 // =================================
-
-                const choices =
-
-                    Array.isArray(m.choices)
-
-                        ? m.choices
-
-                        : [];
-
-
-                for (const choice of choices) {
-
-                    const label =
-
-                        typeof choice === "string"
-
-                            ? choice
-
-                            : choice?.label
-
-                                || choice?.text;
-
-
-                    if (
-
-                        typeof label === "string"
-
-                        && label
-
-                    ) {
-
-                        actions.append(
-
-                            button(
-
-                                label,
-
-                                () => {
-
-                                    input.value = label;
-
-                                    replyTo(m);
-
-                                }
-
-                            )
-
-                        );
-
-                    }
-
-                }
-
 
                 body.append(actions);
 

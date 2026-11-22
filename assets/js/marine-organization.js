@@ -120,6 +120,7 @@
         }
 
 
+        root.classList.add("mo-page");
         let characters = [];
 
         let relationships = [];
@@ -214,7 +215,7 @@
             );
 
 
-            const toolbar = node("div");
+            const toolbar = node("div", null, "mo-tabs");
 
             Object.assign(toolbar.style, {
 
@@ -249,6 +250,7 @@
                 );
 
                 button.disabled = tab === key;
+                button.classList.toggle("mo-selected", tab === key);
 
                 button.onclick =
                     () => render(key);
@@ -294,7 +296,7 @@
 
         function characterCard(character) {
 
-            const card = node("button");
+            const card = node("button", null, "mo-character");
 
             Object.assign(card.style, {
 
@@ -327,7 +329,7 @@
             });
 
 
-            const photo = node("div");
+            const photo = node("div", null, "mo-photo");
 
             Object.assign(photo.style, {
 
@@ -436,7 +438,7 @@
 
         function gridOf(items) {
 
-            const grid = node("div");
+            const grid = node("div", null, "mo-grid");
 
             Object.assign(grid.style, {
 
@@ -653,7 +655,7 @@
                 }
 
 
-                const row = node("article");
+                const row = node("article", null, "mo-relation");
 
                 Object.assign(row.style, {
 
@@ -807,6 +809,31 @@
 
 
             root.append(back, photo);
+
+            const editCharacter = node(
+                "button",
+                "캐릭터 및 대사 편집",
+                "ui-primary"
+            );
+
+            editCharacter.onclick = async () => {
+                try {
+                    await window.MarineCharacters.mount(
+                        root,
+                        client,
+                        character,
+                        {
+                            back: () => detail(character)
+                        }
+                    );
+                } catch (error) {
+                    root.append(
+                        node("p", "편집 화면 오류: " + error.message)
+                    );
+                }
+            };
+
+            root.append(editCharacter);
 
 
             const fields = [
@@ -1001,6 +1028,12 @@
 
 
             root.append(input, save, status);
+
+            window.MarineImages.attach(
+                input,
+                client,
+                "characters"
+            );
 
         }
 

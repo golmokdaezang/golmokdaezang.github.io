@@ -1,0 +1,5931 @@
+
+/* ============================================
+   MARINE OS v2.1
+   Unified Design System
+
+   Font: Noto Sans KR
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+
+
+/* ============================================
+   01. 공통 디자인 변수
+   ============================================ */
+
+:root {
+
+    --ui-font:
+        "Noto Sans KR",
+        "Malgun Gothic",
+        sans-serif;
+
+    --ui-font-size: 14px;
+
+    --ui-surface: #FFFFFF;
+    --ui-background: #F4F6F9;
+
+    --ui-text: #243247;
+    --ui-muted: #748196;
+
+    --ui-border: #E0E5EC;
+    --ui-hover: #EDF1F6;
+
+    --ui-primary: #345777;
+    --ui-primary-hover: #294762;
+
+    --ui-success: #39836A;
+    --ui-danger: #B84D4D;
+
+    --ui-radius: 8px;
+
+    --ui-shadow:
+        0 3px 12px rgba(25, 40, 60, .06);
+
+    --ui-window-shadow:
+        0 18px 60px rgba(0, 0, 0, .24),
+        0 3px 12px rgba(0, 0, 0, .12);
+
+}
+
+
+/* ============================================
+   02. 기본 글꼴
+   ============================================ */
+
+body {
+
+    font-family: var(--ui-font);
+
+    font-size: var(--ui-font-size);
+
+    font-weight: 400;
+
+    line-height: 1.65;
+
+    -webkit-font-smoothing: antialiased;
+
+    text-rendering: optimizeLegibility;
+
+}
+
+
+button,
+input,
+textarea,
+select {
+
+    font-family: var(--ui-font);
+
+    font-size: 13px;
+
+}
+
+
+strong,
+b {
+
+    font-weight: 600;
+
+}
+
+
+/* ============================================
+   03. 접속 화면
+   ============================================ */
+
+#gate {
+
+    background:
+
+        radial-gradient(
+            ellipse at 50% 15%,
+            #223348 0%,
+            #101820 60%,
+            #0C131B 100%
+        );
+
+}
+
+
+#gate .gate-box {
+
+    border-radius: 12px;
+
+    border: 1px solid #3B4A5D;
+
+    padding: 36px;
+
+    box-shadow:
+        0 24px 70px rgba(0, 0, 0, .35);
+
+}
+
+
+#gate .brand {
+
+    font-size: 29px;
+
+    font-weight: 700;
+
+    letter-spacing: 5px;
+
+}
+
+
+#gate .subtitle {
+
+    font-size: 13px;
+
+    color: #9BACBE;
+
+}
+
+
+#gate label {
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    color: #B6C5D5;
+
+}
+
+
+#gate #code {
+
+    border-radius: 6px;
+
+    border: 1px solid #3F5164;
+
+    padding: 13px 15px;
+
+    font-size: 14px;
+
+    background: #17232F;
+
+    transition:
+        border-color .2s,
+        box-shadow .2s;
+
+}
+
+
+#gate #code:focus {
+
+    outline: none;
+
+    border-color: #779DBE;
+
+    box-shadow:
+        0 0 0 3px rgba(119,157,190,.12);
+
+}
+
+
+/* 접속 버튼 */
+
+#gate #connect {
+
+    width: 100%;
+
+    min-height: 46px;
+
+    margin: 4px 0 18px;
+
+    padding: 12px 18px;
+
+    border: 1px solid #6385A3;
+
+    border-radius: 6px;
+
+    background: #365A7B;
+
+    color: #FFFFFF;
+
+    font-weight: 600;
+
+    letter-spacing: .4px;
+
+    transition:
+        background .2s,
+        transform .15s;
+
+}
+
+
+#gate #connect:hover {
+
+    background: #426D91;
+
+    filter: none;
+
+}
+
+
+#gate #connect:active {
+
+    transform: translateY(1px);
+
+}
+
+
+#gate #access a {
+
+    display: inline-block;
+
+    padding: 4px 2px;
+
+    border: 0;
+
+    background: transparent;
+
+    text-decoration: none;
+
+    color: #A6B8CA;
+
+    font-size: 12px;
+
+}
+
+
+#gate #access a:hover {
+
+    color: #FFFFFF;
+
+    text-decoration: underline;
+
+}
+
+
+#gate #identity {
+
+    border-radius: 8px;
+
+    background: #17232F;
+
+    border-color: #405568;
+
+}
+
+
+#gate #profileAvatar {
+
+    border-radius: 5px;
+
+}
+
+
+/* ============================================
+   04. 상단 시스템 표시줄
+   ============================================ */
+
+#systemHeader {
+
+    min-height: 64px;
+
+    padding: 10px 20px;
+
+    border-bottom: 1px solid rgba(255,255,255,.15);
+
+    box-shadow:
+        0 2px 10px rgba(0,0,0,.12);
+
+}
+
+
+#systemHeader .system-title {
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+}
+
+
+#systemHeader .small {
+
+    font-size: 11px;
+
+    font-weight: 400;
+
+    opacity: .8;
+
+}
+
+
+#systemIdentity {
+
+    font-weight: 500;
+
+    font-size: 13px;
+
+}
+
+
+/* ============================================
+   05. 프로그램 창
+   ============================================ */
+
+#desktop .mw-window {
+
+    --ui-background: #F4F6F9;
+    --ui-surface: #FFFFFF;
+
+    --ui-text: #243247;
+    --ui-muted: #748196;
+
+    --ui-border: #E0E5EC;
+    --ui-hover: #EDF1F6;
+
+    --window-bg: var(--ui-background);
+    --window-text: var(--ui-text);
+
+    border: 1px solid #C7CFD9;
+
+    border-radius: 8px;
+
+    background: var(--ui-background);
+
+    color: var(--ui-text);
+
+    box-shadow: var(--ui-window-shadow);
+
+}
+
+
+#desktop .mw-window.mw-active {
+
+    border-color: #A1AFBE;
+
+    box-shadow:
+        0 20px 65px rgba(0,0,0,.30);
+
+}
+
+
+/* 다크 모드 */
+
+#desktop[data-ui-mode="dark"] .mw-window {
+
+    --ui-background: #1B2634;
+    --ui-surface: #233143;
+
+    --ui-text: #E2EAF3;
+    --ui-muted: #A6B5C8;
+
+    --ui-border: #39485B;
+    --ui-hover: #304155;
+
+}
+
+
+/* 창 제목 표시줄 */
+
+#desktop .mw-titlebar {
+
+    min-height: 40px;
+
+    padding-left: 14px;
+
+    color: #FFFFFF;
+
+    border-bottom:
+        1px solid rgba(255,255,255,.1);
+
+}
+
+
+#desktop .mw-title {
+
+    font-family: var(--ui-font);
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    letter-spacing: -.15px;
+
+}
+
+
+/* 최소화 / 최대화 / 닫기 */
+
+#desktop .mw-controls button {
+
+    border: none !important;
+
+    border-radius: 0;
+
+    background: transparent !important;
+
+    color: #FFFFFF;
+
+    box-shadow: none;
+
+}
+
+
+#desktop .mw-controls button:hover {
+
+    background:
+        rgba(255,255,255,.13) !important;
+
+    filter: none;
+
+}
+
+
+#desktop .mw-controls .mw-close:hover {
+
+    background: #B64040 !important;
+
+}
+
+
+/* 프로그램 콘텐츠 */
+
+#desktop .mw-content {
+
+    background: var(--ui-background);
+
+    color: var(--ui-text);
+
+    font-family: var(--ui-font);
+
+    font-size: var(--ui-font-size);
+
+}
+
+
+/* ============================================
+   06. 프로그램 내부 제목
+   ============================================ */
+
+#desktop .mw-content h1 {
+
+    margin: 0 0 16px;
+
+    color: inherit;
+
+    font-size: 23px;
+
+    font-weight: 700;
+
+    letter-spacing: -.8px;
+
+}
+
+
+#desktop .mw-content h2 {
+
+    margin: 0 0 14px;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    letter-spacing: -.5px;
+
+}
+
+
+#desktop .mw-content h3 {
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    letter-spacing: -.2px;
+
+}
+
+
+#desktop .mw-content label {
+
+    font-weight: 500;
+
+}
+
+
+/* ============================================
+   07. 공통 버튼
+   ============================================ */
+
+#desktop .mw-content button {
+
+    min-height: 32px;
+
+    padding: 7px 12px;
+
+    border: 1px solid var(--ui-border);
+
+    border-radius: 6px;
+
+    background: var(--ui-surface);
+
+    color: var(--ui-text);
+
+    font-weight: 500;
+
+    font-size: 13px;
+
+    line-height: 1.4;
+
+    transition:
+        background .15s,
+        border-color .15s,
+        box-shadow .15s;
+
+}
+
+
+#desktop .mw-content button:hover {
+
+    background: var(--ui-hover);
+
+    border-color: #AAB8CA;
+
+    filter: none;
+
+}
+
+
+#desktop .mw-content button:focus-visible {
+
+    outline: 2px solid #7198BC;
+
+    outline-offset: 2px;
+
+}
+
+
+#desktop .mw-content button:disabled {
+
+    opacity: .45;
+
+    cursor: not-allowed;
+
+}
+
+
+/* 중요 버튼용 공통 클래스 */
+
+#desktop .mw-content .ui-primary,
+
+#desktop .mw-content button[type="submit"] {
+
+    background: var(--ui-primary);
+
+    border-color: var(--ui-primary);
+
+    color: #FFFFFF;
+
+}
+
+
+#desktop .mw-content .ui-primary:hover,
+
+#desktop .mw-content button[type="submit"]:hover {
+
+    background: var(--ui-primary-hover);
+
+    border-color: var(--ui-primary-hover);
+
+}
+
+
+/* 삭제 버튼용 공통 클래스 */
+
+#desktop .mw-content .ui-danger {
+
+    color: var(--ui-danger);
+
+    border-color: #DDB8B8;
+
+}
+
+
+/* ============================================
+   08. 입력창
+   ============================================ */
+
+#desktop .mw-content input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
+
+#desktop .mw-content textarea,
+
+#desktop .mw-content select {
+
+    min-width: 0;
+
+    max-width: 100%;
+
+    padding: 9px 12px;
+
+    border: 1px solid var(--ui-border);
+
+    border-radius: 6px;
+
+    background: var(--ui-surface);
+
+    color: var(--ui-text);
+
+    outline: none;
+
+    transition:
+        border-color .2s,
+        box-shadow .2s;
+
+}
+
+
+#desktop .mw-content input:focus,
+
+#desktop .mw-content textarea:focus,
+
+#desktop .mw-content select:focus {
+
+    border-color: #7198BC;
+
+    box-shadow:
+        0 0 0 3px rgba(84,130,176,.10);
+
+}
+
+
+#desktop .mw-content input::placeholder,
+
+#desktop .mw-content textarea::placeholder {
+
+    color: #909CAC;
+
+}
+
+
+#desktop .mw-content input[type="checkbox"],
+
+#desktop .mw-content input[type="radio"],
+
+#desktop .mw-content input[type="range"] {
+
+    accent-color: var(--ui-primary);
+
+}
+
+
+#desktop .mw-content input[type="file"] {
+
+    max-width: 100%;
+
+    font-size: 12px;
+
+}
+
+
+#desktop .mw-content input::file-selector-button {
+
+    padding: 7px 12px;
+
+    margin-right: 8px;
+
+    border: 1px solid var(--ui-border);
+
+    border-radius: 5px;
+
+    background: var(--ui-hover);
+
+    color: var(--ui-text);
+
+    font-family: var(--ui-font);
+
+    cursor: pointer;
+
+}
+
+
+/* ============================================
+   09. 공통 카드
+   ============================================ */
+
+.ui-card,
+
+#desktop .record-card,
+
+#desktop .md-settings-section {
+
+    background: var(--ui-surface);
+
+    color: var(--ui-text);
+
+    border: 1px solid var(--ui-border);
+
+    border-radius: 10px;
+
+    padding: 18px;
+
+    box-shadow: var(--ui-shadow);
+
+}
+
+
+.ui-eyebrow {
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    letter-spacing: 1.5px;
+
+    color: var(--ui-muted);
+
+}
+
+
+.ui-muted {
+
+    font-size: 12px;
+
+    color: var(--ui-muted);
+
+}
+
+
+.ui-metric {
+
+    font-size: 28px;
+
+    font-weight: 700;
+
+    font-variant-numeric: tabular-nums;
+
+    letter-spacing: -.8px;
+
+}
+
+
+/* ============================================
+   10. 표 디자인
+   ============================================ */
+
+#desktop .mw-content table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 13px;
+
+}
+
+
+#desktop .mw-content th {
+
+    background: var(--ui-hover);
+
+    padding: 11px 12px;
+
+    text-align: left;
+
+    font-weight: 600;
+
+}
+
+
+#desktop .mw-content td {
+
+    padding: 11px 12px;
+
+    border-bottom:
+        1px solid var(--ui-border);
+
+}
+
+
+#desktop .mw-content hr {
+
+    border: 0;
+
+    border-top:
+        1px solid var(--ui-border);
+
+    margin: 18px 0;
+
+}
+
+
+/* ============================================
+   11. 메신저 밝은 테마
+   ============================================ */
+
+#desktop .mc-shell {
+
+    min-height: 0;
+
+    background: var(--ui-surface);
+
+    color: var(--ui-text);
+
+    font-family: var(--ui-font);
+
+    font-size: 13px;
+
+}
+
+
+#desktop .mc-side {
+
+    background: var(--ui-background);
+
+    border-color: var(--ui-border);
+
+    padding: 12px;
+
+}
+
+
+#desktop .mc-side h3 {
+
+    color: var(--ui-muted);
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+}
+
+
+#desktop .mc-contacts button {
+
+    background: transparent;
+
+    border-color: transparent;
+
+    color: var(--ui-text);
+
+    border-radius: 7px;
+
+}
+
+
+#desktop .mc-contacts button.mc-active {
+
+    background: var(--ui-hover);
+
+    border-color: var(--ui-border);
+
+}
+
+
+#desktop .mc-main {
+
+    background: var(--ui-surface);
+
+}
+
+
+#desktop .mc-main > header {
+
+    background: var(--ui-surface);
+
+    color: var(--ui-text);
+
+    border-color: var(--ui-border);
+
+    padding: 14px;
+
+}
+
+
+#desktop .mc-log {
+
+    background: var(--ui-surface);
+
+}
+
+
+#desktop .mc-bubble {
+
+    background: var(--ui-hover);
+
+    color: var(--ui-text);
+
+    border-radius: 12px;
+
+    padding: 9px 13px;
+
+}
+
+
+#desktop .mc-out .mc-bubble {
+
+    background: #375674;
+
+    color: #FFFFFF;
+
+}
+
+
+#desktop .mc-shell small {
+
+    color: var(--ui-muted);
+
+}
+
+
+#desktop .mc-out small {
+
+    color: #C5D6E7;
+
+}
+
+
+#desktop .mc-actions button {
+
+    min-height: 24px;
+
+    font-size: 10px;
+
+    padding: 3px 6px;
+
+}
+
+
+#desktop .mc-form {
+
+    border-color: var(--ui-border);
+
+    background: var(--ui-surface);
+
+}
+
+
+#desktop .mc-reply {
+
+    background: var(--ui-hover);
+
+    color: var(--ui-text);
+
+}
+
+
+/* ============================================
+   12. 바탕화면 아이콘
+   ============================================ */
+
+#desktop .md-icon {
+
+    border-radius: 8px;
+
+    transition:
+        background .15s,
+        box-shadow .15s;
+
+}
+
+
+#desktop .md-icon-label {
+
+    font-family: var(--ui-font);
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+    letter-spacing: -.25px;
+
+}
+
+
+/* ============================================
+   13. 작업 표시줄
+   ============================================ */
+
+#taskbar {
+
+    min-height: 50px;
+
+    padding: 7px 12px;
+
+    gap: 7px;
+
+    background: #172331;
+
+    border-top:
+        1px solid rgba(255,255,255,.13);
+
+}
+
+
+#taskbar button {
+
+    min-height: 34px;
+
+    padding: 7px 12px;
+
+    border-radius: 6px;
+
+    border: 1px solid transparent;
+
+    background: transparent;
+
+    color: #DCE6F0;
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+}
+
+
+#taskbar button:hover {
+
+    background: #2C3E51;
+
+    filter: none;
+
+}
+
+
+#taskbar .mw-task.mw-active {
+
+    background: #354B62;
+
+    border-color: #526B83;
+
+}
+
+
+#taskbar #exit:hover {
+
+    background: #713B40;
+
+    color: #FFFFFF;
+
+}
+
+
+#taskbar #clock {
+
+    padding: 0 10px;
+
+    color: #DCE6F0;
+
+    font-size: 12px;
+
+    font-variant-numeric: tabular-nums;
+
+}
+
+
+#unreadBadge {
+
+    border-radius: 10px;
+
+    background: #BA524D;
+
+}
+
+
+/* ============================================
+   14. 스크롤바
+   ============================================ */
+
+#desktop .mw-content {
+
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        #A5B2C3 transparent;
+
+}
+
+
+#desktop ::-webkit-scrollbar {
+
+    width: 7px;
+
+    height: 7px;
+
+}
+
+
+#desktop ::-webkit-scrollbar-thumb {
+
+    background: #ABB8C7;
+
+    border-radius: 8px;
+
+}
+
+
+#desktop ::-webkit-scrollbar-track {
+
+    background: transparent;
+
+}
+
+
+/* ============================================
+   15. 스티커 메모
+   ============================================ */
+
+#desktop .marine-sticky-note {
+
+    border-radius: 6px;
+
+    border: 1px solid rgba(0,0,0,.07);
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,.16);
+
+    font-family: var(--ui-font);
+
+}
+
+
+/* ============================================
+   16. 창 열기 애니메이션
+   ============================================ */
+
+@keyframes marine-window-appear {
+
+    from {
+
+        opacity: 0;
+
+        scale: .985;
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        scale: 1;
+
+    }
+
+}
+
+
+#desktop .mw-window {
+
+    animation:
+        marine-window-appear .18s ease-out;
+
+}
+
+
+/* ============================================
+   17. 접근성 및 작은 화면 대응
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    #desktop *,
+
+    #gate * {
+
+        animation-duration: .01ms !important;
+
+        transition-duration: .01ms !important;
+
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    #gate .gate-box {
+
+        padding: 23px;
+
+    }
+
+    #systemHeader {
+
+        padding: 8px 12px;
+
+    }
+
+    #desktop .mw-content h2 {
+
+        font-size: 18px;
+
+    }
+
+    #taskbar button {
+
+        padding: 6px 8px;
+
+        font-size: 11px;
+
+    }
+
+}
+
+/* ============================================
+   18. 시스템 부팅 진행률
+   ============================================ */
+
+.mui-boot-panel {
+
+    margin-top: 24px;
+
+    padding: 18px;
+
+    background: #131E2A;
+
+    border: 1px solid #34485C;
+
+    border-radius: 8px;
+
+}
+
+
+.mui-boot-heading {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    letter-spacing: 1.5px;
+
+    color: #A0B6CC;
+
+    margin-bottom: 12px;
+
+}
+
+
+.mui-progress-text {
+
+    color: #FFFFFF;
+
+    font-size: 18px;
+
+    font-variant-numeric: tabular-nums;
+
+    letter-spacing: 0;
+
+}
+
+
+.mui-progress-track {
+
+    height: 5px;
+
+    background: #28394B;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+}
+
+
+.mui-progress-fill {
+
+    height: 100%;
+
+    width: 0;
+
+    border-radius: 10px;
+
+    background: linear-gradient(
+        90deg,
+        #527B9F,
+        #A0C1DC
+    );
+
+    transition: width .65s ease;
+
+}
+
+
+.mui-boot-caption {
+
+    margin-top: 10px;
+
+    font-size: 12px;
+
+    color: #A7B7C8;
+
+}
+
+
+#gate .boot-line {
+
+    padding: 4px 0;
+
+    font-size: 12px;
+
+    border-bottom:
+        1px solid rgba(255,255,255,.04);
+
+    animation: mui-log-appear .2s ease;
+
+}
+
+
+@keyframes mui-log-appear {
+
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+/* ============================================
+   19. 전산망 화면 전환
+   ============================================ */
+
+#gate {
+
+    transition: opacity .45s ease;
+
+}
+
+
+#gate.mui-leaving {
+
+    opacity: 0;
+
+    pointer-events: none;
+
+}
+
+
+#desktop:not([hidden]) {
+
+    animation: mui-desktop-enter .4s ease;
+
+}
+
+
+@keyframes mui-desktop-enter {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+}
+
+
+/* ============================================
+   20. 상단 시스템 알림
+   ============================================ */
+
+.mui-toast {
+
+    position: fixed;
+
+    top: 18px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    z-index: 100000;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 15px;
+
+    width: min(510px, calc(100vw - 32px));
+
+    padding: 18px 16px;
+
+    overflow: hidden;
+
+    background: #FFFFFF;
+
+    color: #243247;
+
+    border: 1px solid #DCE3EB;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 12px 45px rgba(0,0,0,.22);
+
+    font-family: var(--ui-font);
+
+    animation: mui-toast-enter .35s ease;
+
+}
+
+
+.mui-toast-icon {
+
+    display: grid;
+
+    place-items: center;
+
+    flex-shrink: 0;
+
+    width: 44px;
+
+    height: 44px;
+
+    border-radius: 10px;
+
+    background: #EDF2F7;
+
+    color: #365A7B;
+
+}
+
+
+.mui-toast-icon svg {
+
+    width: 25px;
+
+    height: 25px;
+
+}
+
+
+.mui-toast-content {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
+.mui-toast-label {
+
+    margin-bottom: 4px;
+
+    color: #79889B;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    letter-spacing: 1.1px;
+
+}
+
+
+.mui-toast-title {
+
+    margin-bottom: 6px;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    letter-spacing: -.4px;
+
+}
+
+
+.mui-toast-message {
+
+    color: #65758A;
+
+    font-size: 12px;
+
+    line-height: 1.8;
+
+    white-space: pre-line;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+.mui-toast-close {
+
+    width: 26px;
+
+    height: 26px;
+
+    padding: 0;
+
+    border: 0;
+
+    border-radius: 5px;
+
+    background: transparent;
+
+    color: #8490A0;
+
+    font-size: 21px;
+
+    line-height: 1;
+
+}
+
+
+.mui-toast-close:hover {
+
+    background: #EEF2F7;
+
+}
+
+
+.mui-toast-timer {
+
+    position: absolute;
+
+    left: 0;
+
+    bottom: 0;
+
+    width: 100%;
+
+    height: 3px;
+
+    background: #527B9F;
+
+    transform-origin: left center;
+
+    animation: mui-toast-countdown 6s linear forwards;
+
+}
+
+
+@keyframes mui-toast-countdown {
+
+    from {
+        transform: scaleX(1);
+    }
+
+    to {
+        transform: scaleX(0);
+    }
+
+}
+
+
+@keyframes mui-toast-enter {
+
+    from {
+
+        opacity: 0;
+
+        transform: translate(-50%, -25px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translate(-50%, 0);
+
+    }
+
+}
+
+
+.mui-toast-leaving {
+
+    animation: mui-toast-exit .24s ease forwards;
+
+}
+
+
+@keyframes mui-toast-exit {
+
+    to {
+
+        opacity: 0;
+
+        transform: translate(-50%, -20px);
+
+    }
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .mui-toast,
+    .mui-toast-timer,
+    .mui-progress-fill {
+
+        animation-duration: .01ms !important;
+
+        transition-duration: .01ms !important;
+
+    }
+
+}
+
+/* ============================================
+   21. 추가 웹폰트
+   ============================================ */
+
+@font-face {
+
+    font-family: "Pretendard";
+
+    font-weight: 100 900;
+
+    font-style: normal;
+
+    font-display: swap;
+
+    src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/woff2/PretendardVariable.woff2")
+
+         format("woff2");
+
+}
+
+
+@font-face {
+
+    font-family: "SUIT";
+
+    font-weight: 100 900;
+
+    font-style: normal;
+
+    font-display: swap;
+
+    src: url("https://cdn.jsdelivr.net/gh/sunn-us/SUIT@2.0.5/fonts/variable/woff2/SUIT-Variable.woff2")
+
+         format("woff2");
+
+}
+
+
+#desktop {
+
+    font-family: var(--ui-font);
+
+    font-size: var(--ui-font-size);
+
+    font-weight: var(--ui-font-weight, 400);
+
+}
+
+
+#desktop .mw-content {
+
+    font-weight: var(--ui-font-weight, 400);
+
+}
+
+
+/* ============================================
+   22. 바탕화면 프로필 표시 설정
+   ============================================ */
+
+#desktop[data-show-portrait="false"]
+.md-portrait-photo {
+
+    display: none !important;
+
+}
+
+
+#desktop[data-show-affiliation="false"]
+.md-portrait > strong,
+
+#desktop[data-show-affiliation="false"]
+#commanderTop {
+
+    display: none !important;
+
+}
+
+
+#desktop[data-show-justice="false"]
+.md-portrait > small {
+
+    display: none !important;
+
+}
+
+
+/* ============================================
+   23. 일반 업무 공간 모드
+   ============================================ */
+
+#desktop[data-normal-mode="true"] {
+
+    --accent: #7195B4;
+
+    --titlebar-bg: #293E53;
+
+}
+
+
+#desktop[data-normal-mode="true"]
+#systemHeader {
+
+    background: #293E53;
+
+}
+
+
+#desktop[data-normal-mode="true"]
+#systemLogo,
+
+#desktop[data-normal-mode="true"]
+#systemIdentity,
+
+#desktop[data-normal-mode="true"]
+.md-portrait,
+
+#desktop[data-normal-mode="true"]
+.md-logo,
+
+#desktop[data-normal-mode="true"]
+#messageButton {
+
+    display: none !important;
+
+}
+
+
+#desktop[data-normal-mode="true"]
+.md-wallpaper {
+
+    background-color: #293D53 !important;
+
+    background-image: none !important;
+
+}
+
+
+#desktop[data-normal-mode="true"]
+.mui-world-icon {
+
+    display: none !important;
+
+}
+
+
+/* ============================================
+   24. 환경 설정 디자인
+   ============================================ */
+
+#desktop .md-settings {
+
+    padding: 20px;
+
+    max-width: 920px;
+
+    margin: 0 auto;
+
+}
+
+
+#desktop .md-settings-section {
+
+    margin-bottom: 18px;
+
+    padding: 20px;
+
+}
+
+
+#desktop .md-settings-section h3 {
+
+    margin: 0 0 16px;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+}
+
+
+#desktop .md-settings-row {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 16px;
+
+    min-height: 45px;
+
+    padding: 9px 0;
+
+    border-bottom:
+        1px solid var(--ui-border);
+
+}
+
+
+#desktop .md-settings-row:last-child {
+
+    border-bottom: none;
+
+}
+
+
+#desktop .md-settings-row select {
+
+    min-width: 120px;
+
+}
+
+
+/* 체크박스를 스위치 형태로 표시 */
+
+#desktop .md-settings input[type="checkbox"] {
+
+    appearance: none;
+
+    position: relative;
+
+    width: 38px;
+
+    height: 22px;
+
+    flex-shrink: 0;
+
+    border: 1px solid transparent;
+
+    border-radius: 20px;
+
+    background: #B5BEC9;
+
+    cursor: pointer;
+
+    transition: background .2s;
+
+}
+
+
+#desktop .md-settings input[type="checkbox"]::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 3px;
+
+    top: 2px;
+
+    width: 16px;
+
+    height: 16px;
+
+    border-radius: 50%;
+
+    background: #FFFFFF;
+
+    box-shadow: 0 1px 3px #0002;
+
+    transition: transform .2s;
+
+}
+
+
+#desktop .md-settings input[type="checkbox"]:checked {
+
+    background: #456B8D;
+
+}
+
+
+#desktop .md-settings input[type="checkbox"]:checked::after {
+
+    transform: translateX(15px);
+
+}
+
+
+#desktop .mui-font-preview {
+
+    margin-top: 18px;
+
+    padding: 18px;
+
+    background: var(--ui-background);
+
+    border: 1px solid var(--ui-border);
+
+    border-radius: 8px;
+
+    font-size: var(--ui-font-size);
+
+    font-weight: var(--ui-font-weight);
+
+}
+
+
+#desktop .mui-font-preview p {
+
+    margin: 6px 0;
+
+}
+
+
+/* ============================================
+   25. 인사 기록부 및 진급 관리
+   ============================================ */
+
+#desktop .mp-page {
+
+    width: 100%;
+
+    max-width: 850px;
+
+    margin: 0 auto;
+
+    padding: 24px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 16px;
+
+    color: var(--ui-text);
+
+    font-family: var(--ui-font);
+
+}
+
+
+#desktop .mp-page * {
+
+    box-sizing: border-box;
+
+}
+
+
+#desktop .mp-heading h2 {
+
+    font-size: 24px;
+
+    font-weight: 700;
+
+    letter-spacing: -.9px;
+
+    margin: 5px 0 0;
+
+}
+
+
+#desktop .mp-eyebrow {
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    letter-spacing: 1.6px;
+
+    color: var(--ui-muted);
+
+}
+
+
+#desktop .mp-card {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+    padding: 22px;
+
+    background: var(--ui-surface);
+
+    border: 1px solid var(--ui-border);
+
+    border-radius: 13px;
+
+    box-shadow: var(--ui-shadow);
+
+}
+
+
+#desktop .mp-card p {
+
+    margin: 0;
+
+}
+
+
+#desktop .mp-card-title {
+
+    margin: 0 0 4px;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+}
+
+
+#desktop .mp-muted {
+
+    color: var(--ui-muted);
+
+    font-size: 12px;
+
+    font-weight: 400;
+
+}
+
+
+#desktop .mp-icon {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: inherit;
+
+}
+
+
+#desktop .mp-icon svg {
+
+    width: 19px;
+
+    height: 19px;
+
+}
+
+
+/* ============================================
+   26. 복무 프로필 카드
+   ============================================ */
+
+#desktop .mp-hero {
+
+    padding: 25px;
+
+}
+
+
+#desktop .mp-identity {
+
+    display: flex;
+
+    gap: 20px;
+
+    align-items: center;
+
+}
+
+
+#desktop .mp-insignia {
+
+    width: 74px;
+
+    flex-shrink: 0;
+
+}
+
+
+#desktop .mp-insignia svg {
+
+    display: block;
+
+    width: 100%;
+
+    height: auto;
+
+    filter:
+        drop-shadow(0 3px 3px rgba(0,0,0,.12));
+
+}
+
+
+#desktop .mp-rank {
+
+    font-size: 30px;
+
+    font-weight: 700;
+
+    letter-spacing: -1px;
+
+    margin: 0 0 5px;
+
+}
+
+
+#desktop .mp-identity p {
+
+    margin: 3px 0;
+
+    font-size: 13px;
+
+}
+
+
+#desktop .mp-hero-stats {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 18px;
+
+    margin-top: 8px;
+
+    padding-top: 18px;
+
+    border-top: 1px solid var(--ui-border);
+
+}
+
+
+#desktop .mp-hero-stats > div + div {
+
+    border-left: 1px solid var(--ui-border);
+
+    padding-left: 22px;
+
+}
+
+
+#desktop .mp-hero-stats .mp-number {
+
+    font-size: 29px;
+
+    color: var(--ui-primary);
+
+}
+
+
+/* ============================================
+   27. 통계 카드
+   ============================================ */
+
+#desktop .mp-stat-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 12px;
+
+}
+
+
+#desktop .mp-metric {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+
+    min-width: 0;
+
+}
+
+
+#desktop .mp-stat-grid .mp-metric {
+
+    background: var(--ui-surface);
+
+    border: 1px solid var(--ui-border);
+
+    border-radius: 11px;
+
+    padding: 17px;
+
+    align-items: center;
+
+    text-align: center;
+
+    box-shadow: var(--ui-shadow);
+
+}
+
+
+#desktop .mp-metric .mp-icon {
+
+    width: 37px;
+
+    height: 37px;
+
+    border-radius: 10px;
+
+    background: var(--ui-hover);
+
+    color: var(--ui-primary);
+
+    margin-bottom: 5px;
+
+}
+
+
+#desktop .mp-number {
+
+    font-size: 23px;
+
+    font-weight: 700;
+
+    letter-spacing: -.6px;
+
+    font-variant-numeric: tabular-nums;
+
+}
+
+
+/* ============================================
+   28. 진급 진행률
+   ============================================ */
+
+#desktop .mp-progress-heading,
+
+#desktop .mp-progress-labels {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 12px;
+
+}
+
+
+#desktop .mp-progress-heading {
+
+    font-size: 13px;
+
+}
+
+
+#desktop .mp-progress-labels {
+
+    color: var(--ui-muted);
+
+    font-size: 12px;
+
+}
+
+
+#desktop .mp-percent {
+
+    font-size: 23px;
+
+    font-weight: 700;
+
+    color: var(--ui-primary);
+
+}
+
+
+#desktop .mp-progress-track {
+
+    height: 9px;
+
+    background: var(--ui-hover);
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+}
+
+
+#desktop .mp-progress-fill {
+
+    height: 100%;
+
+    border-radius: 20px;
+
+    background: linear-gradient(
+
+        90deg,
+
+        var(--ui-primary),
+
+        #7499B8
+
+    );
+
+    transition: width .5s ease;
+
+}
+
+
+#desktop .mp-point-label {
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+}
+
+
+/* ============================================
+   29. 인사 정보 행
+   ============================================ */
+
+#desktop .mp-field {
+
+    display: grid;
+
+    grid-template-columns: 115px minmax(0, 1fr);
+
+    gap: 16px;
+
+    align-items: center;
+
+    padding: 11px 0;
+
+    border-bottom: 1px solid var(--ui-border);
+
+    font-size: 13px;
+
+}
+
+
+#desktop .mp-field:last-child {
+
+    border-bottom: 0;
+
+}
+
+
+#desktop .mp-field > span {
+
+    color: var(--ui-muted);
+
+}
+
+
+#desktop .mp-field > strong {
+
+    font-weight: 500;
+
+    text-align: right;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+/* ============================================
+   30. 계급 비교
+   ============================================ */
+
+#desktop .mp-rank-comparison {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr) 35px minmax(0, 1fr);
+
+    align-items: center;
+
+    gap: 12px;
+
+}
+
+
+#desktop .mp-rank-box {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 20px 8px;
+
+    background: var(--ui-background);
+
+    border-radius: 10px;
+
+    border: 1px solid var(--ui-border);
+
+}
+
+
+#desktop .mp-rank-box strong {
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+}
+
+
+#desktop .mp-rank-comparison > .mp-icon {
+
+    color: var(--ui-muted);
+
+}
+
+
+/* ============================================
+   31. 인사 발령 타임라인
+   ============================================ */
+
+#desktop .mp-timeline {
+
+    padding-left: 15px;
+
+}
+
+
+#desktop .mp-timeline-item {
+
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+
+    padding: 4px 0 24px 22px;
+
+    border-left: 2px solid var(--ui-border);
+
+}
+
+
+#desktop .mp-timeline-item::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 8px;
+
+    left: -6px;
+
+    width: 10px;
+
+    height: 10px;
+
+    background: var(--ui-primary);
+
+    border-radius: 50%;
+
+}
+
+
+#desktop .mp-timeline-item:last-child {
+
+    padding-bottom: 5px;
+
+}
+
+
+#desktop .mp-timeline-item strong {
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+}
+
+
+#desktop .mp-timeline-item p {
+
+    font-size: 12px;
+
+    color: var(--ui-muted);
+
+}
+
+
+/* ============================================
+   32. 공적 활동
+   ============================================ */
+
+#desktop .mp-activity {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 12px 0;
+
+    border-bottom: 1px solid var(--ui-border);
+
+}
+
+
+#desktop .mp-activity:last-child {
+
+    border-bottom: 0;
+
+}
+
+
+#desktop .mp-activity > div {
+
+    min-width: 0;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+#desktop .mp-activity p {
+
+    margin: 4px 0;
+
+}
+
+
+#desktop .mp-activity-points {
+
+    flex-shrink: 0;
+
+    color: #39836A;
+
+    font-size: 13px;
+
+}
+
+
+/* ============================================
+   33. 인사 관리 버튼 및 상태
+   ============================================ */
+
+#desktop .mp-actions {
+
+    display: flex;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+
+}
+
+
+#desktop .mp-page .mp-button {
+
+    display: inline-flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 8px;
+
+    min-height: 42px;
+
+    padding: 10px 18px;
+
+    border-radius: 8px;
+
+}
+
+
+#desktop .mp-actions .ui-primary {
+
+    flex: 1;
+
+}
+
+
+#desktop .mp-page .mp-button .mp-icon svg {
+
+    width: 16px;
+
+    height: 16px;
+
+}
+
+
+#desktop .mp-loading,
+
+#desktop .mp-empty {
+
+    padding: 20px;
+
+    color: var(--ui-muted);
+
+    text-align: center;
+
+    font-size: 13px;
+
+}
+
+
+#desktop .mp-error {
+
+    padding: 14px;
+
+    color: #B84D4D;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+#desktop .mp-success {
+
+    padding: 14px;
+
+    border-radius: 8px;
+
+    border: 1px solid #B8D7C9;
+
+    background: #E8F4ED;
+
+    color: #39775A;
+
+}
+
+
+/* ============================================
+   34. 개별 소속 숨김 및 다크 모드
+   ============================================ */
+
+#desktop[data-show-affiliation="false"]
+.mp-commander {
+
+    display: none !important;
+
+}
+
+
+#desktop[data-ui-mode="dark"] .mp-page {
+
+    --ui-primary: #9DBFDC;
+
+}
+
+
+#desktop[data-ui-mode="dark"]
+.mp-page .ui-primary {
+
+    background: #365A7B;
+
+    border-color: #365A7B;
+
+    color: #FFFFFF;
+
+}
+
+
+/* ============================================
+   35. 작은 프로그램 창 대응
+   ============================================ */
+
+#desktop .mw-content {
+
+    container-type: inline-size;
+
+}
+
+
+@container (max-width: 430px) {
+
+    #desktop .mp-page {
+
+        padding: 12px;
+
+        gap: 12px;
+
+    }
+
+
+    #desktop .mp-card {
+
+        padding: 16px;
+
+    }
+
+
+    #desktop .mp-insignia {
+
+        width: 55px;
+
+    }
+
+
+    #desktop .mp-identity {
+
+        gap: 12px;
+
+    }
+
+
+    #desktop .mp-rank {
+
+        font-size: 25px;
+
+    }
+
+
+    #desktop .mp-hero-stats .mp-number {
+
+        font-size: 23px;
+
+    }
+
+
+    #desktop .mp-stat-grid {
+
+        gap: 6px;
+
+    }
+
+
+    #desktop .mp-stat-grid .mp-metric {
+
+        padding: 10px 5px;
+
+    }
+
+
+    #desktop .mp-number {
+
+        font-size: 18px;
+
+    }
+
+
+    #desktop .mp-field {
+
+        grid-template-columns:
+            90px minmax(0, 1fr);
+
+        gap: 8px;
+
+    }
+
+}
+
+/* ============================================
+   36. 통합 일정 관리
+   ============================================ */
+
+#desktop .ms-page {
+
+    max-width: 1100px;
+
+    margin: 0 auto;
+
+    padding: 22px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 16px;
+
+    color: var(--ui-text);
+
+    --ms-meeting: #527B9F;
+
+    --ms-dinner: #B09351;
+
+    --ms-report: #548E79;
+
+    --ms-personal: #9681B0;
+
+}
+
+
+#desktop .ms-page * {
+
+    box-sizing: border-box;
+
+}
+
+
+#desktop .ms-heading {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 12px;
+
+}
+
+
+#desktop .ms-heading h2 {
+
+    font-size: 24px;
+
+    font-weight: 700;
+
+    letter-spacing: -.8px;
+
+    margin: 4px 0 0;
+
+}
+
+
+#desktop .ms-eyebrow {
+
+    font-size: 10px;
+
+    letter-spacing: 1.5px;
+
+    font-weight: 600;
+
+    color: var(--ui-muted);
+
+}
+
+
+#desktop .ms-muted {
+
+    font-size: 12px;
+
+    color: var(--ui-muted);
+
+}
+
+
+#desktop .ms-icon {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+}
+
+
+#desktop .ms-icon svg {
+
+    width: 18px;
+
+    height: 18px;
+
+}
+
+
+#desktop .ms-page button {
+
+    display: inline-flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 6px;
+
+}
+
+
+#desktop .ms-card {
+
+    background: var(--ui-surface);
+
+    color: var(--ui-text);
+
+    border: 1px solid var(--ui-border);
+
+    border-radius: 12px;
+
+    padding: 18px;
+
+    box-shadow: var(--ui-shadow);
+
+}
+
+
+/* ============================================
+   37. 월간 일정 통계
+   ============================================ */
+
+#desktop .ms-stat-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 10px;
+
+}
+
+
+#desktop .ms-stat {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    background: var(--ui-surface);
+
+    padding: 17px;
+
+    border: 1px solid var(--ui-border);
+
+    border-radius: 10px;
+
+    box-shadow: var(--ui-shadow);
+
+}
+
+
+#desktop .ms-stat strong {
+
+    font-size: 25px;
+
+    line-height: 1.3;
+
+    letter-spacing: -.7px;
+
+    font-variant-numeric: tabular-nums;
+
+}
+
+
+/* ============================================
+   38. 달력 상단 메뉴
+   ============================================ */
+
+#desktop .ms-toolbar {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 18px;
+
+    gap: 8px;
+
+}
+
+
+#desktop .ms-navigation {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+}
+
+
+#desktop .ms-navigation h3 {
+
+    font-size: 19px;
+
+    font-weight: 700;
+
+    margin: 0;
+
+    white-space: nowrap;
+
+}
+
+
+#desktop .ms-page .ms-arrow {
+
+    width: 30px;
+
+    height: 30px;
+
+    padding: 4px;
+
+    background: transparent;
+
+    border-color: transparent;
+
+}
+
+
+#desktop .ms-page .ms-arrow:hover {
+
+    background: var(--ui-hover);
+
+}
+
+
+/* ============================================
+   39. 월간 달력
+   ============================================ */
+
+#desktop .ms-weekdays,
+
+#desktop .ms-calendar-grid {
+
+    display: grid;
+
+    grid-template-columns:
+
+        repeat(7, minmax(0, 1fr));
+
+}
+
+
+#desktop .ms-weekdays {
+
+    text-align: center;
+
+    padding-bottom: 10px;
+
+    font-size: 12px;
+
+    color: var(--ui-muted);
+
+}
+
+
+#desktop .ms-calendar-grid {
+
+    border-top: 1px solid var(--ui-border);
+
+    border-left: 1px solid var(--ui-border);
+
+    overflow: hidden;
+
+}
+
+
+#desktop .ms-calendar-grid .ms-day,
+
+#desktop .ms-calendar-grid .ms-blank {
+
+    min-width: 0;
+
+    min-height: 88px;
+
+    padding: 7px;
+
+    border: 0;
+
+    border-right: 1px solid var(--ui-border);
+
+    border-bottom: 1px solid var(--ui-border);
+
+    border-radius: 0;
+
+    background: var(--ui-surface);
+
+}
+
+
+#desktop .ms-calendar-grid .ms-day {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    justify-content: flex-start;
+
+    gap: 4px;
+
+    text-align: left;
+
+    color: var(--ui-text);
+
+}
+
+
+#desktop .ms-calendar-grid .ms-blank {
+
+    background: var(--ui-background);
+
+}
+
+
+#desktop .ms-calendar-grid .ms-day:hover {
+
+    background: var(--ui-hover);
+
+}
+
+
+#desktop .ms-calendar-grid .ms-selected {
+
+    background: #E8F0F8;
+
+    box-shadow: inset 0 0 0 1px #7D9DBC;
+
+}
+
+
+#desktop .ms-day-number {
+
+    display: grid;
+
+    place-items: center;
+
+    width: 25px;
+
+    height: 25px;
+
+    border-radius: 50%;
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+}
+
+
+#desktop .ms-today .ms-day-number {
+
+    background: var(--ui-primary);
+
+    color: #FFFFFF;
+
+    font-weight: 700;
+
+}
+
+
+#desktop .ms-sunday {
+
+    color: #BE6262;
+
+}
+
+
+#desktop .ms-saturday {
+
+    color: #527FAB;
+
+}
+
+
+#desktop .ms-day.ms-sunday .ms-day-number {
+
+    color: #BE6262;
+
+}
+
+
+#desktop .ms-day.ms-saturday .ms-day-number {
+
+    color: #527FAB;
+
+}
+
+
+#desktop .ms-day.ms-today .ms-day-number {
+
+    color: #FFFFFF;
+
+}
+
+
+/* ============================================
+   40. 일정 분류별 색상
+   ============================================ */
+
+#desktop .ms-page [data-type="meeting"] {
+
+    --event-color: var(--ms-meeting);
+
+}
+
+
+#desktop .ms-page [data-type="dinner"] {
+
+    --event-color: var(--ms-dinner);
+
+}
+
+
+#desktop .ms-page [data-type="report"] {
+
+    --event-color: var(--ms-report);
+
+}
+
+
+#desktop .ms-page [data-type="personal"] {
+
+    --event-color: var(--ms-personal);
+
+}
+
+
+#desktop .ms-event-tag {
+
+    display: block;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    padding: 3px 5px;
+
+    font-size: 10px;
+
+    line-height: 1.4;
+
+    border-radius: 3px;
+
+    border-left: 2px solid var(
+
+        --event-color, #8293A6
+
+    );
+
+    background: color-mix(
+
+        in srgb,
+
+        var(--event-color, #8293A6) 16%,
+
+        var(--ui-surface)
+
+    );
+
+    color: var(--ui-text);
+
+}
+
+
+#desktop .ms-more {
+
+    padding-left: 4px;
+
+    color: var(--ui-muted);
+
+    font-size: 10px;
+
+}
+
+
+#desktop .ms-legend {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    padding-top: 15px;
+
+}
+
+
+#desktop .ms-legend-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    color: var(--ui-muted);
+
+    font-size: 11px;
+
+}
+
+
+#desktop .ms-legend-item::before {
+
+    content: "";
+
+    width: 8px;
+
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: var(--event-color);
+
+}
+
+
+/* ============================================
+   41. 일정 상세 정보
+   ============================================ */
+
+#desktop .ms-details {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+}
+
+
+#desktop .ms-details-heading {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 3px 0;
+
+}
+
+
+#desktop .ms-details-heading h3 {
+
+    margin: 0;
+
+    font-size: 17px;
+
+    font-weight: 700;
+
+}
+
+
+#desktop .ms-event-card {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 10px;
+
+    padding: 18px;
+
+    background: var(--ui-surface);
+
+    border: 1px solid var(--ui-border);
+
+    border-left: 3px solid var(
+
+        --event-color, #8394A6
+
+    );
+
+    border-radius: 9px;
+
+    box-shadow: var(--ui-shadow);
+
+}
+
+
+#desktop .ms-event-card h3 {
+
+    font-size: 16px;
+
+    margin: 0;
+
+    font-weight: 700;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+#desktop .ms-event-card p {
+
+    margin: 0;
+
+}
+
+
+#desktop .ms-category {
+
+    padding: 3px 8px;
+
+    border-radius: 4px;
+
+    color: var(--ui-text);
+
+    font-size: 10px;
+
+    background: color-mix(
+
+        in srgb,
+
+        var(--event-color, #8394A6) 16%,
+
+        var(--ui-surface)
+
+    );
+
+}
+
+
+#desktop .ms-event-meta {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 14px;
+
+    color: var(--ui-muted);
+
+    font-size: 12px;
+
+}
+
+
+#desktop .ms-event-meta > div {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+}
+
+
+#desktop .ms-event-meta svg {
+
+    width: 14px;
+
+    height: 14px;
+
+}
+
+
+#desktop .ms-description {
+
+    white-space: pre-wrap;
+
+    overflow-wrap: anywhere;
+
+    font-size: 13px;
+
+}
+
+
+/* ============================================
+   42. 참석 여부 선택
+   ============================================ */
+
+#desktop .ms-response-actions {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
+
+    width: 100%;
+
+}
+
+
+#desktop .ms-response-actions button {
+
+    flex: 1;
+
+    min-width: 65px;
+
+}
+
+
+#desktop .ms-response[aria-pressed="true"] {
+
+    border-color: #527B9F;
+
+    background: #E3EDF7;
+
+    color: #345777;
+
+    font-weight: 600;
+
+}
+
+
+#desktop .ms-response[data-response="accepted"]
+
+[aria-pressed="true"] {
+
+    color: #39836A;
+
+}
+
+
+#desktop .ms-page .ms-pin-button {
+
+    background: transparent;
+
+    border-color: transparent;
+
+    padding: 5px 0;
+
+    font-size: 12px;
+
+    color: var(--ui-muted);
+
+}
+
+
+/* ============================================
+   43. 비어 있는 일정
+   ============================================ */
+
+#desktop .ms-empty {
+
+    min-height: 150px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    gap: 8px;
+
+}
+
+
+#desktop .ms-empty .ms-icon {
+
+    color: var(--ui-muted);
+
+}
+
+
+#desktop .ms-empty .ms-icon svg {
+
+    width: 32px;
+
+    height: 32px;
+
+}
+
+
+#desktop .ms-empty p {
+
+    margin: 0;
+
+}
+
+
+/* ============================================
+   44. 새 일정 등록 양식
+   ============================================ */
+
+#desktop .ms-form {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+
+}
+
+
+#desktop .ms-form h3,
+
+#desktop .ms-form p {
+
+    margin: 0;
+
+}
+
+
+#desktop .ms-field {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+}
+
+
+#desktop .ms-field input,
+
+#desktop .ms-field textarea,
+
+#desktop .ms-field select {
+
+    width: 100%;
+
+}
+
+
+#desktop .ms-notify-field {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    font-size: 12px;
+
+}
+
+
+#desktop .ms-form-actions {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 8px;
+
+}
+
+
+#desktop .ms-feedback {
+
+    padding: 10px 12px;
+
+    font-size: 12px;
+
+    background: var(--ui-hover);
+
+    border-radius: 6px;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+#desktop .ms-error {
+
+    color: var(--ui-danger);
+
+    padding: 15px;
+
+}
+
+
+/* ============================================
+   45. 다크 모드 대응
+   ============================================ */
+
+#desktop[data-ui-mode="dark"]
+
+.ms-calendar-grid .ms-selected {
+
+    background: #30465D;
+
+}
+
+
+#desktop[data-ui-mode="dark"]
+
+.ms-response[aria-pressed="true"] {
+
+    background: #30465D;
+
+    color: #BDD6ED;
+
+}
+
+
+/* ============================================
+   46. 작은 창 대응
+   ============================================ */
+
+@container (max-width: 550px) {
+
+    #desktop .ms-page {
+
+        padding: 11px;
+
+        gap: 12px;
+
+    }
+
+
+    #desktop .ms-card {
+
+        padding: 12px;
+
+    }
+
+
+    #desktop .ms-stat {
+
+        padding: 10px;
+
+    }
+
+
+    #desktop .ms-stat strong {
+
+        font-size: 20px;
+
+    }
+
+
+    #desktop .ms-stat .ms-muted {
+
+        font-size: 10px;
+
+    }
+
+
+    #desktop .ms-navigation {
+
+        gap: 3px;
+
+    }
+
+
+    #desktop .ms-navigation h3 {
+
+        font-size: 16px;
+
+    }
+
+
+    #desktop .ms-calendar-grid .ms-day,
+
+    #desktop .ms-calendar-grid .ms-blank {
+
+        min-height: 62px;
+
+        padding: 3px;
+
+    }
+
+
+    #desktop .ms-event-tag {
+
+        padding: 3px;
+
+        font-size: 9px;
+
+    }
+
+}
+
+
+@container (max-width: 350px) {
+
+    #desktop .ms-event-tag {
+
+        width: 7px;
+
+        height: 7px;
+
+        padding: 0;
+
+        border: 0;
+
+        border-radius: 50%;
+
+        background: var(--event-color);
+
+        font-size: 0;
+
+    }
+
+}
+
+/* ============================================
+   47. 메신저 공통 레이아웃
+   ============================================ */
+
+#desktop .mc-shell {
+
+    grid-template-columns:
+
+        minmax(160px, 30%)
+
+        minmax(0, 1fr);
+
+    gap: 0;
+
+    background: var(--ui-surface, #FFFFFF);
+
+    color: var(--ui-text, #243247);
+
+    font-family: var(--ui-font, "Noto Sans KR");
+
+    font-size: 13px;
+
+    line-height: 1.65;
+
+}
+
+
+#desktop .mc-side {
+
+    background: var(--ui-background, #F2F5F8);
+
+    border-right:
+
+        1px solid var(--ui-border, #DCE3EA);
+
+    padding: 14px 10px;
+
+    gap: 10px;
+
+}
+
+
+#desktop .mc-shell h3 {
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    color: var(--ui-muted, #778598);
+
+    margin: 18px 5px 8px;
+
+}
+
+
+#desktop .mc-shell button {
+
+    border-radius: 7px;
+
+    background: var(--ui-surface);
+
+    color: var(--ui-text);
+
+    border: 1px solid var(--ui-border);
+
+    transition:
+
+        background .15s,
+
+        border-color .15s;
+
+}
+
+
+#desktop .mc-shell button:hover {
+
+    background: var(--ui-hover);
+
+}
+
+
+/* ============================================
+   48. 대화 목록
+   ============================================ */
+
+#desktop .mc-contacts button {
+
+    min-height: 49px;
+
+    padding: 9px 8px;
+
+    margin: 3px 0;
+
+    border: 1px solid transparent;
+
+    background: transparent;
+
+    border-radius: 8px;
+
+    gap: 9px;
+
+}
+
+
+#desktop .mc-contacts button:hover {
+
+    background: var(--ui-hover);
+
+}
+
+
+#desktop .mc-contacts button.mc-active {
+
+    background: #E0EAF4;
+
+    border-color: transparent;
+
+    color: #345777;
+
+    font-weight: 600;
+
+}
+
+
+#desktop .mc-avatar {
+
+    width: 36px;
+
+    height: 36px;
+
+    background: #DBE4EE;
+
+    color: #486985;
+
+    font-weight: 600;
+
+    font-size: 13px;
+
+    border-radius: 50%;
+
+}
+
+
+/* ============================================
+   49. 대화방 상단
+   ============================================ */
+
+#desktop .mc-main {
+
+    background: var(--ui-surface);
+
+}
+
+
+#desktop .mc-main > header {
+
+    min-height: 64px;
+
+    padding: 12px 17px;
+
+    background: var(--ui-surface);
+
+    border-bottom:
+
+        1px solid var(--ui-border);
+
+    gap: 10px;
+
+}
+
+
+#desktop .mc-main > header strong {
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+}
+
+
+#desktop .mc-main > header button {
+
+    padding: 5px 9px;
+
+    font-size: 11px;
+
+}
+
+
+/* ============================================
+   50. 메시지 말풍선
+   ============================================ */
+
+#desktop .mc-log {
+
+    padding: 18px;
+
+    background: var(--ui-surface);
+
+    scrollbar-width: thin;
+
+}
+
+
+#desktop .mc-message {
+
+    gap: 9px;
+
+    margin: 15px 0;
+
+}
+
+
+#desktop .mc-bubble {
+
+    max-width: 85%;
+
+    padding: 10px 14px;
+
+    background: #EDF1F5;
+
+    color: #293B4E;
+
+    border: 0;
+
+    border-radius: 4px 13px 13px 13px;
+
+}
+
+
+#desktop .mc-out .mc-bubble {
+
+    background: #426789;
+
+    color: #FFFFFF;
+
+    border-radius: 13px 4px 13px 13px;
+
+}
+
+
+#desktop .mc-bubble p {
+
+    margin: 5px 0;
+
+    line-height: 1.75;
+
+    font-size: 13px;
+
+}
+
+
+#desktop .mc-bubble strong {
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+}
+
+
+#desktop .mc-shell small {
+
+    color: var(--ui-muted);
+
+    font-size: 10px;
+
+}
+
+
+#desktop .mc-out .mc-bubble small {
+
+    color: #D6E3F0;
+
+}
+
+
+/* ============================================
+   51. 메시지 부가 기능
+   ============================================ */
+
+#desktop .mc-actions {
+
+    margin-top: 7px;
+
+    gap: 4px;
+
+}
+
+
+#desktop .mc-actions button {
+
+    padding: 3px 7px;
+
+    font-size: 10px;
+
+    min-height: 24px;
+
+    border-radius: 5px;
+
+    background: transparent;
+
+    border: 1px solid #8293A644;
+
+    color: inherit;
+
+}
+
+
+#desktop .mc-actions button:hover {
+
+    background: #8293A622;
+
+}
+
+
+#desktop .mc-reply {
+
+    background: var(--ui-background);
+
+    border-top:
+
+        1px solid var(--ui-border);
+
+    border-left: 3px solid #527B9F;
+
+    padding: 9px 14px;
+
+    font-size: 12px;
+
+}
+
+
+/* ============================================
+   52. 메시지 입력창
+   ============================================ */
+
+#desktop .mc-form {
+
+    padding: 13px;
+
+    gap: 8px;
+
+    background: var(--ui-surface);
+
+    border-top:
+
+        1px solid var(--ui-border);
+
+}
+
+
+#desktop .mc-shell input {
+
+    min-height: 36px;
+
+    padding: 9px 12px;
+
+    background: var(--ui-background);
+
+    color: var(--ui-text);
+
+    border: 1px solid var(--ui-border);
+
+    border-radius: 8px;
+
+    outline: none;
+
+}
+
+
+#desktop .mc-form input {
+
+    border-radius: 20px;
+
+}
+
+
+#desktop .mc-shell input:focus {
+
+    border-color: #779ABA;
+
+}
+
+
+#desktop .mc-form button[type="submit"] {
+
+    background: #426789;
+
+    color: #FFFFFF;
+
+    border-color: #426789;
+
+    border-radius: 18px;
+
+    padding: 8px 17px;
+
+    font-weight: 500;
+
+}
+
+
+#desktop .mc-form button[type="submit"]:hover {
+
+    background: #345777;
+
+}
+
+
+#desktop .mc-status {
+
+    color: var(--ui-muted);
+
+    background: var(--ui-surface);
+
+    font-size: 11px;
+
+}
+
+
+/* ============================================
+   53. 메신저 다크 모드
+   ============================================ */
+
+#desktop[data-ui-mode="dark"] .mc-bubble {
+
+    background: #2B3948;
+
+    color: #DBE5EF;
+
+}
+
+
+#desktop[data-ui-mode="dark"] .mc-out .mc-bubble {
+
+    background: #395E80;
+
+    color: #FFFFFF;
+
+}
+
+
+#desktop[data-ui-mode="dark"]
+
+.mc-contacts button.mc-active {
+
+    background: #30475E;
+
+    color: #C9DEF1;
+
+}
+
+
+/* ============================================
+   54. 메모장 레이아웃
+   ============================================ */
+
+#desktop .mn-shell {
+
+    gap: 0 !important;
+
+    background: var(--ui-surface);
+
+    color: var(--ui-text);
+
+    font-family: var(--ui-font, "Noto Sans KR");
+
+}
+
+
+#desktop .mn-side {
+
+    width: 210px !important;
+
+    padding: 16px 12px !important;
+
+    background: var(--ui-background);
+
+    border-right:
+
+        1px solid var(--ui-border) !important;
+
+    scrollbar-width: thin;
+
+}
+
+
+#desktop .mn-side > button:first-child {
+
+    width: 100%;
+
+    padding: 10px;
+
+    margin-bottom: 14px;
+
+    background: #426789;
+
+    color: #FFFFFF;
+
+    border-color: #426789;
+
+    border-radius: 7px;
+
+    font-weight: 500;
+
+}
+
+
+#desktop .mn-side > button:first-child:hover {
+
+    background: #345777;
+
+}
+
+
+#desktop .mn-side .mn-list-item {
+
+    min-height: 45px;
+
+    padding: 10px 12px;
+
+    margin-top: 5px !important;
+
+    background: transparent;
+
+    color: var(--ui-text);
+
+    border: 1px solid transparent;
+
+    border-radius: 8px;
+
+    font-size: 13px;
+
+}
+
+
+#desktop .mn-side .mn-list-item:hover {
+
+    background: var(--ui-hover);
+
+}
+
+
+#desktop .mn-side .mn-active {
+
+    background: var(--ui-surface);
+
+    border-color: var(--ui-border);
+
+    box-shadow: 0 2px 5px #00000008;
+
+    color: var(--ui-primary);
+
+    font-weight: 600;
+
+}
+
+
+/* ============================================
+   55. 메모 편집 공간
+   ============================================ */
+
+#desktop .mn-editor {
+
+    padding: 24px;
+
+    background: var(--ui-surface);
+
+    scrollbar-width: thin;
+
+}
+
+
+#desktop .mn-editor .mn-title {
+
+    padding: 8px 0;
+
+    font-size: 25px !important;
+
+    font-weight: 700;
+
+    line-height: 1.5;
+
+    letter-spacing: -.7px;
+
+    border: 0;
+
+    border-bottom: 1px solid var(--ui-border);
+
+    border-radius: 0;
+
+    background: transparent;
+
+    color: var(--ui-text);
+
+}
+
+
+#desktop .mn-editor .mn-content {
+
+    min-height: 220px !important;
+
+    padding: 14px;
+
+    border: 1px solid var(--ui-border);
+
+    border-radius: 8px;
+
+    background: var(--ui-background);
+
+    color: var(--ui-text);
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    line-height: 1.9;
+
+}
+
+
+#desktop .mn-editor > small {
+
+    display: block;
+
+    padding: 7px 2px;
+
+    color: var(--ui-muted);
+
+    font-size: 11px;
+
+}
+
+
+#desktop .mn-editor h3 {
+
+    margin: 24px 0 11px;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+}
+
+
+#desktop .mn-editor textarea:focus,
+
+#desktop .mn-editor input:focus {
+
+    outline: none;
+
+    border-color: #779ABA;
+
+}
+
+
+#desktop .mn-editor p {
+
+    margin: 12px 0 6px;
+
+    font-size: 12px;
+
+    color: var(--ui-muted);
+
+}
+
+
+/* ============================================
+   56. 메모 도구 및 색상
+   ============================================ */
+
+#desktop .mn-toolbar {
+
+    gap: 8px;
+
+    margin: 6px 0 16px;
+
+}
+
+
+#desktop .mn-toolbar button {
+
+    padding: 8px 12px;
+
+    border-radius: 7px;
+
+    font-size: 12px;
+
+}
+
+
+#desktop .mn-palette {
+
+    flex-wrap: wrap;
+
+}
+
+
+#desktop .mn-palette button {
+
+    border-radius: 50%;
+
+    width: 28px !important;
+
+    height: 28px !important;
+
+    padding: 0;
+
+    border: 1px solid #00000018 !important;
+
+    transition: transform .15s;
+
+}
+
+
+#desktop .mn-palette button:hover {
+
+    transform: scale(1.12);
+
+}
+
+
+#desktop .mn-editor input[type="checkbox"],
+
+#desktop .mn-editor input[type="range"] {
+
+    accent-color: #527B9F;
+
+}
+
+
+#desktop .mn-editor hr {
+
+    border: 0;
+
+    border-top: 1px solid var(--ui-border);
+
+    margin: 24px 0 15px;
+
+}
+
+
+/* ============================================
+   57. 바탕화면 스티커 메모
+   ============================================ */
+
+#desktop .marine-sticky-note {
+
+    border-radius: 8px;
+
+    border: 1px solid #00000012;
+
+    box-shadow:
+
+        0 6px 20px #00000025 !important;
+
+    font-family: var(--ui-font, "Noto Sans KR");
+
+}
+
+
+#desktop .marine-sticky-note header {
+
+    min-height: 32px;
+
+    padding: 6px 10px;
+
+    border-bottom: 1px solid #00000010;
+
+}
+
+
+#desktop .marine-sticky-note header input {
+
+    font-weight: 600;
+
+}
+
+
+#desktop .marine-sticky-note textarea {
+
+    border: none;
+
+    background: transparent;
+
+    color: #343434;
+
+    font-family: inherit;
+
+    line-height: 1.8;
+
+}
+
+
+#desktop .marine-sticky-note button {
+
+    background: transparent;
+
+    color: #444444;
+
+    border: 1px solid transparent;
+
+    border-radius: 4px;
+
+}
+
+
+#desktop .marine-sticky-note button:hover {
+
+    background: #00000010;
+
+}
+
+
+/* ============================================
+   58. 작은 프로그램 창 대응
+   ============================================ */
+
+@container (max-width: 550px) {
+
+    #desktop .mc-shell {
+
+        grid-template-columns:
+
+            130px minmax(0, 1fr);
+
+    }
+
+
+    #desktop .mc-side {
+
+        padding: 8px 5px;
+
+    }
+
+
+    #desktop .mc-avatar {
+
+        width: 28px;
+
+        height: 28px;
+
+    }
+
+
+    #desktop .mc-log {
+
+        padding: 10px;
+
+    }
+
+
+    #desktop .mc-bubble {
+
+        padding: 8px 10px;
+
+        max-width: 90%;
+
+    }
+
+
+    #desktop .mn-side {
+
+        width: 135px !important;
+
+        padding: 10px 7px !important;
+
+    }
+
+
+    #desktop .mn-editor {
+
+        padding: 13px;
+
+    }
+
+
+    #desktop .mn-editor .mn-title {
+
+        font-size: 20px !important;
+
+    }
+
+}
+
+
+/* ============================================
+   59. 수배관리국 공통 화면
+   ============================================ */
+
+#desktop .mw-wanted-page {
+
+    padding: 22px;
+
+    color: var(--ui-text);
+
+    background: var(--ui-background);
+
+    font-family:
+
+        var(--ui-font, "Noto Sans KR");
+
+    box-sizing: border-box;
+
+}
+
+
+#desktop .mw-wanted-page h2 {
+
+    font-size: 23px;
+
+    font-weight: 700;
+
+    letter-spacing: -.7px;
+
+    margin: 5px 0 8px;
+
+}
+
+
+#desktop .mw-wanted-page > p {
+
+    font-size: 12px;
+
+    color: var(--ui-muted);
+
+}
+
+
+#desktop .mw-wanted-toolbar {
+
+    align-items: center;
+
+    padding: 16px;
+
+    margin-top: 18px;
+
+    background: var(--ui-surface);
+
+    border: 1px solid var(--ui-border);
+
+    border-radius: 10px;
+
+    box-shadow: var(--ui-shadow);
+
+}
+
+
+#desktop .mw-wanted-toolbar input {
+
+    min-width: 100px;
+
+    min-height: 36px;
+
+    padding: 8px 12px;
+
+    border-radius: 7px;
+
+}
+
+
+#desktop .mw-wanted-toolbar select {
+
+    min-height: 36px;
+
+    border-radius: 7px;
+
+}
+
+
+#desktop .mw-wanted-count {
+
+    margin: 18px 0 12px;
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+    color: var(--ui-muted);
+
+}
+
+
+/* ============================================
+   60. 수배서 보관함
+   ============================================ */
+
+#desktop .mw-wanted-grid {
+
+    grid-template-columns:
+
+        repeat(auto-fill, minmax(190px, 1fr))
+
+        !important;
+
+    align-items: start;
+
+    gap: 20px !important;
+
+}
+
+
+#desktop .mw-wanted-page .mw-wanted-poster {
+
+    background-color: #DFC69B !important;
+
+    background-image:
+
+        radial-gradient(
+
+            ellipse at center,
+
+            #F4E3B9 0%,
+
+            #D4B27F 100%
+
+        ) !important;
+
+    color: #352719 !important;
+
+    border: 3px double #80613D !important;
+
+    border-radius: 2px !important;
+
+    padding: 12px !important;
+
+    width: 100%;
+
+    box-shadow:
+
+        0 4px 12px #00000020 !important;
+
+    transition:
+
+        transform .2s ease,
+
+        box-shadow .2s ease;
+
+}
+
+
+#desktop .mw-wanted-page .mw-wanted-poster:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow:
+
+        0 8px 18px #00000030 !important;
+
+}
+
+
+#desktop .mw-wanted-poster > div:first-child {
+
+    font-family: Georgia, serif !important;
+
+    letter-spacing: 1px;
+
+    font-size: clamp(22px, 3vw, 34px) !important;
+
+    color: #352719;
+
+    padding-bottom: 6px;
+
+}
+
+
+#desktop .mw-wanted-poster img {
+
+    filter: saturate(.9);
+
+}
+
+
+#desktop .mw-wanted-poster small {
+
+    display: block;
+
+    font-family: Georgia, serif;
+
+    font-weight: bold;
+
+    font-size: 10px;
+
+    letter-spacing: 2px;
+
+    margin-top: 8px;
+
+    color: #735B3E;
+
+}
+
+
+/* ============================================
+   61. 수배 기록 상세 정보
+   ============================================ */
+
+#desktop .mw-wanted-detail {
+
+    background: var(--ui-surface);
+
+    padding: 20px;
+
+    border: 1px solid var(--ui-border);
+
+    border-radius: 12px;
+
+    box-shadow: var(--ui-shadow);
+
+}
+
+
+#desktop .mw-wanted-detail h2 {
+
+    font-size: 24px;
+
+    font-weight: 700;
+
+}
+
+
+#desktop .mw-wanted-detail p {
+
+    font-size: 13px;
+
+    line-height: 1.9;
+
+    white-space: pre-wrap;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+#desktop .mw-wanted-detail hr {
+
+    border: 0;
+
+    border-top: 1px solid var(--ui-border);
+
+    margin: 20px 0;
+
+}
+
+
+#desktop .mw-wanted-secret {
+
+    background: var(--ui-surface);
+
+    border: 1px solid var(--ui-border) !important;
+
+    border-left: 3px solid #AC5555 !important;
+
+    border-radius: 9px;
+
+    padding: 20px !important;
+
+}
+
+
+#desktop .mw-wanted-secret h3 {
+
+    color: #AC5555;
+
+    font-size: 15px;
+
+    margin-top: 0;
+
+}
+
+
+/* ============================================
+   62. 수배서 등록 양식
+   ============================================ */
+
+#desktop .mw-wanted-form {
+
+    background: var(--ui-surface);
+
+    border: 1px solid var(--ui-border);
+
+    border-radius: 12px;
+
+    padding: 22px;
+
+    margin-top: 18px;
+
+    gap: 17px !important;
+
+    box-shadow: var(--ui-shadow);
+
+}
+
+
+#desktop .mw-wanted-form label {
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+}
+
+
+#desktop .mw-wanted-form label > span {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+}
+
+
+#desktop .mw-wanted-form input:not([type="checkbox"]),
+
+#desktop .mw-wanted-form textarea {
+
+    padding: 10px 12px;
+
+    border-radius: 7px;
+
+    border: 1px solid var(--ui-border);
+
+    background: var(--ui-background);
+
+    color: var(--ui-text);
+
+    box-sizing: border-box;
+
+    font-family: inherit;
+
+}
+
+
+#desktop .mw-wanted-form textarea {
+
+    resize: vertical;
+
+    min-height: 100px;
+
+    line-height: 1.8;
+
+}
+
+
+#desktop .mw-wanted-form button[type="submit"] {
+
+    background: #426789;
+
+    border-color: #426789;
+
+    color: #FFFFFF;
+
+    min-height: 40px;
+
+    font-weight: 500;
+
+}
+
+
+#desktop .mw-wanted-form input[type="checkbox"] {
+
+    accent-color: #527B9F;
+
+}
+
+
+/* ============================================
+   63. 해군 조직 관리
+   ============================================ */
+
+#desktop .mo-page {
+
+    padding: 22px;
+
+    color: var(--ui-text);
+
+    background: var(--ui-background);
+
+    font-family:
+
+        var(--ui-font, "Noto Sans KR");
+
+    box-sizing: border-box;
+
+}
+
+
+#desktop .mo-page > h2 {
+
+    font-size: 23px;
+
+    font-weight: 700;
+
+    letter-spacing: -.7px;
+
+    margin: 5px 0 8px;
+
+}
+
+
+#desktop .mo-page > small {
+
+    font-size: 11px;
+
+    letter-spacing: 1px;
+
+    color: var(--ui-muted);
+
+}
+
+
+#desktop .mo-page > h3 {
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    letter-spacing: -.3px;
+
+    margin: 25px 0 12px;
+
+}
+
+
+/* ============================================
+   64. 조직 관리 탭
+   ============================================ */
+
+#desktop .mo-tabs {
+
+    background: var(--ui-surface);
+
+    border: 1px solid var(--ui-border);
+
+    border-radius: 9px;
+
+    padding: 6px;
+
+    gap: 5px !important;
+
+}
+
+
+#desktop .mo-tabs button {
+
+    flex: 1;
+
+    min-width: 75px;
+
+    padding: 9px 10px;
+
+    background: transparent;
+
+    border: 1px solid transparent;
+
+    color: var(--ui-muted);
+
+    font-size: 12px;
+
+    border-radius: 6px;
+
+}
+
+
+#desktop .mo-tabs button:hover {
+
+    background: var(--ui-hover);
+
+}
+
+
+#desktop .mo-tabs button.mo-selected {
+
+    background: #426789;
+
+    color: #FFFFFF;
+
+    border-color: #426789;
+
+    opacity: 1;
+
+    font-weight: 600;
+
+}
+
+
+/* ============================================
+   65. 인물 프로필 카드
+   ============================================ */
+
+#desktop .mo-grid {
+
+    grid-template-columns:
+
+        repeat(auto-fit, minmax(135px, 1fr))
+
+        !important;
+
+    gap: 14px !important;
+
+}
+
+
+#desktop .mo-page .mo-character {
+
+    position: relative;
+
+    padding: 20px 12px !important;
+
+    min-height: 180px;
+
+    background: var(--ui-surface);
+
+    color: var(--ui-text);
+
+    border-radius: 10px;
+
+    border-left: 1px solid var(--ui-border);
+
+    border-right: 1px solid var(--ui-border);
+
+    border-bottom: 1px solid var(--ui-border);
+
+    box-shadow: var(--ui-shadow);
+
+    transition:
+
+        transform .18s ease,
+
+        box-shadow .18s ease;
+
+}
+
+
+#desktop .mo-page .mo-character:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+
+        0 5px 16px #00000012;
+
+}
+
+
+#desktop .mo-photo {
+
+    width: 76px !important;
+
+    height: 76px !important;
+
+    border-radius: 50%;
+
+    background: var(--ui-background) !important;
+
+    border: 1px solid var(--ui-border);
+
+    margin: 2px 0 6px;
+
+    color: var(--ui-muted);
+
+}
+
+
+#desktop .mo-character strong {
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+}
+
+
+#desktop .mo-character small {
+
+    font-size: 11px;
+
+    line-height: 1.5;
+
+    color: var(--ui-muted);
+
+}
+
+
+#desktop .mo-character small:last-child {
+
+    background: var(--ui-background);
+
+    padding: 3px 8px;
+
+    border-radius: 5px;
+
+    font-size: 10px;
+
+}
+
+
+/* ============================================
+   66. 인물 관계 기록
+   ============================================ */
+
+#desktop .mo-relation {
+
+    background: var(--ui-surface);
+
+    border: 1px solid var(--ui-border) !important;
+
+    border-radius: 9px;
+
+    padding: 17px !important;
+
+    box-shadow: var(--ui-shadow);
+
+}
+
+
+#desktop .mo-relation strong {
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+}
+
+
+#desktop .mo-relation p {
+
+    color: var(--ui-text);
+
+    font-size: 13px;
+
+}
+
+
+#desktop .mo-relation small {
+
+    font-size: 12px;
+
+    color: var(--ui-muted);
+
+    line-height: 1.8;
+
+}
+
+
+/* ============================================
+   67. 인물 상세 기록
+   ============================================ */
+
+#desktop .mo-page > .mo-character {
+
+    margin: 20px 0;
+
+}
+
+
+#desktop .mo-page > strong {
+
+    display: block;
+
+    color: var(--ui-muted);
+
+    font-size: 12px;
+
+    margin-top: 15px;
+
+}
+
+
+#desktop .mo-page > p {
+
+    font-size: 14px;
+
+    overflow-wrap: anywhere;
+
+    line-height: 1.8;
+
+}
+
+
+#desktop .mo-page > strong + p {
+
+    margin: 5px 0;
+
+    padding: 12px 15px;
+
+    background: var(--ui-surface);
+
+    border: 1px solid var(--ui-border);
+
+    border-radius: 7px;
+
+}
+
+
+#desktop .mo-page > input {
+
+    margin: 8px 0;
+
+    padding: 10px 12px;
+
+    background: var(--ui-surface);
+
+    color: var(--ui-text);
+
+    border: 1px solid var(--ui-border);
+
+    border-radius: 7px;
+
+}
+
+
+#desktop .mo-page > button {
+
+    margin: 3px;
+
+}
+
+
+/* ============================================
+   68. 작은 창 대응
+   ============================================ */
+
+@container (max-width: 500px) {
+
+    #desktop .mw-wanted-page,
+
+    #desktop .mo-page {
+
+        padding: 12px;
+
+    }
+
+    #desktop .mw-wanted-grid {
+
+        grid-template-columns:
+
+            repeat(auto-fill, minmax(135px, 1fr))
+
+            !important;
+
+        gap: 10px !important;
+
+    }
+
+    #desktop .mw-wanted-form {
+
+        padding: 14px;
+
+    }
+
+    #desktop .mo-grid {
+
+        grid-template-columns:
+
+            repeat(auto-fit, minmax(105px, 1fr))
+
+            !important;
+
+        gap: 8px !important;
+
+    }
+
+    #desktop .mo-photo {
+
+        width: 58px !important;
+
+        height: 58px !important;
+
+    }
+
+    #desktop .mo-tabs button {
+
+        font-size: 11px;
+
+        min-width: 60px;
+
+    }
+
+}
+
+/* ============================================
+   69. 이미지 업로드 관리
+   ============================================ */
+
+#desktop .mi-panel {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+    width: 100%;
+
+    padding: 17px;
+
+    margin: 10px 0 16px;
+
+    box-sizing: border-box;
+
+    background: var(--ui-background, #F3F5F8);
+
+    border: 1px solid var(--ui-border, #DCE3EA);
+
+    border-radius: 10px;
+
+}
+
+
+/* ============================================
+   70. 이미지 미리보기
+   ============================================ */
+
+#desktop .mi-preview {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 100%;
+
+    min-height: 170px;
+
+    padding: 12px;
+
+    box-sizing: border-box;
+
+    background: var(--ui-surface, #FFFFFF);
+
+    border: 1px dashed var(--ui-border, #DCE3EA);
+
+    border-radius: 8px;
+
+    overflow: hidden;
+
+}
+
+
+#desktop .mi-preview img {
+
+    display: block;
+
+    max-width: 100%;
+
+    max-height: 280px;
+
+    object-fit: contain;
+
+    border-radius: 6px;
+
+}
+
+
+#desktop .mi-panel [hidden] {
+
+    display: none !important;
+
+}
+
+
+#desktop .mi-placeholder {
+
+    color: var(--ui-muted, #778598);
+
+    font-size: 13px;
+
+}
+
+
+/* ============================================
+   71. 파일 선택 및 제거
+   ============================================ */
+
+#desktop .mi-actions {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+}
+
+
+#desktop .mi-actions button {
+
+    min-height: 36px;
+
+    padding: 8px 14px;
+
+    border-radius: 7px;
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+}
+
+
+#desktop .mi-actions .mi-select {
+
+    background: #426789;
+
+    border: 1px solid #426789;
+
+    color: #FFFFFF;
+
+    font-weight: 500;
+
+}
+
+
+#desktop .mi-actions .mi-select:hover {
+
+    background: #345777;
+
+}
+
+
+#desktop .mi-actions .mi-remove {
+
+    background: var(--ui-surface, #FFFFFF);
+
+    color: var(--ui-text, #243247);
+
+    border: 1px solid var(--ui-border, #DCE3EA);
+
+}
+
+
+#desktop .mi-actions button:disabled {
+
+    opacity: .5;
+
+    cursor: wait;
+
+}
+
+
+#desktop .mi-status {
+
+    margin: 0;
+
+    font-size: 11px;
+
+    line-height: 1.6;
+
+    color: var(--ui-muted, #778598);
+
+    overflow-wrap: anywhere;
+
+}
+
+
+/* 72. 캐릭터 및 대사 관리 */
+
+#desktop .mch-page {
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 22px;
+    color: var(--ui-text);
+    background: var(--ui-background);
+    font-family: var(--ui-font);
+}
+
+#desktop .mch-header {
+    background: var(--ui-surface);
+    border: 1px solid var(--ui-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 16px;
+}
+
+#desktop .mch-header small {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--ui-muted);
+}
+
+#desktop .mch-header h2 {
+    font-size: 26px;
+    margin: 6px 0;
+}
+
+#desktop .mch-header p {
+    font-size: 13px;
+    color: var(--ui-muted);
+}
+
+#desktop .mch-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 5px;
+    background: var(--ui-surface);
+    border: 1px solid var(--ui-border);
+    border-radius: 9px;
+}
+
+#desktop .mch-tabs button {
+    flex: 1;
+    border: 0;
+    padding: 10px;
+}
+
+#desktop .mch-tabs .mch-selected {
+    background: #426789;
+    color: white;
+    font-weight: 600;
+}
+
+#desktop .mch-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    background: var(--ui-surface);
+    border: 1px solid var(--ui-border);
+    border-radius: 11px;
+}
+
+#desktop .mch-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+#desktop .mch-field > span {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ui-muted);
+}
+
+#desktop .mch-field input,
+#desktop .mch-field textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 12px;
+    border: 1px solid var(--ui-border);
+    border-radius: 7px;
+    background: var(--ui-background);
+    color: var(--ui-text);
+    font-family: inherit;
+    line-height: 1.7;
+}
+
+#desktop .mch-field textarea {
+    resize: vertical;
+}
+
+#desktop .mch-dialogues {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+#desktop .mch-dialogue {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 17px;
+    background: var(--ui-surface);
+    border: 1px solid var(--ui-border);
+    border-radius: 9px;
+}
+
+#desktop .mch-dialogue h3 {
+    margin: 0;
+    font-size: 15px;
+}
+
+#desktop .mch-actions,
+#desktop .mch-confirm {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+#desktop .mch-toggle {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+}
+
+#desktop .mch-toggle input {
+    accent-color: #426789;
+}
+
+#desktop .mch-danger {
+    color: #B84D4D;
+}
+
+#desktop .mch-status {
+    min-height: 18px;
+    font-size: 12px;
+    color: var(--ui-muted);
+}
+
+#desktop .mch-page .ui-primary {
+    background: #426789;
+    color: #FFFFFF;
+}
+
+@container (max-width: 500px) {
+    #desktop .mch-page {
+        padding: 12px;
+    }
+
+    #desktop .mch-body,
+    #desktop .mch-dialogue,
+    #desktop .mch-header {
+        padding: 13px;
+    }
+}
+
+/* =========================================
+   73. 메신저 추천 답장
+   ========================================= */
+
+#desktop .mc-quick-replies {
+    flex-shrink: 0;
+    padding: 10px 14px;
+    background: var(--ui-background);
+    border-top: 1px solid var(--ui-border);
+}
+
+#desktop .mc-quick-replies[hidden] {
+    display: none !important;
+}
+
+#desktop .mc-quick-title {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ui-muted);
+}
+
+#desktop .mc-quick-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    max-height: 130px;
+    overflow-y: auto;
+}
+
+#desktop .mc-quick-buttons button {
+    background: var(--ui-surface);
+    color: #426789;
+    border: 1px solid #B9CADB;
+    border-radius: 20px;
+    padding: 7px 13px;
+    min-height: 30px;
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+
+    transition:
+        background .15s,
+        border-color .15s,
+        transform .15s;
+}
+
+#desktop .mc-quick-buttons button:hover {
+    background: #DFEAF4;
+    border-color: #779ABA;
+    transform: translateY(-1px);
+}
+
+#desktop .mc-quick-buttons button:active {
+    transform: translateY(0);
+}
+
+#desktop .mc-quick-buttons button:focus-visible {
+    outline: 2px solid #779ABA;
+    outline-offset: 2px;
+}
+
+
+/* =========================================
+   74. 추천 답장 다크 모드
+   ========================================= */
+
+#desktop[data-ui-mode="dark"]
+.mc-quick-buttons button {
+    background: #293B4E;
+    color: #C8DEF0;
+    border-color: #486681;
+}
+
+#desktop[data-ui-mode="dark"]
+.mc-quick-buttons button:hover {
+    background: #39536A;
+    border-color: #779ABA;
+}

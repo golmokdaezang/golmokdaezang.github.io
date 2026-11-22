@@ -390,74 +390,99 @@
     // 메시지 내용 분류
     // =========================================
 
-    async function classify(client, message) {
+async function classify(client, message) {
 
-        const text = message.trim();
+    const text = message.trim();
 
-        // 아직 완료하지 않았다는 표현을 먼저 확인
+    // 01. 사과
 
-        if (
-            /아직.*(못|안)|분석\s*중|작성\s*중|미제출|제출\s*전|하는\s*중|못\s*했/.test(text)
-        ) {
-            return "working";
-        }
+    if (/죄송|미안|사과드립니다|사과합니다/.test(text)) {
+        return "apology";
+    }
 
 
-        // 보고서 제출 및 완료 여부
+    // 02. 휴식 및 피로
 
-        if (
-            /제출\s*(했|완료|했습니다)|저장\s*(했|완료)|보고\s*완료|다\s*했|작성\s*완료/.test(text)
-        ) {
-
-            const report = await checkReport(client);
-
-            return report
-                ? "submitted"
-                : "missing";
-
-        }
+    if (/쉬고|쉴래|휴식|피곤|자러|졸려|힘들어/.test(text)) {
+        return "rest";
+    }
 
 
-        // 식사 관련 대화
+    // 03. 업무 미완료
 
-        if (
-            /저녁|점심|밥|식사|회식|배고파/.test(text)
-        ) {
-            return "food";
-        }
-
-
-        // 휴식 관련 대화
-
-        if (
-            /쉬고|쉴래|휴식|피곤|자러|졸려/.test(text)
-        ) {
-            return "rest";
-        }
+    if (
+        /아직.*(못|안)|분석\s*중|작성\s*중|미제출|제출\s*전|하는\s*중|못\s*했/.test(text)
+    ) {
+        return "working";
+    }
 
 
-        // 인사
+    // 04. 보고서 제출 여부 확인
 
-        if (
-            /안녕|좋은\s*아침|계세요|뭐해|뭐\s*하세요/.test(text)
-        ) {
-            return "greeting";
-        }
+    if (
+        /제출\s*(했|완료|했습니다)|저장\s*(했|완료)|보고\s*완료|다\s*했|작성\s*완료/.test(text)
+    ) {
 
+        const report = await checkReport(client);
 
-        // 기타 업무 진행
-
-        if (
-            /분석|연구|공부|작업|작성|진행/.test(text)
-        ) {
-            return "working";
-        }
-
-
-        return "default";
+        return report
+            ? "submitted"
+            : "missing";
 
     }
 
+
+    // 05. 칭찬
+
+    if (/멋있|멋지|대단하|최고|존경|잘생겼/.test(text)) {
+        return "compliment";
+    }
+
+
+    // 06. 장난 및 실없는 소리
+
+    if (
+        /심심해|심심합니다|놀아줘|놀아주세요|메롱|바보|장난이|농담이|^ㅋ{2,}$|^ㅎ{2,}$/.test(text)
+    ) {
+        return "joke";
+    }
+
+
+    // 07. 식사
+
+    if (/저녁|점심|밥|식사|배고파/.test(text)) {
+        return "food";
+    }
+
+
+    // 08. 질문
+
+    if (/궁금|질문|어떻게|왜요|무엇|뭔가요/.test(text)) {
+        return "question";
+    }
+
+
+    // 09. 인사
+
+    if (
+        /안녕|좋은\s*아침|계세요|뭐해|뭐\s*하세요/.test(text)
+    ) {
+        return "greeting";
+    }
+
+
+    // 10. 업무 진행
+
+    if (/분석|연구|공부|작업|작성|진행/.test(text)) {
+        return "working";
+    }
+
+
+    // 11. 일반적인 일상 대화
+
+    return "daily";
+
+}
 
     // =========================================
     // 직전 답장과 동일한 문장 제외
@@ -506,6 +531,35 @@
     // 개인 메시지 자동 답장 예약
     // =========================================
 
+async function loadCustomReply(client, characterKey, type) {
+
+    const rows = check(
+
+        await client
+            .from("marine_dialogues")
+            .select("id,content,choices")
+            .eq("character_key", characterKey)
+            .eq("category", type)
+            .eq("enabled", true)
+
+    );
+
+    if (!rows.length) {
+        return null;
+    }
+
+    const content = await chooseReply(
+        client,
+        characterKey,
+        rows.map(row => row.content)
+    );
+
+    return randomItem(
+        rows.filter(row => row.content === content)
+    );
+
+}
+
     async function reply(
         client,
         characterKey,
@@ -541,33 +595,51 @@
         }
 
 
-        const profile =
-            dialogues[characterKey];
+const profile = dialogues[characterKey] || {
 
-        if (!profile) {
-            return;
-        }
+    default: ["그래. 무슨 이야기인가?"]
 
-
-        const type = await classify(
-            client,
-            message
-        );
+};
 
 
-        const candidates =
-
-            profile[type]
-
-            || profile.default;
+const type = await classify(client, message);
 
 
-        const content = await chooseReply(
-            client,
-            characterKey,
-            candidates
-        );
+let custom = null;
 
+
+try {
+
+    custom = await loadCustomReply(
+        client,
+        characterKey,
+        type
+    );
+
+} catch (error) {
+
+    console.warn("사용자 대사 조회 실패", error);
+
+}
+
+
+const candidates =
+    profile[type] || profile.default;
+
+
+const content = custom
+    ? custom.content
+    : await chooseReply(
+        client,
+        characterKey,
+        candidates
+    );
+
+
+const choices = custom &&
+    Array.isArray(custom.choices)
+        ? custom.choices
+        : [];
 
         // 캐릭터에 따른 답장 시간
 
@@ -619,6 +691,7 @@
                     direction: "incoming",
 
                     content,
+choices,
 
                     reply_to: replyTo,
 

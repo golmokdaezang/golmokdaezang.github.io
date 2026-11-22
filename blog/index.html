@@ -384,6 +384,9 @@
         }
 
     </style>
+<!-- MARINE OS v2.1 공통 디자인 -->
+
+<link rel="stylesheet" href="/assets/css/marine-ui.css">
 
 </head>
 
@@ -586,7 +589,10 @@
 
     <script src="/assets/js/marine-wanted.js"></script>
 
-    <script src="/assets/js/marine-organization.js"></script>
+    <script src="/assets/js/marine-images.js"></script>
+
+    <script src="/assets/js/marine-characters.js"></script>
+<script src="/assets/js/marine-organization.js"></script>
 
     <script src="/assets/js/marine-chat.js"></script>
 
@@ -596,6 +602,7 @@
 
     <script src="/assets/js/marine-notifications.js"></script>
 
+<script src="/assets/js/marine-ui.js"></script>
 
     <!-- =====================================
          05. 통합 시스템
@@ -1065,202 +1072,274 @@
         // 10. 전산망 부팅 로그
         // =====================================
 
-        async function bootLog(text) {
+async function bootLog(text, progress) {
 
-            const line = node(
+    const line = node(
 
-                "div",
+        "div",
 
-                null,
+        null,
 
-                "boot-line"
+        "boot-line"
 
-            );
-
-
-            const state = node(
-
-                "span",
-
-                "[ 처리 중 ]"
-
-            );
+    );
 
 
-            line.append(
+    const state = node(
 
-                node("span", text + " ........"),
+        "span",
 
-                state
+        "[ 처리 중 ]"
 
-            );
-
-
-            $("logs").append(line);
+    );
 
 
-            await delay(220);
+    line.append(
+
+        node("span", text + " ........"),
+
+        state
+
+    );
 
 
-            state.textContent = "[ 완료 ]";
+    $("logs").append(line);
 
-            state.className = "done";
 
-        }
+    await delay(850);
 
+
+    state.textContent = "[ 완료 ]";
+
+    state.className = "done";
+
+
+    MarineUI.setProgress(
+
+        progress,
+
+        text + " 완료"
+
+    );
+
+}
 
         // =====================================
         // 11. 전산망 접속
         // =====================================
 
-        $("access").addEventListener(
+$("access").addEventListener(
 
-            "submit",
+    "submit",
 
-            async event => {
+    async event => {
 
-                event.preventDefault();
+        event.preventDefault();
 
 
-                if (!client || authorized) return;
+        if (!client || authorized) return;
 
 
-                if (
+        if ($("connect").disabled) return;
 
-                    $("code").value.trim().toUpperCase()
 
-                    !== ACCESS_CODE
+        if (
 
-                ) {
+            $("code").value.trim().toUpperCase()
 
-                    $("status").textContent =
+            !== ACCESS_CODE
 
-                        "등록되지 않은 인사 식별 코드입니다.";
+        ) {
 
-                    return;
+            $("status").textContent =
 
-                }
+                "등록되지 않은 인사 식별 코드입니다.";
 
+            return;
 
-                $("connect").disabled = true;
+        }
 
-                $("status").textContent =
 
-                    "접근 권한 확인 중...";
+        $("connect").disabled = true;
 
+        $("connect").textContent = "인증 확인 중...";
 
-                try {
+        $("status").textContent =
 
-                    await authenticate();
+            "접근 권한을 확인하고 있습니다.";
 
 
-                    $("status").textContent = "";
+        try {
 
-                    $("access").hidden = true;
+            // 실제 관리자 인증
 
-                    $("logs").replaceChildren();
+            await authenticate();
 
 
-                    await bootLog(
-                        "MARINE OS 커널 초기화"
-                    );
+            $("status").textContent = "";
 
+            $("access").hidden = true;
 
-                    await bootLog(
-                        "마린포드 중앙 전산망 연결"
-                    );
+            $("logs").replaceChildren();
 
 
-                    await bootLog(
-                        "관계자 접근 권한 검증"
-                    );
+            MarineUI.prepareBoot();
 
 
-                    await loadIdentity();
+            MarineUI.setProgress(
 
+                5,
 
-                    await bootLog(
-                        "해군 인사 기록 조회"
-                    );
+                "접근 권한 인증 완료"
 
+            );
 
-                    await bootLog(
-                        "소속 지휘 체계 확인"
-                    );
 
+            // 세계관용 부팅 연출
 
-                    await bootLog(
-                        "업무 프로그램 모듈 확인"
-                    );
+            await bootLog(
 
+                "MARINE OS 초기화",
 
-                    $("identity").hidden = false;
+                18
 
+            );
 
-                    await delay(800);
 
-                    await authenticate();
+            await bootLog(
 
+                "중앙 전산망 접속 준비",
 
-                    $("logs").append(
+                32
 
-                        node(
+            );
 
-                            "div",
 
-                            "[ 승인 ] 전산망 접속을 허가합니다.",
+            await loadIdentity();
 
-                            "done"
 
-                        )
+            await bootLog(
 
-                    );
+                "해군 인사 기록 조회",
 
+                48
 
-                    await delay(700);
+            );
 
 
-                    authorized = true;
+            await bootLog(
 
+                "소속 지휘 체계 확인",
 
-                    await enterDesktop();
+                62
 
+            );
 
-                } catch (error) {
 
-                    authorized = false;
+            await bootLog(
 
-                    MarineNotifications.stop();
+                "사용자 작업 환경 준비",
 
-                    MarineSimulation.stop();
+                77
 
-                    $("desktop").hidden = true;
+            );
 
-                    $("gate").hidden = false;
 
-                    $("access").hidden = false;
+            await authenticate();
 
-                    $("identity").hidden = true;
 
-                    $("logs").replaceChildren();
+            await bootLog(
 
-                    $("status").textContent =
+                "접근 권한 최종 확인",
 
-                        error.message;
+                95
 
-                    console.error(error);
+            );
 
 
-                } finally {
+            $("identity").hidden = false;
 
-                    $("connect").disabled = false;
 
-                }
+            $("logs").append(
 
-            }
+                node(
 
-        );
+                    "div",
 
+                    "[ 승인 ] 전산망 접속을 허가합니다.",
+
+                    "done"
+
+                )
+
+            );
+
+
+            await MarineUI.finishBoot();
+
+
+            authorized = true;
+
+
+            await enterDesktop();
+
+
+            MarineUI.welcome(
+
+                profile,
+
+                personnel
+
+            );
+
+
+            MarineUI.resetBoot();
+
+
+        } catch (error) {
+
+            authorized = false;
+
+
+            MarineNotifications.stop();
+
+            MarineSimulation.stop();
+
+            MarineUI.resetBoot();
+
+
+            $("desktop").hidden = true;
+
+            $("gate").hidden = false;
+
+            $("access").hidden = false;
+
+            $("identity").hidden = true;
+
+            $("logs").replaceChildren();
+
+
+            $("status").textContent =
+
+                error.message;
+
+
+            console.error(error);
+
+
+        } finally {
+
+            $("connect").disabled = false;
+
+            $("connect").textContent =
+
+                "전산망 접속";
+
+        }
+
+    }
+
+);
 
         // =====================================
         // 12. 바탕화면 초기화

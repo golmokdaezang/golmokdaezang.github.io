@@ -643,7 +643,23 @@
 
                 });
 
+button.className = "mn-list-item";
 
+button.classList.toggle(
+
+    "mn-active",
+
+    selected?.id === note.id
+
+);
+
+button.setAttribute(
+
+    "aria-pressed",
+
+    String(selected?.id === note.id)
+
+);
                 button.onclick = async () => {
 
                     try {
@@ -681,6 +697,8 @@
         function openNote(note) {
 
             selected = note;
+
+renderList();
 
             editor.replaceChildren();
 

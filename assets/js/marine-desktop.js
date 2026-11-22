@@ -60,7 +60,23 @@
 
         leader: "akainu",
 
-        mode: "dark",
+        mode: "light",
+
+normalMode: false,
+
+showPortrait: true,
+
+showAffiliation: true,
+
+showJustice: true,
+
+showWelcome: true,
+
+uiFont: "Noto Sans KR",
+
+uiFontSize: 14,
+
+uiFontWeight: "400",
 
         wallpaper: "",
 
@@ -1297,6 +1313,72 @@
 
         desktop.dataset.mode = settings.mode;
 
+// v2.1 공통 화면 설정
+
+const shell = document.getElementById("desktop");
+
+if (shell) {
+
+    shell.dataset.uiMode = settings.mode;
+
+    shell.dataset.normalMode =
+
+        settings.normalMode ? "true" : "false";
+
+}
+
+
+const supportedFonts = [
+
+    "Noto Sans KR",
+
+    "Pretendard",
+
+    "SUIT",
+
+    "Malgun Gothic"
+
+];
+
+
+const selectedFont =
+
+    supportedFonts.includes(settings.uiFont)
+
+        ? settings.uiFont
+
+        : "Noto Sans KR";
+
+
+target.style.setProperty(
+
+    "--ui-font",
+
+    `"${selectedFont}", "Malgun Gothic", sans-serif`
+
+);
+
+
+target.style.setProperty(
+
+    "--ui-font-size",
+
+    clamp(settings.uiFontSize, 12, 20) + "px"
+
+);
+
+
+target.style.setProperty(
+
+    "--ui-font-weight",
+
+    settings.uiFontWeight === "500"
+
+        ? "500"
+
+        : "400"
+
+);
 
         // =====================================
         // 배경화면
@@ -2405,6 +2487,158 @@
         // =====================================
         // 19. 대장 테마 선택
         // =====================================
+
+// =====================================
+// v2.1 화면 및 표시 설정
+// =====================================
+
+const displaySection = section(
+
+    "00. 화면 및 표시 설정"
+
+);
+
+
+checkbox(
+
+    displaySection,
+
+    "일반 모드 (업무 공간)",
+
+    "normalMode"
+
+);
+
+
+checkbox(
+
+    displaySection,
+
+    "대장 프로필 사진 표시",
+
+    "showPortrait"
+
+);
+
+
+checkbox(
+
+    displaySection,
+
+    "대장 소속 문구 표시",
+
+    "showAffiliation"
+
+);
+
+
+checkbox(
+
+    displaySection,
+
+    "정의관 표시",
+
+    "showJustice"
+
+);
+
+
+checkbox(
+
+    displaySection,
+
+    "접속 환영 알림 표시",
+
+    "showWelcome"
+
+);
+
+
+const fontSection = section(
+
+    "글꼴 및 텍스트"
+
+);
+
+
+select(
+
+    fontSection,
+
+    "시스템 글꼴",
+
+    "uiFont",
+
+    [
+
+        ["Noto Sans KR", "Noto Sans KR"],
+
+        ["Pretendard", "Pretendard"],
+
+        ["SUIT", "SUIT"],
+
+        ["Malgun Gothic", "맑은 고딕"]
+
+    ]
+
+);
+
+
+range(
+
+    fontSection,
+
+    "기본 글자 크기",
+
+    "uiFontSize",
+
+    12,
+
+    20,
+
+    "px"
+
+);
+
+
+select(
+
+    fontSection,
+
+    "글자 굵기",
+
+    "uiFontWeight",
+
+    [
+
+        ["400", "보통"],
+
+        ["500", "중간"]
+
+    ]
+
+);
+
+
+const fontPreview = node("div");
+
+fontPreview.className = "mui-font-preview";
+
+
+fontPreview.append(
+
+    node("h3", "시스템 글꼴 미리보기"),
+
+    node("p", "전산망 접속을 환영합니다."),
+
+    node("p", "ABCDEFGHIJKLMN"),
+
+    node("p", "0123456789")
+
+);
+
+
+fontSection.append(fontPreview);
 
         const themeSection = section(
 
