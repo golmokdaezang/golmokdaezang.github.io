@@ -1,724 +1,109 @@
-
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>선장의 중앙 기록실</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            color: #e6d6b9;
-            background: #15110d;
-            font-family: Georgia, "Malgun Gothic", serif;
-        }
-
-        button, select {
-            font: inherit;
-        }
-
-        button, a {
-            cursor: pointer;
-        }
-
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        /* 상단 메뉴 */
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 35px;
-            border-bottom: 1px solid #655034;
-            color: #c8a76b;
-        }
-
-        /* 전체 레이아웃 */
-
-        .container {
-            display: grid;
-            grid-template-columns: 230px minmax(0, 1fr);
-            gap: 40px;
-            max-width: 1500px;
-            margin: auto;
-            padding: 35px;
-        }
-
-        /* 왼쪽 책 목록 */
-
-        .sidebar {
-            position: sticky;
-            top: 25px;
-            align-self: start;
-            border-right: 1px solid #665034;
-            padding-right: 20px;
-        }
-
-        .sidebar h3 {
-            color: #c8a76b;
-            font-size: 14px;
-            letter-spacing: 2px;
-        }
-
-        .book-button {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            width: 100%;
-            margin-bottom: 8px;
-            padding: 12px;
-            background: transparent;
-            color: #e6d6b9;
-            border: 1px solid transparent;
-            border-radius: 4px;
-            text-align: left;
-        }
-
-        .book-button:hover,
-        .book-button.active {
-            background: #382b1b;
-            border-color: #665034;
-        }
-
-        .book-symbol {
-            display: inline-grid;
-            place-items: center;
-            width: 30px;
-            height: 36px;
-            border-radius: 3px;
-            border: 1px solid #a48958;
-        }
-
-        /* 중앙 기록실 제목 */
-
-        .heading {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid #665034;
-        }
-
-        .heading small {
-            color: #c8a76b;
-            letter-spacing: 3px;
-        }
-
-        .heading h1 {
-            font-weight: 400;
-            font-size: 36px;
-        }
-
-        /* 관리자 메뉴 */
-
-        .menus {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 40px;
-        }
-
-        .menu {
-            background: linear-gradient(
-                145deg,
-                #30251a,
-                #211a12
-            );
-
-            border: 1px solid #75603e;
-            color: #e6d6b9;
-            border-radius: 6px;
-            padding: 30px 15px;
-            text-align: center;
-        }
-
-        .menu:hover {
-            background: #45341f;
-        }
-
-        .menu .symbol {
-            font-size: 32px;
-            color: #c8a76b;
-        }
-
-        .menu h2 {
-            font-size: 20px;
-            font-weight: 400;
-        }
-
-        .menu p {
-            color: #aa9b85;
-            font-size: 13px;
-        }
-
-        /* 게시글 목록 */
-
-        .records {
-            border-top: 1px solid #665034;
-            padding-top: 20px;
-        }
-
-        .post {
-            padding: 20px;
-            margin-bottom: 12px;
-            border: 1px solid #58462e;
-            background: #211a12;
-            border-radius: 4px;
-        }
-
-        .post h3 {
-            margin: 12px 0;
-        }
-
-        .post-meta {
-            display: flex;
-            justify-content: space-between;
-            color: #c8a76b;
-            font-size: 13px;
-        }
-
-        .post-body {
-            white-space: pre-wrap;
-            overflow-wrap: anywhere;
-            line-height: 1.8;
-            border-top: 1px solid #665034;
-            margin-top: 15px;
-            padding-top: 15px;
-        }
-
-        .action {
-            border: 1px solid #867047;
-            border-radius: 4px;
-            padding: 8px 12px;
-            background: transparent;
-            color: #e6d6b9;
-        }
-
-        .notice {
-            padding: 25px;
-            color: #aa9b85;
-            text-align: center;
-        }
-
-        /* 숨김 처리 */
-
-        [hidden] {
-            display: none !important;
-        }
-
-        /* 모바일 화면 */
-
-        @media (max-width: 700px) {
-            .container {
-                grid-template-columns: 1fr;
-                padding: 18px;
-                gap: 20px;
-            }
-
-            .sidebar {
-                position: static;
-                border-right: none;
-                border-bottom: 1px solid #665034;
-            }
-
-            .topbar {
-                padding: 15px;
-            }
-
-            .heading h1 {
-                font-size: 28px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- 상단 로그인 메뉴 -->
-
-    <header class="topbar">
-        <span>⚓ CAPTAIN'S ARCHIVE</span>
-
-        <div>
-            <a id="login" href="/login/">
-                로그인
-            </a>
-
-            <button id="logout" class="action" hidden>
-                로그아웃
-            </button>
-        </div>
-    </header>
-
-    <div class="container">
-
-        <!-- 왼쪽 책 목록 -->
-
-        <aside class="sidebar">
-            <h3>기록 보관소</h3>
-
-            <button class="book-button active" id="allBooks">
-                전체 기록
-            </button>
-
-            <div id="bookList"></div>
-
-            <p>
-                <a href="/bookshelf/">
-                    ← 책장으로 돌아가기
-                </a>
-            </p>
-        </aside>
-
-        <!-- 중앙 기록실 -->
-
-        <main>
-
-            <header class="heading">
-                <small>CAPTAIN'S ARCHIVE</small>
-                <h1>선장의 중앙 기록실</h1>
-                <p>여섯 권의 책에 담긴 항해 기록</p>
-            </header>
-
-            <!-- 관리자 전용 메뉴 -->
-
-            <section class="menus" id="adminMenus" hidden>
-
-                <a class="menu" href="/blog/admin/">
-                    <div class="symbol">✒</div>
-                    <h2>새 기록 작성</h2>
-                    <p>게시글 작성 및 공개</p>
-                </a>
-
-                <a class="menu" href="/blog/admin/">
-                    <div class="symbol">▤</div>
-                    <h2>기존 기록 관리</h2>
-                    <p>게시글 수정 및 삭제</p>
-                </a>
-
-                <button class="menu" id="designMenu">
-                    <div class="symbol">❖</div>
-                    <h2>책 디자인 관리</h2>
-                    <p>책 이름, 색상, 장식 수정</p>
-                </button>
-
-                <button class="menu" id="orderMenu">
-                    <div class="symbol">☷</div>
-                    <h2>목차 관리</h2>
-                    <p>게시글 순서 변경</p>
-                </button>
-
-            </section>
-
-            <!-- 게시글 목록 -->
-
-            <section class="records">
-
-                <h2 id="recordTitle">
-                    전체 항해 기록
-                </h2>
-
-                <div id="postList">
-                    <p class="notice">
-                        기록을 불러오는 중...
-                    </p>
-                </div>
-
-            </section>
-
-        </main>
-
-    </div>
-
-    <!-- Supabase 연결 -->
-
-    <script src="/assets/js/supabase-config.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-
-    <script>
-
-        // 관리자 계정 UID
-
-        const ADMIN_UID = '6e6288e5-3612-4d2f-8d8b-fb08007d86a9';
-
-
-        // Supabase 클라이언트 생성
-
-        const client = window.supabase.createClient(
-            window.SUPABASE_URL,
-            window.SUPABASE_PUBLISHABLE_KEY
-        );
-
-
-        // 상태 변수
-
-        let books = [];
-        let posts = [];
-        let selectedBook = null;
-        let isAdmin = false;
-
-
-        // HTML 요소 가져오기
-
-        const $ = id => document.getElementById(id);
-
-
-        // HTML 요소 생성 함수
-
-        function make(tag, className, text) {
-
-            const el = document.createElement(tag);
-
-            if (className) {
-                el.className = className;
-            }
-
-            if (text !== undefined) {
-                el.textContent = text;
-            }
-
-            return el;
-        }
-
-
-        // 페이지 초기화
-
-        async function init() {
-
-            const { data } = await client.auth.getUser();
-
-            isAdmin = data.user?.id === ADMIN_UID;
-
-            // 로그인 여부 및 관리자 권한에 따라 표시
-
-            $('adminMenus').hidden = !isAdmin;
-            $('login').hidden = !!data.user;
-            $('logout').hidden = !data.user;
-
-
-            // 책 목록 불러오기
-
-            const bookResult = await client
-                .from('books')
-                .select('*')
-                .order('sort_order');
-
-            if (bookResult.error) {
-                throw bookResult.error;
-            }
-
-            books = bookResult.data;
-
-
-            // 게시글 목록 불러오기
-
-            const postResult = await client
-                .from('posts')
-                .select('id,title,book_key,is_public,created_at')
-                .order('created_at', {
-                    ascending: false
-                });
-
-            if (postResult.error) {
-                throw postResult.error;
-            }
-
-            posts = postResult.data;
-
-
-            // 화면 출력
-
-            renderBooks();
-            renderPosts();
-        }
-
-
-        // 왼쪽 책 목록 출력
-
-        function renderBooks() {
-
-            $('bookList').replaceChildren();
-
-            $('allBooks').classList.toggle(
-                'active',
-                selectedBook === null
-            );
-
-            books.forEach(book => {
-
-                const button = make(
-                    'button',
-                    'book-button'
-                );
-
-                const symbol = make(
-                    'span',
-                    'book-symbol',
-                    book.symbol
-                );
-
-
-                // 데이터베이스에 저장된 책 디자인 반영
-
-                symbol.style.backgroundColor = book.color;
-                symbol.style.color = book.text_color;
-
-                button.append(
-                    symbol,
-                    make('span', '', book.name)
-                );
-
-                button.classList.toggle(
-                    'active',
-                    selectedBook === book.slug
-                );
-
-
-                // 책 선택
-
-                button.onclick = () => {
-
-                    selectedBook = book.slug;
-
-                    renderBooks();
-                    renderPosts();
-                };
-
-                $('bookList').append(button);
-            });
-        }
-
-
-        // 게시글 목록 출력
-
-        function renderPosts() {
-
-            $('postList').replaceChildren();
-
-            const currentBook = books.find(
-                b => b.slug === selectedBook
-            );
-
-
-            // 선택한 책의 이름 표시
-
-            $('recordTitle').textContent = currentBook
-                ? currentBook.name + ' · 항해 기록'
-                : '전체 항해 기록';
-
-
-            // 선택한 책에 해당하는 게시글 필터링
-
-            const filtered = posts.filter(
-                p => !selectedBook ||
-                     p.book_key === selectedBook
-            );
-
-
-            // 게시글이 없는 경우
-
-            if (!filtered.length) {
-
-                $('postList').append(
-                    make(
-                        'p',
-                        'notice',
-                        '아직 등록된 기록이 없습니다.'
-                    )
-                );
-
-                return;
-            }
-
-
-            // 게시글 카드 생성
-
-            filtered.forEach(post => {
-
-                const book = books.find(
-                    b => b.slug === post.book_key
-                );
-
-                const card = make('article', 'post');
-                const meta = make('div', 'post-meta');
-
-
-                // 책 이름 및 공개 여부
-
-                meta.append(
-                    make(
-                        'span',
-                        '',
-                        book?.name || post.book_key
-                    ),
-
-                    make(
-                        'span',
-                        '',
-                        post.is_public
-                            ? '🔓 공개'
-                            : '🔒 봉인'
-                    )
-                );
-
-
-                // 게시글 제목
-
-                const title = make(
-                    'h3',
-                    '',
-                    post.title
-                );
-
-
-                // 작성 날짜
-
-                const date = make(
-                    'p',
-                    '',
-                    new Date(
-                        post.created_at
-                    ).toLocaleDateString('ko-KR')
-                );
-
-
-                // 기록 열기 버튼
-
-                const read = make(
-                    'button',
-                    'action',
-                    '기록 열기'
-                );
-
-                const body = make(
-                    'div',
-                    'post-body'
-                );
-
-                body.hidden = true;
-
-
-                // 게시글 본문 열기 및 닫기
-
-                read.onclick = async () => {
-
-                    if (!body.hidden) {
-
-                        body.hidden = true;
-                        body.textContent = '';
-
-                        return;
-                    }
-
-                    body.hidden = false;
-
-
-                    // 비공개 게시글 접근 제한
-
-                    if (!post.is_public && !isAdmin) {
-
-                        body.textContent =
-                            '🔒 봉인된 기록입니다.';
-
-                        return;
-                    }
-
-
-                    // 게시글 본문 불러오기
-
-                    body.textContent = '불러오는 중...';
-
-                    const { data, error } = await client
-                        .from('post_contents')
-                        .select('content')
-                        .eq('post_id', post.id)
-                        .maybeSingle();
-
-                    body.textContent = error
-                        ? '기록을 불러오지 못했습니다.'
-                        : data?.content ??
-                          '열람할 수 없는 기록입니다.';
-                };
-
-
-                card.append(
-                    meta,
-                    title,
-                    date,
-                    read,
-                    body
-                );
-
-                $('postList').append(card);
-            });
-        }
-
-
-        // 전체 기록 버튼
-
-        $('allBooks').onclick = () => {
-
-            selectedBook = null;
-
-            renderBooks();
-            renderPosts();
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>선장의 중앙 기록실</title><style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #181611; color: #e1cda4; font: 16px/1.6 Georgia, "Malgun Gothic", serif; }
+main { max-width: 1200px; margin: auto; padding: 30px 20px; }
+a { color: #d5b77c; }
+header, .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+header a:first-child { margin-right: auto; }
+section, article { border: 1px solid #67543b; background: #241e17; padding: 20px; border-radius: 8px; margin: 16px 0; }
+label { display: block; margin: 12px 0 4px; }
+input, select, textarea, button { font: inherit; color: inherit; background: #31271d; border: 1px solid #786044; border-radius: 5px; padding: 9px; }
+input, select, textarea { width: 100%; }
+input[type=checkbox] { width: auto; }
+textarea { min-height: 360px; resize: vertical; }
+button { cursor: pointer; }
+button:disabled { opacity: .5; cursor: wait; }
+button:hover { background: #51402b; }
+[hidden] { display: none !important; }
+.columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.preview { overflow-wrap: anywhere; min-width: 0; background: #181611; padding: 15px; border: 1px solid #67543b; }
+img { max-width: 100%; }
+pre { overflow: auto; background: #15110d; padding: 12px; }
+td, th { border: 1px solid #67543b; padding: 6px; }
+table { border-collapse: collapse; }
+@media(max-width: 700px) { .columns { grid-template-columns: 1fr; } }
+
+.container { display: grid; grid-template-columns: 230px minmax(0,1fr); gap: 40px; margin: 30px auto; }
+aside { border-right: 1px solid #67543b; padding-right: 20px; align-self: start; position: sticky; top: 20px; }
+aside button { display: flex; gap: 10px; align-items: center; width: 100%; margin: 8px 0; background: transparent; text-align: left; }
+aside button.active { background: #51402b; }
+.symbol { display: inline-grid; place-items: center; width: 30px; height: 36px; border: 1px solid #a48958; border-radius: 3px; overflow: hidden; }
+.menus { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0; background: transparent; border: 0; }
+.menus a, .menus button { text-decoration: none; text-align: center; padding: 24px 10px; border: 1px solid #75603e; background: #30251a; border-radius: 6px; color: inherit; }
+.menus h2 { font-size: 20px; font-weight: normal; }
+.preview { margin-top: 15px; }
+@media(max-width:700px) { .container { grid-template-columns: 1fr; gap: 15px; } aside { position: static; border-right: 0; } }
+</style></head>
+<body><main>
+<header><span>⚓ CAPTAIN'S ARCHIVE</span><a id="login" href="/login/">로그인</a><button id="logout" hidden>로그아웃</button></header>
+<div class="container"><aside><h3>기록 보관소</h3><button id="allBooks">전체 기록</button><div id="bookList"></div><a href="/bookshelf/">← 책장으로 돌아가기</a></aside>
+<div><h1>선장의 중앙 기록실</h1><p>여섯 권의 책에 담긴 항해 기록</p>
+<section id="adminMenus" class="menus" hidden>
+<a href="/blog/write/">✒<h2>새 기록 작성</h2>게시글 작성 및 공개</a>
+<a href="/blog/admin/">▤<h2>기존 기록 관리</h2>게시글 수정 및 삭제</a>
+<a href="/blog/design/">❖<h2>책 디자인 관리</h2>책 이름, 색상, 장식 수정</a>
+<button id="orderMenu">☷<h2>목차 관리</h2>게시글 순서 변경</button>
+</section><h2 id="recordTitle">전체 항해 기록</h2><div id="postList">기록을 불러오는 중...</div></div></div>
+</main>
+<script src="/assets/js/supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.3.1/dist/purify.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const ADMIN_UID = '6e6288e5-3612-4d2f-8d8b-fb08007d86a9';
+const client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_PUBLISHABLE_KEY);
+let books = [], posts = [], selected = null, isAdmin = false;
+function el(tag, text) { const n = document.createElement(tag); n.textContent = text; return n; }
+function check(r) { if (r.error) throw r.error; return r.data; }
+function render() {
+    $('bookList').replaceChildren();
+    $('allBooks').classList.toggle('active', !selected);
+    for (const b of books) {
+        const btn = el('button', '');
+        const symbol = el('span', b.symbol);
+        symbol.className = 'symbol'; symbol.style.backgroundColor = b.color; symbol.style.color = b.text_color;
+        btn.append(symbol, el('span', b.name)); btn.classList.toggle('active', selected === b.slug);
+        btn.onclick = () => { selected = b.slug; render(); }; $('bookList').append(btn);
+    }
+    $('recordTitle').textContent = selected ? (books.find(b => b.slug === selected)?.name || selected) + ' · 항해 기록' : '전체 항해 기록';
+    const root = $('postList'); root.replaceChildren();
+    const rows = posts.filter(p => !selected || p.book_key === selected);
+    if (selected) rows.sort((a, b) => (a.sort_order || Infinity) - (b.sort_order || Infinity) || a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id));
+    if (!rows.length) root.textContent = '아직 등록된 기록이 없습니다.';
+    for (const p of rows) {
+        const card = el('article', '');
+        const meta = el('small', (books.find(b => b.slug === p.book_key)?.name || p.book_key) + ' · ' + (p.is_public ? '🔓 공개' : '🔒 봉인'));
+        const read = el('button', '기록 열기'); const body = el('div', ''); body.hidden = true; body.className = 'preview';
+        read.onclick = async () => {
+            if (!body.hidden) { body.hidden = true; body.replaceChildren(); return; }
+            body.hidden = false;
+            if (!p.is_public && !isAdmin) { body.textContent = '🔒 봉인된 기록입니다.'; return; }
+            body.textContent = '불러오는 중...';
+            try {
+                const row = check(await client.from('post_contents').select('content').eq('post_id', p.id).maybeSingle());
+                if (!row) { body.textContent = '열람할 수 없는 기록입니다.'; return; }
+                if (body.hidden) return;
+                if (window.marked && window.DOMPurify) body.innerHTML = DOMPurify.sanitize(marked.parse(row.content), {USE_PROFILES: {html: true}});
+                else body.textContent = row.content;
+            } catch (e) { body.textContent = '기록을 불러오지 못했습니다.'; }
         };
-
-
-        // 로그아웃 버튼
-
-        $('logout').onclick = async () => {
-
-            const { error } = await client.auth.signOut();
-
-            if (error) {
-
-                alert('로그아웃에 실패했습니다.');
-
-                return;
-            }
-
-            location.reload();
-        };
-
-
-        // 책 디자인 관리 페이지 이동
-
-        $('designMenu').onclick = () => {
-
-            window.location.href = '/blog/design/';
-        };
-
-
-        // 목차 관리 버튼 (추후 구현)
-
-        $('orderMenu').onclick = () => {
-
-            alert(
-                '목차 관리 기능은 다음 단계에서 연결됩니다.'
-            );
-        };
-
-
-        // 페이지 실행 및 오류 처리
-
-        init().catch(error => {
-
-            $('postList').textContent =
-                '기록실 연결 오류: ' + error.message;
-        });
-
-    </script>
-
-</body>
-</html>
+        card.append(meta, el('h3', p.title), el('p', new Date(p.created_at).toLocaleDateString('ko-KR')), read, body); root.append(card);
+    }
+}
+$('allBooks').onclick = () => { selected = null; render(); };
+$('orderMenu').onclick = () => location.href = '/blog/order/';
+$('logout').onclick = async () => { try { check(await client.auth.signOut()); location.reload(); } catch(e) { alert(e.message); } };
+async function init() {
+    const {data} = await client.auth.getUser(); isAdmin = data.user?.id === ADMIN_UID;
+    $('adminMenus').hidden = !isAdmin; $('login').hidden = !!data.user; $('logout').hidden = !data.user;
+    books = check(await client.from('books').select('*').order('sort_order'));
+    posts = check(await client.from('posts').select('id,title,book_key,is_public,created_at,sort_order').order('created_at',{ascending:false}).order('id'));
+    render();
+    client.auth.onAuthStateChange((event, session) => { if (isAdmin && session?.user.id !== ADMIN_UID) location.reload(); });
+}
+init().catch(e => $('postList').textContent = '기록실 연결 오류: ' + e.message);
+</script>
+</body></html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>목차 관리</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #181611; color: #e1cda4; font: 16px/1.6 Georgia, "Malgun Gothic", serif; }
+        main { max-width: 850px; margin: auto; padding: 32px 20px; }
+        a { color: #d5b77c; }
+        h1 { text-align: center; }
+        section { background: #241e17; border: 1px solid #67543b; padding: 20px; border-radius: 8px; }
+        button, select { font: inherit; background: #31271d; color: inherit; border: 1px solid #786044; border-radius: 5px; padding: 9px; }
+        button { cursor: pointer; }
+        button:disabled { opacity: .4; cursor: default; }
+        select { width: 100%; margin: 8px 0 16px; }
+        .row { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid #67543b; border-radius: 5px; margin: 8px 0; background: #31271d; }
+        .name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+        .handle { cursor: grab; }
+        .over { outline: 2px solid #d5b77c; }
+        .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+        small { display: block; color: #b7a17c; }
+        [hidden] { display: none !important; }
+    </style>
+</head>
+<body>
+<main>
+    <a href="/blog/">← 중앙 기록실</a>
+    <h1>⚓ 목차 관리</h1>
+    <p id="status" role="status">관리자 인증 확인 중...</p>
+    <a id="login" href="/login/" hidden>로그인</a>
+    <section id="workspace" hidden>
+        <label for="book">편집할 책</label>
+        <select id="book"></select>
+        <small>게시글을 끌거나 화살표를 눌러 순서를 변경하세요.</small>
+        <div id="rows"></div>
+        <div class="actions">
+            <button id="save">목차 순서 저장</button>
+            <button id="cancel">변경 취소</button>
+        </div>
+    </section>
+</main>
+<script src="/assets/js/supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+    const ADMIN_UID = '6e6288e5-3612-4d2f-8d8b-fb08007d86a9';
+    const $ = id => document.getElementById(id);
+    const client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_PUBLISHABLE_KEY);
+    let rows = [], original = [], activeBook = '', busy = false, dirty = false, dragId = null;
+    function check(result) {
+        if (result.error) throw result.error;
+        return result.data;
+    }
+    function status(message) { $('status').textContent = message; }
+    function element(tag, content) {
+        const node = document.createElement(tag);
+        node.textContent = content;
+        return node;
+    }
+    function move(from, to) {
+        if (busy || from < 0 || to < 0 || from === to || to >= rows.length) return;
+        rows.splice(to, 0, rows.splice(from, 1)[0]);
+        dirty = rows.some((p, i) => p.id !== original[i]?.id);
+        status(dirty ? '저장하지 않은 변경 사항이 있습니다.' : '목차 순서가 변경되지 않았습니다.');
+        render();
+    }
+    function render() {
+        const root = $('rows');
+        root.replaceChildren();
+        $('save').disabled = busy || !dirty;
+        $('cancel').disabled = busy || !dirty;
+        $('book').disabled = busy;
+        if (!rows.length) root.textContent = '이 책에는 아직 게시글이 없습니다.';
+        rows.forEach((p, i) => {
+            const row = element('div', '');
+            row.className = 'row';
+            row.draggable = !busy;
+            const handle = element('span', '⠿');
+            handle.className = 'handle';
+            const name = element('div', '');
+            name.className = 'name';
+            name.append(element('span', p.title), element('small', p.is_public ? '공개' : '봉인'));
+            const up = element('button', '↑');
+            const down = element('button', '↓');
+            up.setAttribute('aria-label', p.title + ' 위로 이동');
+            down.setAttribute('aria-label', p.title + ' 아래로 이동');
+            up.disabled = busy || i === 0;
+            down.disabled = busy || i === rows.length - 1;
+            up.onclick = () => move(i, i - 1);
+            down.onclick = () => move(i, i + 1);
+            row.ondragstart = e => { dragId = p.id; e.dataTransfer.setData('text/plain', p.id); e.dataTransfer.effectAllowed = 'move'; };
+            row.ondragover = e => { if (dragId && !busy) { e.preventDefault(); row.classList.add('over'); } };
+            row.ondragleave = () => row.classList.remove('over');
+            row.ondragend = () => { dragId = null; root.querySelectorAll('.over').forEach(n => n.classList.remove('over')); };
+            row.ondrop = e => { e.preventDefault(); row.classList.remove('over'); if (dragId) move(rows.findIndex(x => x.id === dragId), i); dragId = null; };
+            row.append(handle, element('span', String(i + 1).padStart(2, '0')), name, up, down);
+            root.append(row);
+        });
+    }
+    async function load(book) {
+        const data = check(await client.from('posts').select('id,title,is_public,sort_order,created_at').eq('book_key', book));
+        data.sort((a, b) => (a.sort_order || Infinity) - (b.sort_order || Infinity) || a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id));
+        activeBook = book;
+        rows = data;
+        original = [...data];
+        dirty = false;
+        status('목차를 불러왔습니다.');
+    }
+    async function act(fn) {
+        if (busy) return;
+        busy = true;
+        render();
+        try { await fn(); }
+        catch (e) { status('오류: ' + e.message); }
+        finally { busy = false; render(); }
+    }
+    $('book').onchange = () => {
+        const next = $('book').value;
+        if (dirty && !confirm('저장하지 않은 변경을 취소할까요?')) { $('book').value = activeBook; return; }
+        act(async () => { try { await load(next); } finally { $('book').value = activeBook; } });
+    };
+    $('cancel').onclick = () => { rows = [...original]; dirty = false; status('변경을 취소했습니다.'); render(); };
+    $('save').onclick = () => act(async () => {
+        try {
+            for (let i = 0; i < rows.length; i++) {
+                check(await client.from('posts').update({sort_order: i + 1}).eq('id', rows[i].id).eq('book_key', activeBook).select('id').single());
+            }
+        } catch (e) {
+            status('일부 순서만 저장되었을 수 있습니다. 다시 저장하세요: ' + e.message);
+            return;
+        }
+        original = [...rows];
+        dirty = false;
+        status('목차 순서를 저장했습니다.');
+    });
+    window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = true; } });
+    async function init() {
+        const {data, error} = await client.auth.getUser();
+        if (error || data.user?.id !== ADMIN_UID) { status('관리자 로그인이 필요합니다.'); $('login').hidden = false; return; }
+        const books = check(await client.from('books').select('slug,name').order('sort_order'));
+        for (const b of books) { const option = element('option', b.name); option.value = b.slug; $('book').append(option); }
+        if (!books.length) { status('등록된 책이 없습니다.'); return; }
+        await load(books[0].slug);
+        $('workspace').hidden = false;
+        render();
+        client.auth.onAuthStateChange((event, session) => { if (session?.user.id !== ADMIN_UID) { $('workspace').hidden = true; rows = []; original = []; dirty = false; render(); status('관리자 로그인이 필요합니다.'); $('login').hidden = false; } });
+    }
+    init().catch(e => status('연결 오류: ' + e.message));
+</script>
+</body>
+</html>
