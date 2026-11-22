@@ -4,30 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>목차 관리</title>
-    <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; background: #181611; color: #e1cda4; font: 16px/1.6 Georgia, "Malgun Gothic", serif; }
-        main { max-width: 850px; margin: auto; padding: 32px 20px; }
-        a { color: #d5b77c; }
-        h1 { text-align: center; }
-        section { background: #241e17; border: 1px solid #67543b; padding: 20px; border-radius: 8px; }
-        button, select { font: inherit; background: #31271d; color: inherit; border: 1px solid #786044; border-radius: 5px; padding: 9px; }
-        button { cursor: pointer; }
-        button:disabled { opacity: .4; cursor: default; }
-        select { width: 100%; margin: 8px 0 16px; }
-        .row { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid #67543b; border-radius: 5px; margin: 8px 0; background: #31271d; }
-        .name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
-        .handle { cursor: grab; }
-        .over { outline: 2px solid #d5b77c; }
-        .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
-        small { display: block; color: #b7a17c; }
-        [hidden] { display: none !important; }
-    </style>
+    <link rel="stylesheet" href="/assets/css/marine-admin.css?v=1">
+<script defer src="/assets/js/marine-admin-theme.js?v=1"></script>
 </head>
-<body>
+<body class="marine-admin" data-app="order">
 <main>
     <a href="/blog/">← 중앙 기록실</a>
-    <h1>⚓ 목차 관리</h1>
+    <span class="app-kicker">ORDER · 03</span><h1>문서 편철</h1><p class="app-subtitle">목차 관리</p>
     <p id="status" role="status">관리자 인증 확인 중...</p>
     <a id="login" href="/login/" hidden>로그인</a>
     <section id="workspace" hidden>

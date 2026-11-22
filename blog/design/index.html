@@ -5,110 +5,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>책 디자인 관리</title>
-    <style>
-        * {
-            box-sizing: border-box
-        }
-
-        body {
-            margin: 0;
-            background: #15110d;
-            color: #e6d6b9;
-            font: 16px 'Malgun Gothic', sans-serif
-        }
-
-        main {
-            max-width: 900px;
-            margin: auto;
-            padding: 30px
-        }
-
-        a {
-            color: #c8a76b
-        }
-
-        section {
-            border: 1px solid #665034;
-            padding: 24px;
-            margin: 20px 0;
-            background: #211a12
-        }
-
-        label {
-            display: block;
-            margin: 16px 0 6px
-        }
-
-        input,
-        select,
-        textarea,
-        button {
-            font: inherit;
-            padding: 10px;
-            border: 1px solid #867047;
-            background: #30251a;
-            color: #e6d6b9;
-            border-radius: 4px
-        }
-
-        input:not([type=color]),
-        select,
-        textarea {
-            width: 100%
-        }
-
-        button {
-            cursor: pointer
-        }
-
-        button:disabled {
-            opacity: .5;
-            cursor: default
-        }
-
-        .choices {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 10px 0
-        }
-
-        .swatch {
-            min-width: 42px;
-            height: 42px
-        }
-
-        .preview {
-            text-align: center;
-            padding: 35px;
-            overflow-wrap: anywhere;
-            border-radius: 5px
-        }
-
-        .preview strong {
-            font-size: 32px
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 20px
-        }
-
-        [hidden] {
-            display: none !important
-        }
-
-        #status {
-            white-space: pre-wrap
-        }
-    </style>
+    <link rel="stylesheet" href="/assets/css/marine-admin.css?v=1">
+<script defer src="/assets/js/marine-admin-theme.js?v=1"></script>
 </head>
 
-<body>
+<body class="marine-admin" data-app="design">
     <main><a href="/blog/">← 중앙 기록실</a>
-        <h1>책 디자인 관리</h1>
+        <span class="app-kicker">DESIGN · 04</span><h1>분류 체계</h1><p class="app-subtitle">책 디자인 관리</p>
         <p id="status" role="status">권한 확인 중...</p>
         <section id="editor" hidden><label for="book">편집할 책</label><select id="book"></select><label for="name">책
                 이름</label><input id="name" maxlength="100"><label for="description">책 설명</label><textarea
