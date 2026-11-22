@@ -173,13 +173,20 @@ function updateMagnifier(x, y) {
 function updateZoom() {
   const rect = mapImage.getBoundingClientRect();
 
-  const insideMap =
+  const visibleRect = viewport.getBoundingClientRect();
+  const target = document.elementFromPoint(mouseX, mouseY);
+  const overControl = Boolean(target?.closest(".back-link, .chart-mini"));
+  const insideMap = !overControl &&
+    mouseX >= visibleRect.left && mouseX <= visibleRect.right &&
+    mouseY >= visibleRect.top && mouseY <= visibleRect.bottom &&
     mouseX >= rect.left &&
     mouseX <= rect.right &&
     mouseY >= rect.top &&
     mouseY <= rect.bottom;
 
   magnifier.classList.toggle("over-map", insideMap);
+  magnifier.classList.toggle("over-control", overControl);
+  document.body.classList.toggle("lens-active", insideMap && pointerVisible);
 
   if (!insideMap) return;
 
@@ -244,11 +251,13 @@ document.addEventListener("pointermove", (event) => {
 document.addEventListener("pointerleave", () => {
   pointerVisible = false;
   magnifier.classList.remove("visible");
+  document.body.classList.remove("lens-active");
 });
 
 window.addEventListener("blur", () => {
   pointerVisible = false;
   magnifier.classList.remove("visible");
+  document.body.classList.remove("lens-active");
 });
 
 /* ==========================
