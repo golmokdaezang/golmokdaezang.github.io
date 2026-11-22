@@ -10,13 +10,13 @@
 </head>
 <body class="marine-admin" data-app="admin">
 <main>
-    <header><a href="/blog/">← 중앙 기록실</a><a id="login" href="/login/">로그인</a><button id="logout" hidden>로그아웃</button></header>
+    <header style="justify-content:flex-end"><a id="login" href="/login/">로그인</a><button id="logout" hidden>로그아웃</button></header>
     <span class="app-kicker">RECORDS · 02</span><h1>기록물 관리</h1><p class="app-subtitle">기존 기록 관리</p>
     <p id="status" role="status">로그인 확인 중...</p>
     <section id="workspace" hidden>
         <div class="actions">
             <a href="/blog/write/">+ 새 기록 작성</a>
-            <button id="open-marine-scenarios" type="button">⚓ 해군 통신 시나리오 관리</button>
+            
         </div>
         <label for="search">제목 검색</label><input id="search" placeholder="검색할 제목">
         <div class="columns">
@@ -133,7 +133,7 @@ if (!new URLSearchParams(location.search).has("scenario")) init().catch(e => sta
 </script>
 <script src="/assets/js/marine-scenarios.js?v=5"></script>
 <script>
-document.getElementById('open-marine-scenarios').onclick = async () => {
+async function openMarineScenarios() {
     try {
         const { data, error } = await client.auth.getUser();
         if (error) throw error;
@@ -150,10 +150,10 @@ document.getElementById('open-marine-scenarios').onclick = async () => {
         alert('시나리오 관리 창 오류: ' + error.message);
         console.error(error);
     }
-};
+}
 if (new URLSearchParams(location.search).has("scenario")) {
     document.documentElement.classList.add("scenario-page");
-    document.getElementById("open-marine-scenarios").click();
+    openMarineScenarios();
 }
 </script>
 </body>

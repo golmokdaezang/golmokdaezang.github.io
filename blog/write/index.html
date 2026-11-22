@@ -9,7 +9,7 @@
 </head>
 <body class="marine-admin" data-app="write">
 <main>
-    <header><a href="/blog/">← 중앙 기록실</a><a id="login" href="/login/">로그인</a><button id="logout" hidden>로그아웃</button></header>
+    <header style="justify-content:flex-end"><a id="back-records" href="/blog/admin/" style="margin-right:auto" hidden>← 목록으로 돌아가기</a><a id="login" href="/login/">로그인</a><button id="logout" hidden>로그아웃</button></header>
     <span class="app-kicker">EDITOR · 01</span><h1>보고서 작성</h1><p class="app-subtitle">새 기록 작성</p>
     <p id="status" role="status">로그인 확인 중...</p>
     <section id="workspace" hidden>
@@ -78,6 +78,7 @@ $('logout').onclick = async () => {
 };
 
 let editing = new URLSearchParams(location.search).get('id');
+$('back-records').hidden = !editing;
 function preview() {
     const root = $('preview');
     if (!window.marked || !window.DOMPurify) { root.textContent = $('content').value; return; }

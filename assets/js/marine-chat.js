@@ -560,7 +560,13 @@
 
         const reset = node("button", "대화 초기화");
         reset.type = "button";
-        header.append(reset);
+        const scenarioButton = node("button", "시나리오 관리");
+        scenarioButton.type = "button";
+        scenarioButton.onclick = () => {
+            if (!window.MarineWindows?.open) return alert("창 관리 기능을 불러오지 못했습니다.");
+            window.MarineWindows.open({id:"marine-scenario-manager", title:"해군 통신 시나리오 관리", url:"/blog/admin/?scenario=1&v=6", width:900, height:650});
+        };
+        header.append(scenarioButton, reset);
         reset.onclick = async () => {
             if (busy || stopped || reset.disabled) return;
             if (!confirm("모든 대화방의 메시지를 삭제할까요? 직접 보낸 메시지와 캐릭터 메시지, 예약 메시지도 삭제되며 복구할 수 없습니다.")) return;
