@@ -947,58 +947,52 @@ renderList();
             });
 
 
-            for (const color of colors) {
-
-                const button = node("button");
-
-                button.title = color;
-
-                Object.assign(button.style, {
-
-                    background: color,
-
-                    width: "30px",
-
-                    height: "30px",
-
-                    border: "1px solid #777",
-
-                    cursor: "pointer"
-
-                });
-
-
-                button.onclick = async () => {
-
-                    try {
-
-                        await save(
-
-                            client,
-
-                            note.id,
-
-                            { color }
-
-                        );
-
-                        note.color = color;
-
-                        changed();
-
-                    } catch (error) {
-
-                        status.textContent =
-                            error.message;
-
-                    }
-
-                };
-
-                palette.append(button);
-
+            function stickyCards() {
+                return [...document.querySelectorAll('.marine-sticky-note')]
+                    .filter(card => card.dataset.noteId === String(note.id));
             }
 
+            function highlightColor() {
+                for (const button of palette.querySelectorAll('button')) {
+                    const active = button.title.toUpperCase() ===
+                        (note.color || colors[0]).toUpperCase();
+                    button.style.outline = active ? '2px solid #333' : 'none';
+                    button.style.outlineOffset = '2px';
+                    button.setAttribute('aria-pressed', String(active));
+                }
+            }
+
+            for (const color of colors) {
+                const button = node('button');
+                button.type = 'button';
+                button.title = color;
+                Object.assign(button.style, {
+                    background: color,
+                    width: '30px', height: '30px',
+                    border: '1px solid #777', cursor: 'pointer'
+                });
+                button.onclick = async () => {
+                    const previous = note.color;
+                    const buttons = [...palette.querySelectorAll('button')];
+                    buttons.forEach(b => b.disabled = true);
+                    note.color = color;
+                    stickyCards().forEach(card => card.style.background = color);
+                    highlightColor();
+                    try {
+                        await save(client, note.id, { color });
+                        status.textContent = '색상 저장 완료';
+                    } catch (error) {
+                        note.color = previous;
+                        stickyCards().forEach(card => card.style.background = previous || colors[0]);
+                        highlightColor();
+                        status.textContent = '저장 실패: ' + error.message;
+                    } finally {
+                        buttons.forEach(b => b.disabled = false);
+                    }
+                };
+                palette.append(button);
+            }
+            highlightColor();
 
             editor.append(
                 node("p", "메모 색상"),
@@ -1021,34 +1015,25 @@ renderList();
             opacity.value = note.opacity || 1;
 
 
-            opacity.onchange = async () => {
-
-                try {
-
-                    note.opacity =
-                        Number(opacity.value);
-
-                    await save(
-
-                        client,
-
-                        note.id,
-
-                        { opacity: note.opacity }
-
-                    );
-
-                    changed();
-
-                } catch (error) {
-
-                    status.textContent =
-                        error.message;
-
-                }
-
+            opacity.oninput = () => {
+                stickyCards().forEach(card => card.style.opacity = opacity.value);
             };
-
+            opacity.onchange = async () => {
+                const previous = note.opacity || 1;
+                const value = Number(opacity.value);
+                opacity.disabled = true;
+                try {
+                    await save(client, note.id, { opacity: value });
+                    note.opacity = value;
+                    status.textContent = '투명도 저장 완료';
+                } catch (error) {
+                    opacity.value = previous;
+                    stickyCards().forEach(card => card.style.opacity = String(previous));
+                    status.textContent = '저장 실패: ' + error.message;
+                } finally {
+                    opacity.disabled = false;
+                }
+            };
 
             editor.append(
                 node("p", "메모 투명도"),
