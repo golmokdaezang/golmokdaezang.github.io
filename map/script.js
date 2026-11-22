@@ -14,54 +14,92 @@ const LENS_Y = 0.355;
 /* 섬 목록 */
 const ISLANDS = [
   {
-    name: "웹해킹",
-    x: 4, y: 12, width: 17, height: 35,
-    href: "/web/"
+    "name": "웹해킹",
+    "href": "/web/",
+    "x": 2.861,
+    "y": 12.431,
+    "width": 11.5,
+    "height": 43.6
   },
   {
-    name: "시스템 해킹",
-    x: 22, y: 7, width: 17, height: 31,
-    href: "/pwn/"
+    "name": "A&D",
+    "href": "/ad/",
+    "x": 12.5,
+    "y": 45.692,
+    "width": 12.778,
+    "height": 47.846
   },
   {
-    name: "A&D",
-    x: 3, y: 52, width: 21, height: 34,
-    href: "/ad/"
+    "name": "시스템 해킹",
+    "href": "/pwn/",
+    "x": 25.701,
+    "y": 7.462,
+    "width": 4.153,
+    "height": 44.308
   },
   {
-    name: "디지털 포렌식",
-    x: 30, y: 23, width: 28, height: 51,
-    href: "/forensics/"
+    "name": "디지털 포렌식",
+    "href": "/forensics/",
+    "x": 31.229,
+    "y": 23.462,
+    "width": 13.097,
+    "height": 58.462
   },
   {
-    name: "리버싱",
-    x: 49, y: 5, width: 19, height: 30,
-    href: "/reversing/"
+    "name": "리버싱",
+    "href": "/reversing/",
+    "x": 45.375,
+    "y": 10.808,
+    "width": 7.028,
+    "height": 35.462
   },
   {
-    name: "암호학",
-    x: 66, y: 27, width: 18, height: 26,
-    href: "/crypto/"
+    "name": "임베디드",
+    "href": "/embedded/",
+    "x": 49.367,
+    "y": 63.815,
+    "width": 4.6,
+    "height": 22.369
   },
   {
-    name: "IoT",
-    x: 81, y: 8, width: 18, height: 29,
-    href: "/iot/"
+    "name": "암호학",
+    "href": "/crypto/",
+    "x": 57.917,
+    "y": 28.038,
+    "width": 6.389,
+    "height": 35.462
   },
   {
-    name: "네트워크",
-    x: 80, y: 42, width: 19, height: 26,
-    href: "/network/"
+    "name": "Misc",
+    "href": "/misc/",
+    "x": 66.215,
+    "y": 63.992,
+    "width": 4.792,
+    "height": 22.015
   },
   {
-    name: "임베디드",
-    x: 56, y: 49, width: 18, height: 30,
-    href: "/embedded/"
+    "name": "네트워크",
+    "href": "/network/",
+    "x": 70.215,
+    "y": 17.492,
+    "width": 7.347,
+    "height": 27.323
   },
   {
-    name: "Misc",
-    x: 70, y: 63, width: 18, height: 25,
-    href: "/misc/"
+    "name": "IoT",
+    "href": "/iot/",
+    "x": 80.05,
+    "y": 58.192,
+    "width": 4.344,
+    "height": 21.308
+  },
+  {
+    "name": "CTF",
+    "href": "/ctf/",
+    "x": 88.472,
+    "y": 26.492,
+    "width": 6.389,
+    "height": 30.862
   }
 ];
 
@@ -325,3 +363,5 @@ viewport.addEventListener("scroll", () => {
     updateIslandLabel();
   }
 }, { passive: true });
+
+const mini=document.getElementById('mini'); const marker=document.getElementById('marker'); function syncMini(){marker.style.width=100*viewport.clientWidth/viewport.scrollWidth+'%';marker.style.left=100*viewport.scrollLeft/viewport.scrollWidth+'%';mini.value=100*viewport.scrollLeft/Math.max(1,viewport.scrollWidth-viewport.clientWidth);} viewport.addEventListener('scroll',syncMini); window.addEventListener('resize',syncMini); mapImage.addEventListener('load',syncMini); mini.addEventListener('input',()=>{viewport.scrollLeft=Number(mini.value)/100*(viewport.scrollWidth-viewport.clientWidth)});syncMini();
