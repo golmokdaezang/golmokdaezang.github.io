@@ -4,6 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ page.title | escape }} | {{ site.title | escape }}</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&amp;family=Noto+Sans+KR:wght@400;500;600;700&amp;display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&amp;family=Gowun+Batang:wght@400;700&amp;display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/static/woff2/SUIT.css">
   <style>
     :root { color-scheme: dark; --gold:#c8a76b; --muted:#aa9b85; --ink:#e6d6b9; --edge:#665034; --bg-deep:#0d0b0a; --bg-mid:#17120f; --bg-glow:#302418; }
     body[data-book="blue"] { --bg-deep:#0a121d; --bg-mid:#101f30; --bg-glow:#263c51; }
@@ -59,10 +63,85 @@
     .fallback a { color:var(--gold); }
     @media(max-width:760px) { .reading-grid { grid-template-columns:1fr; gap:12px; } .toc { position:relative; top:auto; max-height:230px; border-bottom:1px solid #735739; padding-top:0; } .paper { min-height:45vh; } .topbar { flex-wrap:wrap; } }
     @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
-  </style>
+
+    body {font-family:'Noto Sans KR','Malgun Gothic',sans-serif; background:radial-gradient(ellipse at 75% 0%,var(--bg-glow),var(--bg-mid) 48%,var(--bg-deep)); color:#e9e3d8;}
+    body::before {display:none;}
+    .topbar {background:#10151dcc; border-bottom:1px solid #ffffff18; padding:18px clamp(18px,4vw,64px);}
+    .brand {font-family:'Cinzel',Georgia,serif; letter-spacing:.16em;}
+    .return {border-color:#c8a76b66; border-radius:7px;}
+    .shell {max-width:1480px; padding:clamp(24px,4vw,56px);}
+    .intro {border-color:#ffffff20; margin-bottom:28px;}
+    h1 {font-weight:650; letter-spacing:-.045em;}
+    .intro p {line-height:1.7; color:#c3beb5;}
+    .reading-grid {grid-template-columns:minmax(190px,260px) minmax(0,1fr); gap:clamp(20px,3vw,44px);}
+    .toc {padding:14px 0; scrollbar-color:#947044 transparent;}
+    .toc-list {border:0; gap:6px; counter-reset:chapter;}
+    .toc-button {counter-increment:chapter; margin:0; border:1px solid transparent; border-radius:7px; padding:13px 14px; color:#d1ccc3;}
+    .toc-button::before {content:counter(chapter,decimal-leading-zero) '  '; color:var(--gold); font-size:.8em; margin-right:6px;}
+    .toc-button[aria-selected="true"] {background:#ffffff12; border-color:#c8a76b55; color:#f5e7ca;}
+    .toc-date {color:#b5afa5; padding-left:25px;}
+    .paper {background:#f3eee4; color:#302d29; border:1px solid #d8cdbc; border-radius:10px; box-shadow:0 16px 45px #0004; padding:clamp(24px,4vw,58px); min-height:60vh; color-scheme:light;}
+    .paper::before {display:none;}
+    .article h2 {font-weight:700; letter-spacing:-.035em;}
+    .article-date {color:#796b59; letter-spacing:.035em; border-color:#d8cdbc;}
+    .article-body {font-size:1rem; line-height:1.95;}
+    .article-body :not(pre)>code {background:#e6dccb; border-radius:3px;}
+    .article-body pre {background:#202a35; border-radius:7px;}
+    .article:not([hidden]) {animation:record-in .2s ease both;}
+    body {animation:archive-in .4s ease both;}
+    @keyframes archive-in {from {opacity:0;filter:blur(5px)} to {opacity:1;filter:none}}
+    @keyframes record-in {from {opacity:.6} to {opacity:1}}
+    @media(max-width:760px) {.reading-grid {grid-template-columns:1fr;gap:14px;} .toc {max-height:220px;} .paper {min-height:45vh;}}
+    @media(prefers-reduced-motion:reduce) {body,.article:not([hidden]) {animation:none;}}
+  
+    /* Open, borderless captain's archive */
+    body {font-family:Pretendard,'Noto Sans KR',sans-serif;background:radial-gradient(ellipse at 80% 5%,var(--bg-glow),transparent 75%),linear-gradient(160deg,var(--bg-mid),var(--bg-deep));background-attachment:fixed;color:#eae7e1;}
+    .topbar {background:transparent;border-bottom:1px solid #ffffff18;}
+    .shell {max-width:1600px;padding:clamp(22px,4vw,64px);}
+    .intro {margin-bottom:32px;padding-bottom:22px;}
+    .reading-grid {grid-template-columns:minmax(180px,240px) minmax(0,1fr);gap:clamp(24px,5vw,80px);}
+    .toc {border:0;}
+    .paper {background:none;border:0;box-shadow:none;border-radius:0;color:#eae7e1;padding:8px 0 48px;min-height:0;color-scheme:dark;}
+    .overview[hidden],.overview-back[hidden] {display:none!important;}
+    .overview-kicker {color:var(--gold);font:500 .72rem Cinzel,serif;letter-spacing:.2em;}
+    .overview h2 {font-size:2rem;letter-spacing:-.04em;margin:12px 0 8px;}
+    .overview-count {color:#b9c0c7;font-size:.9rem;margin:0 0 24px;}
+    .overview-entry {display:flex;align-items:center;gap:22px;width:100%;text-align:left;color:inherit;font:inherit;background:transparent;border:0;border-bottom:1px solid #ffffff20;padding:22px 8px;cursor:pointer;}
+    .overview-entry:hover,.overview-entry:focus-visible {background:#ffffff0c;outline:1px solid #ffffff30;border-radius:5px;}
+    .entry-number {color:var(--gold);font-size:.82rem;min-width:25px;}
+    .entry-info {flex:1;min-width:0;display:grid;gap:6px;overflow-wrap:anywhere;}
+    .entry-title {font-size:1.12rem;font-weight:500;}
+    .entry-date {font-size:.78rem;color:#b9c0c7;}
+    .entry-arrow {color:var(--gold);font-size:1.5rem;}
+    .overview-back {font:inherit;color:var(--gold);background:none;border:0;padding:8px 0;margin-bottom:24px;cursor:pointer;}
+    .article {max-width:920px;}
+    .article-date {color:#b9c0c7;border-color:#ffffff20;}
+    .article-body {color:#e0e2e5;line-height:1.95;}
+    .article-body a {color:#e5c789;}
+    .article-body :not(pre)>code {background:#ffffff15;color:#e8d9b7;}
+    .article-body blockquote {color:#c5c7ca;border-color:var(--gold);}
+    .article-body th,.article-body td {border-color:#ffffff30;}
+    .empty {display:none;}
+    @media(max-width:760px){.reading-grid{grid-template-columns:1fr;gap:22px}.toc{max-height:200px}.paper{padding-top:0}.overview-entry{gap:12px;padding:18px 4px}}
+
+    html {font-size:var(--reader-size,16px);}
+    body {font-family:var(--reader-font,Pretendard,'Noto Sans KR',sans-serif);}
+    .intro {text-align:center;padding-block:clamp(24px,4vw,58px);}
+    .intro .symbol {justify-content:center;}
+    .intro .symbol::before {content:"";width:65px;height:1px;background:linear-gradient(90deg,transparent,var(--gold));opacity:.65;}
+    .reader-actions {display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+    .reader-settings {position:relative;}
+    .reader-settings summary {cursor:pointer;list-style:none;}
+    .reader-settings summary::-webkit-details-marker {display:none;}
+    .reader-panel {position:absolute;right:0;top:calc(100% + 12px);z-index:20;width:min(300px,85vw);padding:18px;background:#202b38;color:#eee;border:1px solid #ffffff35;border-radius:10px;box-shadow:0 12px 36px #0005;display:grid;gap:12px;}
+    .reader-panel label {display:grid;gap:6px;}
+    .reader-panel select,.reader-panel button {font:inherit;color:inherit;background:#303e4d;border:1px solid #ffffff35;border-radius:6px;padding:8px;}
+    .reader-panel input {width:100%;accent-color:var(--gold);}
+    @media(max-width:600px){.reader-panel{left:0;right:auto;}.reader-actions{gap:8px;}}
+</style>
 </head>
 <body data-book="{{ page.book_key | escape }}">
-  <header class="topbar"><span class="brand"><svg class="compass" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="11.5" stroke="currentColor" stroke-width="1.25"/><path d="M16 2v5M16 25v5M2 16h5M25 16h5" stroke="currentColor" stroke-width="1.2"/><path d="m20.5 11.5-3 6-6 3 3-6 6-3Z" stroke="currentColor" stroke-width="1.3"/><circle cx="16" cy="16" r="1.4" fill="currentColor"/></svg><span>CAPTAIN'S ARCHIVE</span></span><a class="return" href="{{ '/bookshelf/' | relative_url }}">← 책장으로 돌아가기</a></header>
+  <header class="topbar"><span class="brand"><svg class="compass" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="11.5" stroke="currentColor" stroke-width="1.25"/><path d="M16 2v5M16 25v5M2 16h5M25 16h5" stroke="currentColor" stroke-width="1.2"/><path d="m20.5 11.5-3 6-6 3 3-6 6-3Z" stroke="currentColor" stroke-width="1.3"/><circle cx="16" cy="16" r="1.4" fill="currentColor"/></svg><span>CAPTAIN'S ARCHIVE</span></span><div class="reader-actions"><details class="reader-settings" id="readerSettings"><summary class="return">Aa 읽기 설정</summary><div class="reader-panel"><label>글꼴<select id="readerFont"><option value="pretendard">Pretendard</option><option value="suit">SUIT</option><option value="noto">Noto Sans KR</option><option value="myeongjo">나눔명조</option><option value="gowun">고운바탕</option><option value="malgun">맑은 고딕</option></select></label><label>글자 크기 <output id="readerSizeLabel">16px</output><input id="readerSize" type="range" min="12" max="24" step="1" value="16"></label><button type="button" id="readerReset">기본 설정 복원</button></div></details><a class="return" href="{{ '/bookshelf/' | relative_url }}">← 책장으로 돌아가기</a></div></header>
   <main class="shell">
     {% if page.book_key %}
       {% assign book = site.data.books | where: 'slug', page.book_key | first %}
@@ -71,14 +150,16 @@
         <nav class="toc" aria-label="게시글 목차"><h2>목차 · CONTENTS</h2><div class="toc-list" role="tablist" aria-label="기록 선택">
           {% assign entry_index = 0 %}
           {% for post in site.posts %}{% if post.categories contains page.book_key %}
-            <button type="button" class="toc-button" role="tab" id="tab-{{ entry_index }}" aria-controls="article-{{ entry_index }}" aria-selected="{% if entry_index == 0 %}true{% else %}false{% endif %}" tabindex="{% if entry_index == 0 %}0{% else %}-1{% endif %}" data-index="{{ entry_index }}">{{ post.title | escape }}<span class="toc-date">{{ post.date | date: '%Y.%m.%d' }}</span></button>
+            <button type="button" class="toc-button" role="tab" id="tab-{{ entry_index }}" aria-controls="article-{{ entry_index }}" aria-selected="false" tabindex="0" data-index="{{ entry_index }}">{{ post.title | escape }}<span class="toc-date">{{ post.date | date: '%Y.%m.%d' }}</span></button>
             {% assign entry_index = entry_index | plus: 1 %}
           {% endif %}{% endfor %}
         </div></nav>
-        <section class="paper" aria-label="게시글 본문">
+        <section class="paper" aria-label="기록 열람">
+          <button type="button" class="overview-back" hidden>← 전체 목차</button>
+          <section class="overview"><div class="overview-kicker">VOYAGE RECORDS</div><h2>목차</h2><p class="overview-count" aria-live="polite"></p><div class="overview-list"></div></section>
           {% assign panel_index = 0 %}
           {% for post in site.posts %}{% if post.categories contains page.book_key %}
-            <article class="article" role="tabpanel" id="article-{{ panel_index }}" aria-labelledby="tab-{{ panel_index }}" {% unless panel_index == 0 %}hidden{% endunless %}>
+            <article class="article" role="tabpanel" id="article-{{ panel_index }}" aria-labelledby="tab-{{ panel_index }}" hidden>
               <h2>{{ post.title | escape }}</h2><div class="article-date">{{ post.date | date: '%Y.%m.%d' }} · 선장의 기록</div><div class="article-body">{{ post.content }}</div>
             </article>
             {% assign panel_index = panel_index | plus: 1 %}
@@ -91,6 +172,37 @@
     {% endif %}
   </main>
   <script>
+    function showRecord() {
+      document.querySelector('.overview').hidden = true;
+      document.querySelector('.overview-back').hidden = false;
+    }
+    function refreshOverview() {
+      const list = document.querySelector('.overview-list');
+      if (!list) return;
+      const tabs = Array.from(document.querySelectorAll('.toc-button'));
+      list.replaceChildren();
+      document.querySelector('.overview-count').textContent = `총 ${tabs.length}개의 기록`;
+      tabs.forEach((tab, i) => {
+        const button = document.createElement('button');
+        button.type = 'button'; button.className = 'overview-entry';
+        const number = document.createElement('span'); number.className = 'entry-number'; number.textContent = String(i+1).padStart(2,'0');
+        const info = document.createElement('span'); info.className = 'entry-info';
+        const title = document.createElement('span'); title.className = 'entry-title';
+        title.textContent = Array.from(tab.childNodes).filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim();
+        const date = document.createElement('span'); date.className = 'entry-date'; date.textContent = tab.querySelector('.toc-date')?.textContent || '';
+        const arrow = document.createElement('span'); arrow.className = 'entry-arrow'; arrow.textContent = '›';
+        info.append(title,date); button.append(number,info,arrow); list.append(button);
+        button.addEventListener('click', () => {tab.click(); document.querySelector('.overview-back').focus();});
+      });
+    }
+    document.querySelector('.overview-back')?.addEventListener('click', () => {
+      document.querySelectorAll('.article').forEach(p => p.hidden = true);
+      document.querySelectorAll('.toc-button').forEach(t => {t.setAttribute('aria-selected','false'); t.tabIndex=0;});
+      document.querySelector('.overview').hidden = false;
+      document.querySelector('.overview-back').hidden = true;
+      document.querySelector('.overview-entry')?.focus();
+    });
+    refreshOverview();
     (function () {
       const tabs = Array.from(document.querySelectorAll('.toc-button[role="tab"]'));
       const panels = Array.from(document.querySelectorAll('.article[role="tabpanel"]'));
@@ -99,9 +211,10 @@
         tabs.forEach((tab, i) => {
           const active = i === index;
           tab.setAttribute('aria-selected', String(active));
-          tab.tabIndex = active ? 0 : -1;
+          tab.tabIndex = 0;
           panels[i].hidden = !active;
         });
+        showRecord();
         if (moveFocus) tabs[index].focus();
       }
       tabs.forEach((tab, i) => {
@@ -159,9 +272,10 @@
       generation++;
       for (const t of toc.querySelectorAll('button')) {
         t.setAttribute('aria-selected', String(t === tab));
-        t.tabIndex = t === tab ? 0 : -1;
+        t.tabIndex = 0;
       }
       for (const p of paper.querySelectorAll('.article')) p.hidden = p !== panel;
+      showRecord();
       for (const item of dynamic) if (item.panel !== panel) item.body.replaceChildren();
       return generation;
     }
@@ -173,7 +287,7 @@
       tab.id = 'db-tab-' + row.id;
       tab.setAttribute('role','tab');
       tab.setAttribute('aria-selected','false');
-      tab.tabIndex = -1;
+      tab.tabIndex = 0;
       tab.textContent = (row.is_public ? '' : '🔒 ') + row.title;
       tab.setAttribute('aria-controls','db-panel-' + row.id);
       const date = document.createElement('span');
@@ -221,7 +335,7 @@
       const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length-1 : (i + (event.key === 'ArrowDown' ? 1 : -1) + tabs.length) % tabs.length;
       tabs[next].focus(); tabs[next].click();
     }, true);
-    if (dynamic.length) dynamic[0].tab.click();
+    refreshOverview();
     client.auth.onAuthStateChange((event,session) => {
       const next = session?.user?.id === adminId;
       if (next !== admin) {
@@ -235,5 +349,19 @@
 })();
   </script>
 <script src="/assets/js/marine-common.js"></script>
+<script>
+(() => {
+ const fonts = {pretendard:"Pretendard, 'Noto Sans KR', sans-serif",suit:"SUIT, 'Noto Sans KR', sans-serif",noto:"'Noto Sans KR', sans-serif",myeongjo:"'Nanum Myeongjo', serif",gowun:"'Gowun Batang', serif",malgun:"'Malgun Gothic', sans-serif"};
+ const key='captain-archive-reading-v1';
+ const font=document.getElementById('readerFont'), size=document.getElementById('readerSize'), label=document.getElementById('readerSizeLabel');
+ let saved={}; try {saved=JSON.parse(localStorage.getItem(key)||'{}')||{};} catch(e){}
+ font.value=Object.prototype.hasOwnProperty.call(fonts,saved.font)?saved.font:'pretendard';
+ size.value=Number.isFinite(Number(saved.size))?Math.max(12,Math.min(24,Number(saved.size))):16;
+ function apply(){document.documentElement.style.setProperty('--reader-font',fonts[font.value]);document.documentElement.style.setProperty('--reader-size',size.value+'px');label.textContent=size.value+'px';try{localStorage.setItem(key,JSON.stringify({font:font.value,size:Number(size.value)}));}catch(e){}}
+ font.addEventListener('change',apply);size.addEventListener('input',apply);
+ document.getElementById('readerReset').addEventListener('click',()=>{font.value='pretendard';size.value=16;apply();});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('readerSettings').open=false;});apply();
+})();
+</script>
 </body>
 </html>
