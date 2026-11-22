@@ -163,7 +163,7 @@
             try {
                 const desktop = window.parent.document.getElementById("desktop");
                 if (!desktop) return;
-                const parentStyle = window.parent.getComputedStyle(desktop);
+                const parentStyle = window.parent.getComputedStyle(window.parent.document.documentElement);
                 for (const [source, destination] of [["--ui-font", "--ms-font"], ["--ui-font-size", "--ms-font-size"], ["--ui-font-weight", "--ms-font-weight"]]) {
                     const value = parentStyle.getPropertyValue(source).trim();
                     if (value) document.documentElement.style.setProperty(destination, value);
@@ -175,6 +175,8 @@
             } catch (error) { console.warn("Theme sync:", error); }
         }
         syncTheme();
+        const themeTimer = window.setInterval(syncTheme, 400);
+        window.addEventListener("pagehide", () => clearInterval(themeTimer), {once:true});
         try {
             const desktop = window.parent.document.getElementById("desktop");
             if (desktop) {

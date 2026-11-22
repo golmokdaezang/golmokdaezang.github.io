@@ -1638,93 +1638,31 @@ target.style.setProperty(
     // 13. 기본 아이콘 배치
     // =========================================
 
-    function getDefaultPosition(index) {
-
-        const rows = Math.max(
-
-            1,
-
-            Math.floor(
-
-                (desktop.clientHeight - 24) / 88
-
-            )
-
-        );
-
-
-        return {
-
-            x: 12 + Math.floor(index / rows) * 115,
-
-            y: 12 + (index % rows) * 88
-
-        };
-
+    function gridCells() {
+        const cols = Math.max(1, Math.floor((desktop.clientWidth - 7) / 115));
+        const rows = Math.max(1, Math.floor((desktop.clientHeight - 2) / 88));
+        const cells = [];
+        for (let c=0;c<cols;c++) for(let r=0;r<rows;r++) cells.push({x:12+c*115,y:12+r*88});
+        return cells;
     }
-
-
+    function getDefaultPosition(index) { const cells=gridCells(); return cells[index] || cells[0]; }
     function setIconPosition(icon, position) {
-
-        icon.style.left = clamp(
-
-            position.x,
-
-            0,
-
-            desktop.clientWidth - 110
-
-        ) + "px";
-
-
-        icon.style.top = clamp(
-
-            position.y,
-
-            0,
-
-            desktop.clientHeight - 78
-
-        ) + "px";
-
+        icon.style.left = clamp(position.x, 0, Math.max(0,desktop.clientWidth-110)) + "px";
+        icon.style.top = clamp(position.y, 0, Math.max(0,desktop.clientHeight-78)) + "px";
     }
-
-
+    function nearestCell(position, occupied) {
+        return gridCells().filter(p=>!occupied.has(p.x+":"+p.y)).sort((a,b)=>Math.hypot(a.x-position.x,a.y-position.y)-Math.hypot(b.x-position.x,b.y-position.y))[0];
+    }
     function repositionIcons() {
-
-        if (!iconLayer) {
-
-            return;
-
-        }
-
-
-        const children = [
-
-            ...iconLayer.children
-
-        ];
-
-
-        children.forEach((icon, index) => {
-
-            const id = icon.dataset.appId;
-
-
-            setIconPosition(
-
-                icon,
-
-                settings.positions[id]
-
-                || getDefaultPosition(index)
-
-            );
-
+        if (!iconLayer) return;
+        const used=new Set();
+        [...iconLayer.children].forEach((icon,index)=>{
+            const pos=nearestCell(settings.positions[icon.dataset.appId] || getDefaultPosition(index),used);
+            icon.hidden=!pos;
+            icon.style.display=pos ? "" : "none";
+            if(pos){setIconPosition(icon,pos);used.add(pos.x+":"+pos.y);}
         });
-
     }
-
 
     // =========================================
     // 14. 아이콘 생성
@@ -1871,6 +1809,7 @@ target.style.setProperty(
             attachIconDrag(button, id);
 
         });
+        repositionIcons();
 
     }
 
@@ -1994,13 +1933,10 @@ target.style.setProperty(
                     lastDrag = Date.now();
 
 
-                    settings.positions[id] = {
-
-                        x: icon.offsetLeft,
-
-                        y: icon.offsetTop
-
-                    };
+                    const used = new Set([...iconLayer.children].filter(el=>el!==icon && !el.hidden).map(el=>el.offsetLeft+":"+el.offsetTop));
+                    const pos = nearestCell({x:icon.offsetLeft,y:icon.offsetTop},used) || original;
+                    setIconPosition(icon,pos);
+                    for(const el of iconLayer.children) if(!el.hidden) settings.positions[el.dataset.appId]={x:el.offsetLeft,y:el.offsetTop};
 
 
                     saveSettings();
