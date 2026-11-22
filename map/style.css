@@ -302,3 +302,67 @@ body,
 
 /* Log pose optical lens */
 html,body,.map-page,.map-page *{cursor:auto!important}.map-viewport,.map-viewport *{cursor:none!important}.map-viewport.dragging,.map-viewport.dragging *{cursor:grabbing!important}.magnifier{width:138px;height:138px}.magnifier:not(.over-map),.map-page:has(.map-viewport.dragging) .magnifier{opacity:0}.magnifier-lens{left:50%;top:50%;width:88%;background:#233431}.magnifier-frame{border:1px solid #d8c399;border-radius:50%;box-shadow:0 0 0 3px #bca47755,inset 0 0 0 5px #171c1c88,0 4px 12px #0005;background:repeating-conic-gradient(from 0deg,#ddc79c99 0deg 1deg,transparent 1deg 15deg);mask-image:radial-gradient(circle,transparent 0 62%,black 63%)}.magnifier::after{content:"";position:absolute;inset:8px;border-radius:50%;border:1px solid #e9d7b26b;box-shadow:inset 0 0 12px #d5e9df16;pointer-events:none}.magnifier::before{content:"";position:absolute;z-index:3;left:50%;top:-8px;transform:translateX(-50%);border-left:4px solid transparent;border-right:4px solid transparent;border-top:9px solid #d8c399}.lens-needle{display:none}.island:focus:not(:focus-visible){outline:none}.back-link,.chart-mini,.chart-mini *{cursor:pointer!important}
+
+/* Dark ebony desk and understated navigation */
+body {
+ background-color:#141211;
+ background-image:radial-gradient(ellipse at 50% 38%,#302820 0%,#211c18 48%,#11100f 100%);
+}
+.desk-title {
+ display:flex;align-items:center;justify-content:center;gap:clamp(12px,3vw,48px);
+ width:min(76vw,1100px); top:5vh; color:#dec9a3;
+ font-size:clamp(13px,2vw,24px);letter-spacing:.18em;
+}
+.desk-title::before,.desk-title::after {
+ content:"";height:1px;flex:1;min-width:12px;
+ background:linear-gradient(90deg,transparent,#bca477a0);
+}
+.desk-title::after {transform:rotate(180deg)}
+.chart-mini {bottom:5vh;left:15vw;right:15vw;color:#bca77f;}
+.mini-track {height:14px;border:0;background:linear-gradient(#bca47744,#bca47744) center/100% 1px no-repeat;}
+.mini-track span {top:6px;height:2px;border:0;border-radius:4px;background:#cbb58a;box-shadow:0 0 7px #cbb58a44;}
+.mini-track span::after {content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;background:#ead4a5;transform:translate(-50%,-50%) rotate(45deg);}
+.chart-mini input {inset:0 0 auto;height:22px;}
+.chart-mini:focus-within .mini-track {outline:1px solid #bca47788;outline-offset:3px;}
+.mini-label {margin-top:5px;font-size:11px;letter-spacing:.08em;}
+.mini-label span:nth-child(2){opacity:.65;}
+.back-link{background:#191614e6;border-color:#bca47777;}
+.back-link:hover{background:#363028;}
+@media(max-width:600px){.desk-title{top:8vh;width:82vw;gap:10px}.chart-mini{left:10vw;right:10vw;bottom:7vh}}
+
+/* Ebony desk with soft, indirect candlelight. No image assets. */
+body {
+  background-color: #141210;
+  background-image:
+    radial-gradient(ellipse at 13% 5%, #b7783230, transparent 43%),
+    radial-gradient(ellipse at 50% 43%, #29241e, #171513 58%, #0e0e0e 100%);
+}
+.map-page { isolation: isolate; }
+.map-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 13% 8%, #ffc07024 0%, #bd742414 24%, transparent 58%);
+  animation: desk-candle-glow 9s ease-in-out infinite;
+}
+@keyframes desk-candle-glow {
+  0%,100% { opacity: .72; }
+  25% { opacity: .9; }
+  48% { opacity: .78; }
+  71% { opacity: 1; }
+  88% { opacity: .86; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .map-page::before { animation: none; opacity: .85; }
+}
+
+/* Golden skull navigation marker */
+.mini-track span::after {
+  content: ""; width: 19px; height: 21px;
+  background: center / contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 26'%3E%3Cpath fill='%23ead4a5' stroke='%23171411' stroke-width='1' d='M12 1C5 1 1 6 1 12c0 5 3 8 6 9v4h10v-4c3-1 6-4 6-9C23 6 19 1 12 1Z'/%3E%3Cg fill='%23211b16'%3E%3Cellipse cx='7.5' cy='12' rx='3' ry='3.4'/%3E%3Cellipse cx='16.5' cy='12' rx='3' ry='3.4'/%3E%3Cpath d='M12 15l-2 4h4ZM10 21h1v4h-1Zm3 0h1v4h-1Z'/%3E%3C/g%3E%3C/svg%3E");
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 0 3px #cbb58a44);
+  pointer-events: none;
+}
