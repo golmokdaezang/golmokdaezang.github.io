@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>책 디자인 관리</title>
+    <style>
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: #15110d;
+            color: #e6d6b9;
+            font: 16px 'Malgun Gothic', sans-serif
+        }
+
+        main {
+            max-width: 900px;
+            margin: auto;
+            padding: 30px
+        }
+
+        a {
+            color: #c8a76b
+        }
+
+        section {
+            border: 1px solid #665034;
+            padding: 24px;
+            margin: 20px 0;
+            background: #211a12
+        }
+
+        label {
+            display: block;
+            margin: 16px 0 6px
+        }
+
+        input,
+        select,
+        textarea,
+        button {
+            font: inherit;
+            padding: 10px;
+            border: 1px solid #867047;
+            background: #30251a;
+            color: #e6d6b9;
+            border-radius: 4px
+        }
+
+        input:not([type=color]),
+        select,
+        textarea {
+            width: 100%
+        }
+
+        button {
+            cursor: pointer
+        }
+
+        button:disabled {
+            opacity: .5;
+            cursor: default
+        }
+
+        .choices {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0
+        }
+
+        .swatch {
+            min-width: 42px;
+            height: 42px
+        }
+
+        .preview {
+            text-align: center;
+            padding: 35px;
+            overflow-wrap: anywhere;
+            border-radius: 5px
+        }
+
+        .preview strong {
+            font-size: 32px
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px
+        }
+
+        [hidden] {
+            display: none !important
+        }
+
+        #status {
+            white-space: pre-wrap
+        }
+    </style>
+</head>
+
+<body>
+    <main><a href="/blog/">← 중앙 기록실</a>
+        <h1>책 디자인 관리</h1>
+        <p id="status" role="status">권한 확인 중...</p>
+        <section id="editor" hidden><label for="book">편집할 책</label><select id="book"></select><label for="name">책
+                이름</label><input id="name" maxlength="100"><label for="description">책 설명</label><textarea
+                id="description" rows="3"></textarea><label for="target">색상 적용 대상</label><select id="target">
+                <option value="color">배경색</option>
+                <option value="text_color">글자 색상</option>
+            </select>
+            <div id="colors" class="choices"></div>
+            <div id="colorAdd" hidden><input type="color" id="picker" value="#b68d40"><button id="addColor">색상 추가 및
+                    저장</button></div><label for="symbol">책 장식</label><input id="symbol" maxlength="32">
+            <div id="symbols" class="choices"></div>
+            <div id="symbolAdd" hidden><input id="newSymbol" maxlength="32" placeholder="예: ☽, 🗝️"><button
+                    id="addSymbol">장식 추가 및 저장</button></div><label for="removePreset">사용자 정의 항목 삭제</label><select
+                id="removePreset"></select><button id="remove">선택 항목 삭제</button><label>미리보기</label>
+            <div class="preview" id="preview"><strong id="previewSymbol"></strong>
+                <h2 id="previewName"></h2>
+                <p id="previewDescription"></p>
+            </div>
+            <div class="actions"><button id="save">책 디자인 저장</button><button id="reset">기본 디자인 불러오기</button></div>
+        </section>
+    </main>
+    <script src="/assets/js/supabase-config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script>
+        const ADMIN_UID = '6e6288e5-3612-4d2f-8d8b-fb08007d86a9'; const db = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_PUBLISHABLE_KEY); const $ = id => document.getElementById(id); const defaults = { blue: ['파란 책', '#173c65', '✧'], green: ['초록 책', '#244b39', '⚓'], purple: ['보라 책', '#49305e', '✺'], brown: ['갈색 책', '#704721', '◎'], aqua: ['아쿠아 책', '#17646b', '⚓'], black: ['검정 책', '#242323', '☠'] }; let books = [], presets = [], draft = {}, busy = false; const hex = v => /^#[0-9a-f]{6}$/i.test(v); function msg(t) { $('status').textContent = t } function button(text, fn) { const b = document.createElement('button'); b.type = 'button'; b.textContent = text; b.onclick = fn; return b } function preview() { draft.name = $('name').value; draft.description = $('description').value; draft.symbol = $('symbol').value; $('preview').style.backgroundColor = hex(draft.color) ? draft.color : '#173c65'; $('preview').style.color = hex(draft.text_color) ? draft.text_color : '#e1cda4'; $('previewName').textContent = draft.name; $('previewDescription').textContent = draft.description; $('previewSymbol').textContent = draft.symbol } function fill() { for (const k of ['name', 'description', 'symbol']) $(k).value = draft[k] || ''; preview() } function choose() { draft = { ...books.find(b => b.slug === $('book').value) }; fill() } function render() { for (const [id, kind, base] of [['colors', 'color', [...Object.values(defaults).map(v => v[1]), '#e1cda4', '#ffffff', '#000000']], ['symbols', 'symbol', ['✧', '⚓', '✺', '◎', '☠', '☸', '✦']]]) { const el = $(id); el.replaceChildren(); for (const v of new Set([...base, ...presets.filter(p => p.kind === kind).map(p => p.value)])) { const b = button(kind === 'color' ? '' : v, () => { if (kind === 'color') draft[$('target').value] = v; else $('symbol').value = v; preview() }); b.className = 'swatch'; b.title = v; b.setAttribute('aria-label', v); if (kind === 'color' && hex(v)) b.style.backgroundColor = v; el.append(b) } el.append(button('+', () => { const panel = $(kind === 'color' ? 'colorAdd' : 'symbolAdd'); panel.hidden = !panel.hidden })) } const sel = $('removePreset'); sel.replaceChildren(new Option('삭제할 항목 선택', '')); for (const p of presets) sel.add(new Option(p.kind + ' · ' + p.value, p.id)) } async function loadPresets() { const { data, error } = await db.from('design_presets').select('id,kind,value').order('created_at'); if (error) throw error; presets = data; render() } async function run(fn) { if (busy) return; busy = true; try { await fn() } catch (e) { msg('오류: ' + e.message) } finally { busy = false } } async function add(kind, value) { value = value.trim(); if (!value || kind === 'color' && !hex(value) || kind === 'symbol' && Array.from(value).length > 32) throw Error('올바른 값을 입력하세요.'); if (!presets.some(p => p.kind === kind && p.value === value)) { const { error } = await db.from('design_presets').insert({ kind, value }); if (error) throw error } await loadPresets(); if (kind === 'color') draft[$('target').value] = value; else $('symbol').value = value; preview(); msg('사용자 정의 항목 저장 완료. 책에 적용하려면 책 디자인 저장을 누르세요.') } async function init() { const { data } = await db.auth.getUser(); if (data.user?.id !== ADMIN_UID) { msg('관리자 인증이 필요합니다.'); return } const { data: rows, error } = await db.from('books').select('*').order('sort_order'); if (error) throw error; books = rows; if (!books.length) throw Error('등록된 책이 없습니다.'); for (const b of books) $('book').add(new Option(b.name, b.slug)); await loadPresets(); choose(); $('editor').hidden = false; msg('편집할 책을 선택하세요.') } for (const k of ['name', 'description', 'symbol']) $(k).oninput = preview; $('book').onchange = choose; $('addColor').onclick = () => run(() => add('color', $('picker').value)); $('addSymbol').onclick = () => run(() => add('symbol', $('newSymbol').value)); $('remove').onclick = () => run(async () => { const id = $('removePreset').value; if (!id) return; const { error } = await db.from('design_presets').delete().eq('id', id); if (error) throw error; await loadPresets(); msg('선택 목록에서 삭제했습니다. 기존 책 디자인은 유지됩니다.') }); $('reset').onclick = () => { const d = defaults[draft.slug]; if (!d) return; Object.assign(draft, { name: d[0], description: d[0] + '에 담긴 항해 기록', color: d[1], text_color: '#e1cda4', symbol: d[2] }); fill(); msg('기본 디자인을 불러왔습니다. 저장하면 적용됩니다.') }; $('save').onclick = () => run(async () => { preview(); if (!draft.name.trim()) throw Error('책 이름을 입력하세요.'); const { name, description, color, text_color, symbol, slug } = draft; const { data, error } = await db.from('books').update({ name: name.trim(), description, color, text_color, symbol }).eq('slug', slug).select().single(); if (error) throw error; books = books.map(b => b.slug === slug ? data : b); $('book').selectedOptions[0].textContent = data.name; msg('책 디자인 저장 완료.') }); run(init);
+    </script>
+</body>
+
+</html>
