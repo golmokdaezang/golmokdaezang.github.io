@@ -97,16 +97,16 @@
             <div class="ms-titlebar">
                 <div class="ms-window-title"
                      id="ms-window-title">
-                    ♧ 해군 통신 시나리오 관리
+                    해군 통신 시나리오 관리
                 </div>
 
                 <div class="ms-window-controls">
                     <button id="ms-minimize"
-                            title="최소화">−</button>
+                            title="최소화"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 8h10"/></svg></button>
                     <button id="ms-maximize"
-                            title="최대화">□</button>
+                            title="최대화"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 3h10v10H3z"/></svg></button>
                     <button id="ms-close"
-                            title="닫기">×</button>
+                            title="닫기"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
                 </div>
             </div>
 
@@ -158,6 +158,29 @@
         `;
 
         document.body.appendChild(win);
+        // Same-origin admin iframe: inherit the desktop theme live.
+        function syncTheme() {
+            try {
+                const desktop = window.parent.document.getElementById("desktop");
+                if (!desktop) return;
+                const mode = desktop.dataset.uiMode || "light";
+                document.documentElement.dataset.scenarioMode = mode;
+                const bar = desktop.querySelector(".mw-titlebar");
+                if (bar) document.documentElement.style.setProperty("--ms-title-bg", window.parent.getComputedStyle(bar).backgroundColor);
+            } catch (error) { console.warn("Theme sync:", error); }
+        }
+        syncTheme();
+        try {
+            const desktop = window.parent.document.getElementById("desktop");
+            if (desktop) {
+                const observer = new MutationObserver(syncTheme);
+                observer.observe(desktop, {attributes: true});
+                let ancestor = desktop.parentElement;
+                while (ancestor) { observer.observe(ancestor, {attributes: true}); ancestor = ancestor.parentElement; }
+                window.addEventListener("pagehide", () => observer.disconnect(), {once:true});
+            }
+        } catch (error) { console.warn(error); }
+
 
         $("ms-close").onclick = close;
 
@@ -768,9 +791,9 @@
         Object.assign(dialog.style, {
             width: "min(600px, 90vw)",
             maxHeight: "80vh",
-            background: "#ffffff",
-            color: "#181818",
-            border: "1px solid #d3d3d3",
+            background: "var(--ms-surface, #ffffff)",
+            color: "var(--ms-text, #181818)",
+            border: "1px solid var(--ms-border, #d3d3d3)",
             borderRadius: "12px",
             padding: "24px",
             fontFamily: '"Malgun Gothic", sans-serif'
@@ -790,7 +813,7 @@
             Object.assign(block.style, {
                 padding: "14px",
                 margin: "12px 0",
-                border: "1px solid #dedede",
+                border: "1px solid var(--ms-border, #dedede)",
                 borderRadius: "10px"
             });
 
@@ -812,9 +835,9 @@
         const closeButton = btn("닫기", () => dialog.close());
 
         Object.assign(closeButton.style, {
-            color: "#181818",
-            background: "#ffffff",
-            border: "1px solid #d3d3d3",
+            color: "var(--ms-text, #181818)",
+            background: "var(--ms-surface, #ffffff)",
+            border: "1px solid var(--ms-border, #d3d3d3)",
             borderRadius: "8px",
             padding: "8px 16px"
         });

@@ -558,6 +558,34 @@
         );
 
 
+        const reset = node("button", "대화 초기화");
+        reset.type = "button";
+        header.append(reset);
+        reset.onclick = async () => {
+            if (busy || stopped || reset.disabled) return;
+            if (!confirm("모든 대화방의 메시지를 삭제할까요? 직접 보낸 메시지와 캐릭터 메시지, 예약 메시지도 삭제되며 복구할 수 없습니다.")) return;
+            reset.disabled = true;
+            busy = true;
+            try {
+                const {data, error} = await client.auth.getUser();
+                if (error) throw error;
+                if (data.user?.id !== uid) throw new Error("관리자만 초기화할 수 있습니다.");
+                const result = ok(await client.rpc("marine_clear_messages"));
+                rows = [];
+                replyTo(null);
+                last = "";
+                actionStatus = "대화 기록 초기화 완료 (" + result + "개 삭제)";
+                render();
+                status.textContent = actionStatus;
+            } catch (error) {
+                status.textContent = "초기화 실패: " + error.message;
+            } finally {
+                busy = false;
+                reset.disabled = false;
+                await refresh();
+            }
+        };
+
         // 채팅 기록
 
         const log = node(
