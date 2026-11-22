@@ -264,10 +264,21 @@ permalink: /bookshelf/
     [hidden] { display:none !important; }
     .editor-panel { position:fixed; right:16px; top:16px; z-index:100; max-width:min(390px,90vw); padding:10px; background:#21180ef0; color:#f0dfb6; border:1px solid #a58755; border-radius:5px; }
     .editor-panel button { background:#513820; color:inherit; border:1px solid #a58755; border-radius:4px; padding:7px; cursor:pointer; margin:2px; }
+
+    .editor-panel:not(.is-editing) { background:none; border:0; padding:0; box-shadow:none; }
+    .editor-panel:not(.is-editing) #editStatus:empty { display:none; }
+    .editor-panel:not(.is-editing) #editStatus:not(:empty) { background:#21180ef0; padding:6px 10px; border-radius:4px; }
+    .editor-panel #editShelf { position:relative; display:grid; place-items:center; margin:0 0 0 auto; width:44px; height:44px; padding:0; border-radius:50%; border:1px solid #ad8c55; color:#e4c78c; background:radial-gradient(circle at 32% 25%,#80603a,#49331f 65%,#2c2016); box-shadow:inset 0 0 0 2px #332619,0 3px 9px #0008; }
+    #editShelf svg { width:25px; height:25px; transition:transform .4s ease; }
+    #editShelf:hover,#editShelf:focus-visible { color:#ffe6ae; box-shadow:inset 0 0 0 2px #49351e,0 0 12px #cfa65d66; }
+    #editShelf:hover svg,#editShelf:focus-visible svg { transform:rotate(35deg); }
+    #editShelf::after { content:'서가 정리'; position:absolute; top:calc(100% + 8px); right:0; white-space:nowrap; color:#e4c78c; background:#21180ef5; border:1px solid #987b4f; border-radius:4px; padding:6px 10px; opacity:0; pointer-events:none; transition:opacity .2s; }
+    #editShelf:hover::after,#editShelf:focus-visible::after { opacity:1; }
+    @media (prefers-reduced-motion:reduce) { #editShelf svg,#editShelf::after { transition:none; } }
     .editor-panel p { margin:5px; font-size:13px; }
     .scene.editing .book { touch-action:none; cursor:move; transition:none; transform:none; }
     .scene.editing .book.selected { outline:2px dashed #ffdb92; filter:none; }
-    .resize-handle { display:none; position:absolute; right:0; bottom:0; width:24px; height:24px; background:#e4c48c; border:2px solid #503a20; cursor:nwse-resize; touch-action:none; }
+    .resize-handle { display:none; position:absolute; right:0; top:0; width:24px; height:24px; background:#e4c48c; border:2px solid #503a20; cursor:nesw-resize; touch-action:none; }
     .scene.editing .book.selected .resize-handle { display:block; }
     .book-spine { position:absolute; inset:8% 13%; display:flex; align-items:center; flex-direction:column; gap:8%; pointer-events:none; text-shadow:0 1px 3px #000; overflow:hidden; }
     .spine-name { writing-mode:vertical-rl; font-size:clamp(10px, 1.1vw,18px); overflow:hidden; }
@@ -282,12 +293,17 @@ permalink: /bookshelf/
   <a class="desk-return" href="{{ '/cabin/' | relative_url }}" aria-label="책상으로 돌아가기">〈 &nbsp;책상으로 돌아가기</a>
 
   <aside class="editor-panel" id="editorPanel" hidden>
-    <button id="editShelf">배치 편집</button>
+    <button id="editShelf" type="button" aria-label="서가 정리" aria-controls="editTools" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M10 2h4l.6 3 2 .9 2.6-1.7 2.8 2.8-1.7 2.6.9 2 3 .6v4l-3 .6-.9 2 1.7 2.6-2.8 2.8-2.6-1.7-2 .9-.6 3h-4l-.6-3-2-.9-2.6 1.7L2 21l1.7-2.6-.9-2-3-.6v-4l3-.6.9-2L2 6.6l2.8-2.8 2.6 1.7 2-.9z" transform="translate(1 0) scale(.87)"/>
+        <circle cx="11.5" cy="12" r="3.3"/>
+      </svg>
+    </button>
     <div id="editTools" hidden>
       <button id="saveShelf">저장</button>
       <button id="cancelShelf">취소</button>
       <button id="resetShelf">기본 배치 복원</button>
-      <p>책을 끌어 이동하고 오른쪽 아래 모서리를 끌어 크기를 조절하세요.</p>
+      <p>책을 좌우로 끌거나 다른 선반으로 옮기세요. 오른쪽 위 모서리로 크기를 조절합니다.</p>
     </div>
     <p id="editStatus" role="status"></p>
   </aside>
@@ -645,17 +661,39 @@ permalink: /bookshelf/
     function place(el,b){
       Object.assign(el.style,{left:b.x+'%',top:b.y+'%',width:b.w+'%',height:b.h+'%'});
     }
+    // Shelf coordinates are percentages of the original 1600 × 960 stage.
+    const shelves = [
+      {left:28, right:79, top:15, bottom:39.6},
+      {left:28, right:79, top:43, bottom:66.5}
+    ];
+    function nearestShelf(bottom) {
+      return shelves.reduce((a,b)=>Math.abs(a.bottom-bottom)<=Math.abs(b.bottom-bottom)?a:b);
+    }
+    function snapBook(b, shelf=nearestShelf(b.y+b.h)) {
+      b.w=clamp(b.w,1,shelf.right-shelf.left);
+      b.h=clamp(b.h,4,shelf.bottom-shelf.top);
+      b.x=clamp(b.x,shelf.left,shelf.right-b.w);
+      b.y=shelf.bottom-b.h;
+    }
     function beginDrag(e,index,el,handle){
       if(!editing || saving || e.button!==0)return;
       e.preventDefault();
       selectBook(index);
       const b=bookData[index], start=layout(b), rect=stage.getBoundingClientRect();
       const resizing=e.target===handle, sx=e.clientX, sy=e.clientY;
+      const originalShelf=nearestShelf(start.y+start.h);
       el.setPointerCapture(e.pointerId);
       const move=m=>{
         const dx=(m.clientX-sx)/rect.width*100,dy=(m.clientY-sy)/rect.height*100;
-        if(resizing){b.w=clamp(start.w+dx,1,100-b.x);b.h=clamp(start.h+dy,4,100-b.y);}
-        else{b.x=clamp(start.x+dx,0,100-b.w);b.y=clamp(start.y+dy,0,100-b.h);}
+        if(resizing){
+          b.w=clamp(start.w+dx,1,originalShelf.right-start.x);
+          b.h=clamp(start.h-dy,4,originalShelf.bottom-originalShelf.top);
+          snapBook(b,originalShelf);
+        }else{
+          b.x=start.x+dx;
+          const target=nearestShelf(originalShelf.bottom+dy);
+          snapBook(b,target);
+        }
         place(el,b);
         $('editStatus').textContent='저장하지 않은 변경 사항';
       };
@@ -665,6 +703,8 @@ permalink: /bookshelf/
     }
     function setEditing(on){
       editing=on; scene.classList.toggle('editing',on);
+      $('editorPanel').classList.toggle('is-editing',on);
+      $('editShelf').setAttribute('aria-expanded',String(on));
       $('editShelf').hidden=on; $('editTools').hidden=!on;
       selectedIndex=-1;
       label.textContent='책을 선택해 주세요';openButton.textContent='책을 선택해 주세요';openButton.disabled=true;
@@ -672,7 +712,7 @@ permalink: /bookshelf/
     }
     $('editShelf').onclick=()=>{
       if(!admin||transitioning)return;
-      snapshot=bookData.map(b=>({...b}));setEditing(true);
+      snapshot=bookData.map(b=>({...b}));bookData.forEach(b=>snapBook(b));setEditing(true);
       $('editStatus').textContent='편집 모드';
     };
     $('cancelShelf').onclick=()=>{
@@ -682,6 +722,7 @@ permalink: /bookshelf/
     $('resetShelf').onclick=()=>{
       if(saving)return;
       bookData.forEach(b=>Object.assign(b,layout(defaults.find(d=>slug(d)===slug(b)))));
+      bookData.forEach(b=>snapBook(b));
       drawBooks();$('editStatus').textContent='기본 배치 복원 (저장 필요)';
     };
     $('saveShelf').onclick=async()=>{
@@ -717,6 +758,7 @@ permalink: /bookshelf/
             b.x=clamp(Number(row.x),0,100-b.w);b.y=clamp(Number(row.y),0,100-b.h);
           }
         });
+        bookData.forEach(b=>snapBook(b));
         drawBooks();if(selectedIndex>=0)selectBook(selectedIndex);
         const auth=await client.auth.getUser();
         admin=auth.data?.user?.id==='6e6288e5-3612-4d2f-8d8b-fb08007d86a9';
