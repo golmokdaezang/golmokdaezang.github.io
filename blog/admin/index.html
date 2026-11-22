@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>⚓ 기존 기록 관리</title>
-    <link rel="stylesheet" href="/assets/css/marine-scenarios.css">
+    <link rel="stylesheet" href="/assets/css/marine-scenarios.css?v=3">
     <style>
 * { box-sizing: border-box; }
 body { margin: 0; background: #181611; color: #e1cda4; font: 16px/1.6 Georgia, "Malgun Gothic", serif; }
@@ -152,9 +152,9 @@ function render() {
 $('search').oninput = render;
 $('book').onchange = render;
 $('visibility').onchange = render;
-init().catch(e => status('오류: ' + e.message));
+if (!new URLSearchParams(location.search).has("scenario")) init().catch(e => status('오류: ' + e.message));
 </script>
-<script src="/assets/js/marine-scenarios.js"></script>
+<script src="/assets/js/marine-scenarios.js?v=3"></script>
 <script>
 document.getElementById('open-marine-scenarios').onclick = async () => {
     try {
@@ -164,12 +164,20 @@ document.getElementById('open-marine-scenarios').onclick = async () => {
             alert('관리자만 접근할 수 있습니다.');
             return;
         }
+        if (!new URLSearchParams(location.search).has("scenario") && window.parent !== window && window.parent.MarineWindows) {
+            window.parent.MarineWindows.open({id:"marine-scenario-manager", title:"해군 통신 시나리오 관리", url:"/blog/admin/?scenario=1&v=3", width:900, height:650});
+            return;
+        }
         await window.MarineScenarios.open(client);
     } catch (error) {
         alert('시나리오 관리 창 오류: ' + error.message);
         console.error(error);
     }
 };
+if (new URLSearchParams(location.search).has("scenario")) {
+    document.documentElement.classList.add("scenario-page");
+    document.getElementById("open-marine-scenarios").click();
+}
 </script>
 </body>
 </html>

@@ -394,3 +394,19 @@
 :root[data-scenario-mode="dark"] #marine-scenario-window { --ms-border: #39485b; --ms-sidebar: #1b2634; --ms-selected: #304155; --ms-text: #e2eaf3; --ms-muted: #a6b5c8; }
 #marine-scenario-window input, #marine-scenario-window select { border-radius: 8px; }
 #marine-scenario-window .ms-danger { color: #d76b6b; }
+
+/* Dedicated common-window content */
+html.scenario-page, html.scenario-page body { height:100%; margin:0; overflow:hidden; background:var(--ms-surface); }
+.scenario-page main { display:none; }
+.scenario-page #marine-scenario-window { position:absolute; inset:0; transform:none; width:100%; height:100%; border:0; border-radius:0; box-shadow:none; }
+.scenario-page .ms-titlebar { display:none; }
+#marine-scenario-window { font-size:13px; }
+#marine-scenario-window .ms-sidebar h2 { font-size:15px; }
+#marine-scenario-window .ms-editor-heading { font-size:17px; }
+#marine-scenario-window label { font-size:13px; margin:10px 0 6px; }
+#marine-scenario-window input, #marine-scenario-window select { padding:7px 10px; border-radius:6px; }
+#marine-scenario-window textarea { padding:8px 10px; border-radius:6px; }
+#marine-scenario-window input[type=checkbox] { width:16px; height:16px; }
+#marine-scenario-window .ms-editor { padding:14px; }
+#marine-scenario-window .ms-footer { padding:8px 12px; }
+#marine-scenario-window .ms-scenario-item { padding:8px; }
