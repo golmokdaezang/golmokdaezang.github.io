@@ -1,23 +1,154 @@
----
-layout: null
-permalink: /blog/admin/
----
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>선장의 기록 관리실</title><style>
-*{box-sizing:border-box}body{margin:0;background:#181611;color:#e1cda4;font:16px/1.6 Georgia,serif}main{max-width:1000px;margin:auto;padding:32px 20px}h1{text-align:center}a{color:#d5b77c}header,.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}header a:first-child{margin-right:auto}section,article{border:1px solid #67543b;background:#241e17;padding:20px;border-radius:8px;margin:16px 0}label{display:block;margin:12px 0 4px}input,select,textarea,button{font:inherit;color:inherit;background:#31271d;border:1px solid #786044;border-radius:5px;padding:9px}input,select,textarea{width:100%}input[type=checkbox]{width:auto}textarea{min-height:260px;resize:vertical}button{cursor:pointer}button:disabled{opacity:.5;cursor:wait}button:hover{background:#51402b}small{color:#b7a17c}h3{margin:0 0 8px}#status{white-space:pre-wrap} [hidden]{display:none!important}
-</style></head><body><main><header><a href="/blog/">← 중앙 기록실</a><a id="login" href="/login/">로그인</a><button id="logout" hidden>로그아웃</button></header><h1>⚓ 선장의 기록 관리실</h1><p id="status" role="status">로그인 확인 중…</p><div id="workspace" hidden><section><h2 id="formHeading">새 기록 작성</h2><form id="editor"><label for="book">책 선택</label><select id="book"><option value="blue">파란 책</option><option value="green">초록 책</option><option value="purple">보라 책</option><option value="brown">갈색 책</option><option value="aqua">아쿠아 책</option><option value="black">검정 책</option></select><label for="title">제목</label><input id="title" required maxlength="300"><label for="content">본문</label><textarea id="content"></textarea><label><input type="checkbox" id="published"> 공개 (체크하지 않으면 봉인)</label><div class="actions"><button type="submit">저장</button><button type="button" id="reset">새 기록 작성</button></div></form></section><section><h2>전체 기록</h2><div id="records"></div></section></div></main><script src="/assets/js/supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script>
-// 아래 값을 SQL 정책에 사용한 본인 UID로 변경하세요. UID는 비밀번호가 아닙니다.
-const ADMIN_UID = '6e6288e5-3612-4d2f-8d8b-fb08007d86a9';
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>⚓ 기존 기록 관리</title>
+    <style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #181611; color: #e1cda4; font: 16px/1.6 Georgia, "Malgun Gothic", serif; }
+main { max-width: 1200px; margin: auto; padding: 30px 20px; }
+a { color: #d5b77c; }
+header, .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+header a:first-child { margin-right: auto; }
+section, article { border: 1px solid #67543b; background: #241e17; padding: 20px; border-radius: 8px; margin: 16px 0; }
+label { display: block; margin: 12px 0 4px; }
+input, select, textarea, button { font: inherit; color: inherit; background: #31271d; border: 1px solid #786044; border-radius: 5px; padding: 9px; }
+input, select, textarea { width: 100%; }
+input[type=checkbox] { width: auto; }
+textarea { min-height: 360px; resize: vertical; }
+button { cursor: pointer; }
+button:disabled { opacity: .5; cursor: wait; }
+button:hover { background: #51402b; }
+[hidden] { display: none !important; }
+.columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.preview { overflow-wrap: anywhere; min-width: 0; background: #181611; padding: 15px; border: 1px solid #67543b; }
+img { max-width: 100%; }
+pre { overflow: auto; background: #15110d; padding: 12px; }
+td, th { border: 1px solid #67543b; padding: 6px; }
+table { border-collapse: collapse; }
+@media(max-width: 700px) { .columns { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<main>
+    <header><a href="/blog/">← 중앙 기록실</a><a id="login" href="/login/">로그인</a><button id="logout" hidden>로그아웃</button></header>
+    <h1>⚓ 기존 기록 관리</h1>
+    <p id="status" role="status">로그인 확인 중...</p>
+    <section id="workspace" hidden>
+        <div class="actions"><a href="/blog/write/">+ 새 기록 작성</a></div>
+        <label for="search">제목 검색</label><input id="search" placeholder="검색할 제목">
+        <div class="columns">
+            <div><label for="book">책 분류</label><select id="book"><option value="">전체 책</option></select></div>
+            <div><label for="visibility">공개 여부</label><select id="visibility"><option value="">전체 기록</option><option value="public">공개 기록</option><option value="private">봉인 기록</option></select></div>
+        </div>
+        <div id="records"></div>
+    </section>
+</main>
+<script src="/assets/js/supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.3.1/dist/purify.min.js"></script>
+<script>
 const $ = id => document.getElementById(id);
-const status = msg => $('status').textContent = msg;
-const names={blue:'파란 책',green:'초록 책',purple:'보라 책',brown:'갈색 책',aqua:'아쿠아 책',black:'검정 책'};
-let client, editing=null, busy=false;
-function check(result){if(result.error)throw result.error;return result.data;}
-function reset(){editing=null;$('editor').reset();$('formHeading').textContent='새 기록 작성';}
-function button(label,fn){const b=document.createElement('button');b.textContent=label;b.addEventListener('click',()=>act(fn));return b;}
-async function act(fn){if(busy)return;busy=true;const buttons=[...document.querySelectorAll('#workspace button')];buttons.forEach(b=>b.disabled=true);try{await fn();}catch(e){status('오류: '+(e.message||String(e)));}finally{busy=false;buttons.forEach(b=>b.disabled=false);}}
-async function load(){const rows=check(await client.from('posts').select('id,title,book_key,is_public,created_at').order('created_at',{ascending:false}));const root=$('records');root.replaceChildren();if(!rows.length)root.textContent='아직 기록이 없습니다.';for(const p of rows){const card=document.createElement('article');const heading=document.createElement('h3');heading.textContent=p.title;const meta=document.createElement('small');meta.textContent=names[p.book_key]+' · '+(p.is_public?'🔓 공개':'🔒 봉인');const actions=document.createElement('div');actions.className='actions';actions.append(button('수정',async()=>{const row=check(await client.from('post_contents').select('content').eq('post_id',p.id).maybeSingle());editing=p.id;$('title').value=p.title;$('book').value=p.book_key;$('content').value=row?.content??'';$('published').checked=p.is_public;$('formHeading').textContent='기록 수정';$('editor').scrollIntoView({behavior:'smooth'});}),button(p.is_public?'봉인':'공개',async()=>{if(!p.is_public){check(await client.from('post_contents').select('post_id').eq('post_id',p.id).single());if(!confirm('본문을 모든 방문자에게 공개할까요?'))return;}check(await client.from('posts').update({is_public:!p.is_public,updated_at:new Date().toISOString()}).eq('id',p.id).select('id').single());if(editing===p.id)$('published').checked=!p.is_public;await load();status('공개 설정 변경 완료');}),button('삭제',async()=>{if(!confirm('이 기록을 삭제할까요?'))return;check(await client.from('posts').delete().eq('id',p.id).select('id').single());if(editing===p.id)reset();await load();status('삭제 완료');}));card.append(heading,meta,actions);root.append(card);}}
-$('reset').onclick=reset;
-$('editor').onsubmit=e=>{e.preventDefault();act(async()=>{const title=$('title').value.trim();if(!title)throw new Error('제목을 입력하세요.');const publish=$('published').checked;const data={title,book_key:$('book').value,is_public:false,updated_at:new Date().toISOString()};if(editing){check(await client.from('posts').update(data).eq('id',editing).select('id').single());}else{const p=check(await client.from('posts').insert(data).select('id').single());editing=p.id;$('formHeading').textContent='기록 수정';}check(await client.from('post_contents').upsert({post_id:editing,content:$('content').value}));if(publish)check(await client.from('posts').update({is_public:true}).eq('id',editing).select('id').single());reset();await load();status('저장 완료');});};
-$('logout').onclick=async()=>{try{check(await client.auth.signOut());location.href='/blog/';}catch(e){status(e.message);}};
-(async()=>{try{if(!window.supabase||!window.SUPABASE_URL||!window.SUPABASE_PUBLISHABLE_KEY)throw new Error('Supabase 연결 정보를 확인하세요.');if(ADMIN_UID==='YOUR_USER_UID')throw new Error('파일의 ADMIN_UID를 설정하세요.');client=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_PUBLISHABLE_KEY);const {data,error}=await client.auth.getUser();if(error||!data.user){status('기존 계정으로 로그인한 뒤 이 페이지에 다시 접속하세요.');return;}if(data.user.id!==ADMIN_UID){status('관리자 계정만 접근할 수 있습니다.');$('logout').hidden=false;return;}$('login').hidden=true;$('logout').hidden=false;await load();$('workspace').hidden=false;status('관리자 인증 완료');client.auth.onAuthStateChange((event,session)=>{if(!session||session.user.id!==ADMIN_UID){$('workspace').hidden=true;$('records').replaceChildren();reset();$('login').hidden=false;status('관리자 로그인이 필요합니다.');}});}catch(e){status('오류: '+(e.message||String(e)));}})();
-</script></body></html>
+const ADMIN_UID = '6e6288e5-3612-4d2f-8d8b-fb08007d86a9';
+const client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_PUBLISHABLE_KEY);
+const status = message => $('status').textContent = message;
+function check(result) {
+    if (result.error) throw result.error;
+    return result.data;
+}
+function element(tag, text) {
+    const node = document.createElement(tag);
+    node.textContent = text;
+    return node;
+}
+let books = [];
+let busy = false;
+async function act(fn) {
+    if (busy) return;
+    busy = true;
+    const buttons = [...document.querySelectorAll('#workspace button')];
+    buttons.forEach(b => b.disabled = true);
+    try { await fn(); } catch (e) { status('오류: ' + e.message); }
+    finally { busy = false; buttons.forEach(b => b.disabled = false); }
+}
+async function init() {
+    const { data } = await client.auth.getUser();
+    if (data.user?.id !== ADMIN_UID) {
+        status('관리자 로그인이 필요합니다.');
+        return;
+    }
+    $('login').hidden = true;
+    $('logout').hidden = false;
+    books = check(await client.from('books').select('*').order('sort_order'));
+    await setup();
+    $('workspace').hidden = false;
+    status('관리자 인증 완료');
+    client.auth.onAuthStateChange((event, session) => {
+        if (session?.user.id !== ADMIN_UID) location.replace('/blog/');
+    });
+}
+$('logout').onclick = async () => {
+    try { check(await client.auth.signOut()); location.href = '/blog/'; }
+    catch (e) { status(e.message); }
+};
+
+let posts = [];
+async function setup() {
+    for (const book of books) {
+        const option = element('option', book.name);
+        option.value = book.slug;
+        $('book').append(option);
+    }
+    await load();
+}
+async function load() {
+    posts = check(await client.from('posts').select('*').order('created_at', {ascending: false}));
+    render();
+}
+function button(label, fn) {
+    const b = element('button', label);
+    b.onclick = () => act(fn);
+    return b;
+}
+function render() {
+    const root = $('records');
+    root.replaceChildren();
+    const q = $('search').value.trim().toLowerCase();
+    const book = $('book').value;
+    const visibility = $('visibility').value;
+    const rows = posts.filter(p => p.title.toLowerCase().includes(q) && (!book || p.book_key === book) && (!visibility || p.is_public === (visibility === 'public')));
+    if (!rows.length) root.textContent = '해당 기록이 없습니다.';
+    for (const p of rows) {
+        const card = element('article', '');
+        const name = books.find(b => b.slug === p.book_key)?.name || p.book_key;
+        const actions = element('div', '');
+        actions.className = 'actions';
+        actions.append(
+            button('수정', () => { location.href = '/blog/write/?id=' + encodeURIComponent(p.id); }),
+            button(p.is_public ? '봉인' : '공개', async () => {
+                if (!p.is_public) {
+                    check(await client.from('post_contents').select('post_id').eq('post_id', p.id).single());
+                    if (!confirm('모든 방문자에게 본문을 공개할까요?')) return;
+                }
+                check(await client.from('posts').update({is_public: !p.is_public, updated_at: new Date().toISOString()}).eq('id', p.id).select('id').single());
+                await load(); status('공개 설정 변경 완료');
+            }),
+            button('삭제', async () => {
+                if (!confirm('이 기록을 삭제할까요?')) return;
+                check(await client.from('posts').delete().eq('id', p.id).select('id').single());
+                await load(); status('삭제 완료');
+            })
+        );
+        card.append(element('h3', p.title), element('p', name + ' · ' + (p.is_public ? '공개' : '봉인') + ' · ' + new Date(p.created_at).toLocaleDateString('ko-KR')), actions);
+        root.append(card);
+    }
+}
+$('search').oninput = render;
+$('book').onchange = render;
+$('visibility').onchange = render;
+init().catch(e => status('오류: ' + e.message));
+</script>
+</body>
+</html>

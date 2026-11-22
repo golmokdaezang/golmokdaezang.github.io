@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>⚓ 새 기록 작성</title>
+    <style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #181611; color: #e1cda4; font: 16px/1.6 Georgia, "Malgun Gothic", serif; }
+main { max-width: 1200px; margin: auto; padding: 30px 20px; }
+a { color: #d5b77c; }
+header, .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+header a:first-child { margin-right: auto; }
+section, article { border: 1px solid #67543b; background: #241e17; padding: 20px; border-radius: 8px; margin: 16px 0; }
+label { display: block; margin: 12px 0 4px; }
+input, select, textarea, button { font: inherit; color: inherit; background: #31271d; border: 1px solid #786044; border-radius: 5px; padding: 9px; }
+input, select, textarea { width: 100%; }
+input[type=checkbox] { width: auto; }
+textarea { min-height: 360px; resize: vertical; }
+button { cursor: pointer; }
+button:disabled { opacity: .5; cursor: wait; }
+button:hover { background: #51402b; }
+[hidden] { display: none !important; }
+.columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.preview { overflow-wrap: anywhere; min-width: 0; background: #181611; padding: 15px; border: 1px solid #67543b; }
+img { max-width: 100%; }
+pre { overflow: auto; background: #15110d; padding: 12px; }
+td, th { border: 1px solid #67543b; padding: 6px; }
+table { border-collapse: collapse; }
+@media(max-width: 700px) { .columns { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<main>
+    <header><a href="/blog/">← 중앙 기록실</a><a id="login" href="/login/">로그인</a><button id="logout" hidden>로그아웃</button></header>
+    <h1>⚓ 새 기록 작성</h1>
+    <p id="status" role="status">로그인 확인 중...</p>
+    <section id="workspace" hidden>
+        <form id="editor">
+            <label for="book">책 선택</label><select id="book" required></select>
+            <label for="title">제목</label><input id="title" required maxlength="300">
+            <label>본문 작성 (Markdown)</label>
+            <div class="actions" id="toolbar"></div>
+            <div class="columns">
+                <div><label for="content">작성</label><textarea id="content"></textarea></div>
+                <div><label>실시간 미리보기</label><div class="preview" id="preview"></div></div>
+            </div>
+            <label><input type="checkbox" id="published"> 공개 (체크하지 않으면 봉인)</label>
+            <button type="submit">기록 저장</button>
+            <a href="/blog/admin/">기존 기록 관리</a>
+        </form>
+    </section>
+</main>
+<script src="/assets/js/supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.3.1/dist/purify.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const ADMIN_UID = '6e6288e5-3612-4d2f-8d8b-fb08007d86a9';
+const client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_PUBLISHABLE_KEY);
+const status = message => $('status').textContent = message;
+function check(result) {
+    if (result.error) throw result.error;
+    return result.data;
+}
+function element(tag, text) {
+    const node = document.createElement(tag);
+    node.textContent = text;
+    return node;
+}
+let books = [];
+let busy = false;
+async function act(fn) {
+    if (busy) return;
+    busy = true;
+    const buttons = [...document.querySelectorAll('#workspace button')];
+    buttons.forEach(b => b.disabled = true);
+    try { await fn(); } catch (e) { status('오류: ' + e.message); }
+    finally { busy = false; buttons.forEach(b => b.disabled = false); }
+}
+async function init() {
+    const { data } = await client.auth.getUser();
+    if (data.user?.id !== ADMIN_UID) {
+        status('관리자 로그인이 필요합니다.');
+        return;
+    }
+    $('login').hidden = true;
+    $('logout').hidden = false;
+    books = check(await client.from('books').select('*').order('sort_order'));
+    await setup();
+    $('workspace').hidden = false;
+    status('관리자 인증 완료');
+    client.auth.onAuthStateChange((event, session) => {
+        if (session?.user.id !== ADMIN_UID) location.replace('/blog/');
+    });
+}
+$('logout').onclick = async () => {
+    try { check(await client.auth.signOut()); location.href = '/blog/'; }
+    catch (e) { status(e.message); }
+};
+
+let editing = new URLSearchParams(location.search).get('id');
+function preview() {
+    const root = $('preview');
+    if (!window.marked || !window.DOMPurify) { root.textContent = $('content').value; return; }
+    root.innerHTML = DOMPurify.sanitize(marked.parse($('content').value), {USE_PROFILES: {html: true}});
+}
+$('content').addEventListener('input', preview);
+const tools = [
+    ['제목', '# 제목'], ['굵게', '**내용**'], ['기울임', '*내용*'],
+    ['목록', '- 항목'], ['코드', '```python\n코드\n```'],
+    ['표', '| 항목 | 내용 |\n| --- | --- |\n| 값 | 값 |'],
+    ['이미지 URL', '![설명](https://example.com/image.png)'], ['링크', '[링크](https://example.com)']
+];
+for (const [label, snippet] of tools) {
+    const b = element('button', label);
+    b.type = 'button';
+    b.onclick = () => {
+        const t = $('content');
+        t.setRangeText(snippet, t.selectionStart, t.selectionEnd, 'end');
+        t.focus(); preview();
+    };
+    $('toolbar').append(b);
+}
+async function setup() {
+    for (const book of books) {
+        const option = element('option', book.name);
+        option.value = book.slug;
+        $('book').append(option);
+    }
+    if (editing) {
+        const post = check(await client.from('posts').select('*').eq('id', editing).single());
+        const body = check(await client.from('post_contents').select('content').eq('post_id', editing).maybeSingle());
+        $('title').value = post.title;
+        $('book').value = post.book_key;
+        $('content').value = body?.content ?? '';
+        $('published').checked = post.is_public;
+        document.querySelector('h1').textContent = '기록 수정';
+    }
+    preview();
+}
+$('editor').onsubmit = e => {
+    e.preventDefault();
+    act(async () => {
+        const title = $('title').value.trim();
+        if (!title) throw new Error('제목을 입력하세요.');
+        const publish = $('published').checked;
+        if (publish && !confirm('본문을 모든 방문자에게 공개할까요?')) return;
+        const data = {title, book_key: $('book').value, is_public: false, updated_at: new Date().toISOString()};
+        const content = $('content').value;
+        if (editing) {
+            check(await client.from('posts').update(data).eq('id', editing).select('id').single());
+        } else {
+            const row = check(await client.from('posts').insert(data).select('id').single());
+            editing = row.id;
+            history.replaceState(null, '', '?id=' + encodeURIComponent(editing));
+        }
+        check(await client.from('post_contents').upsert({post_id: editing, content}));
+        if (publish) check(await client.from('posts').update({is_public: true}).eq('id', editing).select('id').single());
+        location.href = '/blog/admin/';
+    });
+};
+init().catch(e => status('오류: ' + e.message));
+</script>
+</body>
+</html>
