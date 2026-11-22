@@ -1,18 +1,439 @@
+
 ---
-layout: book-archive
-title: 전체 항해 기록
+layout: null
+title: 선장의 중앙 기록실
 permalink: /blog/
 ---
-<header class="heading"><div class="ornament">✦ ⚓ ✦</div><h1>선장의 항해 기록</h1><p>여섯 권의 책에 담긴 기록을 한곳에서 관리합니다.</p></header>
-<section class="books" aria-label="책 목록">
-{% for book in site.data.books %}
-<a class="bookcard bookcard-{{ book.slug }}" href="{{ book.url | relative_url }}"><div class="symbol">{{ book.symbol }}</div><h2>{{ book.name }}</h2><p>{{ book.description }}</p></a>
-{% endfor %}
-</section>
-<header class="heading"><h1>최근 기록</h1></header>
-<section class="posts">
-{% for post in site.posts limit:10 %}
-<a class="postcard" href="{{ post.url | relative_url }}"><h2>{{ post.title }}</h2><div class="meta">{{ post.date | date: '%Y.%m.%d' }} · {% for c in post.categories %}{{ c }} {% endfor %}</div><p>{{ post.excerpt | strip_html | truncate: 140 }}</p></a>
-{% else %}<div class="empty">아직 등록된 기록이 없습니다. <code>_posts/</code>에 첫 글을 작성해 보세요.</div>
-{% endfor %}
-</section>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>선장의 중앙 기록실</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: #e6d6b9;
+  background: #15110d;
+  font-family: Georgia, "Malgun Gothic", serif;
+}
+button, select {
+  font: inherit;
+}
+button, a {
+  cursor: pointer;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 35px;
+  border-bottom: 1px solid #655034;
+  color: #c8a76b;
+}
+.container {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: 40px;
+  max-width: 1500px;
+  margin: auto;
+  padding: 35px;
+}
+.sidebar {
+  position: sticky;
+  top: 25px;
+  align-self: start;
+  border-right: 1px solid #665034;
+  padding-right: 20px;
+}
+.sidebar h3 {
+  color: #c8a76b;
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+.book-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 12px;
+  background: transparent;
+  color: #e6d6b9;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  text-align: left;
+}
+.book-button:hover, .book-button.active {
+  background: #382b1b;
+  border-color: #665034;
+}
+.book-symbol {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 36px;
+  border-radius: 3px;
+  border: 1px solid #a48958;
+}
+.heading {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid #665034;
+}
+.heading small {
+  color: #c8a76b;
+  letter-spacing: 3px;
+}
+.heading h1 {
+  font-weight: 400;
+  font-size: 36px;
+}
+.menus {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 40px;
+}
+.menu {
+  background: linear-gradient(145deg,#30251a,#211a12);
+  border: 1px solid #75603e;
+  color: #e6d6b9;
+  border-radius: 6px;
+  padding: 30px 15px;
+  text-align: center;
+}
+.menu:hover {
+  background: #45341f;
+}
+.menu .symbol {
+  font-size: 32px;
+  color: #c8a76b;
+}
+.menu h2 {
+  font-size: 20px;
+  font-weight: 400;
+}
+.menu p {
+  color: #aa9b85;
+  font-size: 13px;
+}
+.records {
+  border-top: 1px solid #665034;
+  padding-top: 20px;
+}
+.post {
+  padding: 20px;
+  margin-bottom: 12px;
+  border: 1px solid #58462e;
+  background: #211a12;
+  border-radius: 4px;
+}
+.post h3 {
+  margin: 12px 0;
+}
+.post-meta {
+  display: flex;
+  justify-content: space-between;
+  color: #c8a76b;
+  font-size: 13px;
+}
+.post-body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+  border-top: 1px solid #665034;
+  margin-top: 15px;
+  padding-top: 15px;
+}
+.action {
+  border: 1px solid #867047;
+  border-radius: 4px;
+  padding: 8px 12px;
+  background: transparent;
+  color: #e6d6b9;
+}
+.notice {
+  padding: 25px;
+  color: #aa9b85;
+  text-align: center;
+}
+[hidden] { display: none !important; }
+@media(max-width: 700px) {
+  .container {
+    grid-template-columns: 1fr;
+    padding: 18px;
+    gap: 20px;
+  }
+  .sidebar {
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid #665034;
+  }
+  .topbar { padding: 15px; }
+  .heading h1 { font-size: 28px; }
+}
+</style>
+</head>
+
+<body>
+<header class="topbar">
+  <span>⚓ CAPTAIN'S ARCHIVE</span>
+  <div>
+    <a id="login" href="/login/">로그인</a>
+    <button id="logout" class="action" hidden>로그아웃</button>
+  </div>
+</header>
+
+<div class="container">
+  <aside class="sidebar">
+    <h3>기록 보관소</h3>
+    <button class="book-button active" id="allBooks">
+      전체 기록
+    </button>
+    <div id="bookList"></div>
+    <p><a href="/bookshelf/">← 책장으로 돌아가기</a></p>
+  </aside>
+
+  <main>
+    <header class="heading">
+      <small>CAPTAIN'S ARCHIVE</small>
+      <h1>선장의 중앙 기록실</h1>
+      <p>여섯 권의 책에 담긴 항해 기록</p>
+    </header>
+
+    <section class="menus" id="adminMenus" hidden>
+      <a class="menu" href="/blog/admin/">
+        <div class="symbol">✒</div>
+        <h2>새 기록 작성</h2>
+        <p>게시글 작성 및 공개</p>
+      </a>
+      <a class="menu" href="/blog/admin/">
+        <div class="symbol">▤</div>
+        <h2>기존 기록 관리</h2>
+        <p>게시글 수정 및 삭제</p>
+      </a>
+      <button class="menu" id="designMenu">
+        <div class="symbol">❖</div>
+        <h2>책 디자인 관리</h2>
+        <p>책 이름, 색상, 장식 수정</p>
+      </button>
+      <button class="menu" id="orderMenu">
+        <div class="symbol">☷</div>
+        <h2>목차 관리</h2>
+        <p>게시글 순서 변경</p>
+      </button>
+    </section>
+
+    <section class="records">
+      <h2 id="recordTitle">전체 항해 기록</h2>
+      <div id="postList">
+        <p class="notice">기록을 불러오는 중...</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="/assets/js/supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+<script>
+const ADMIN_UID = '6e6288e5-3612-4d2f-8d8b-fb08007d86a9';
+
+const client = window.supabase.createClient(
+  window.SUPABASE_URL,
+  window.SUPABASE_PUBLISHABLE_KEY
+);
+
+let books = [];
+let posts = [];
+let selectedBook = null;
+let isAdmin = false;
+
+const $ = id => document.getElementById(id);
+
+function make(tag, className, text) {
+  const el = document.createElement(tag);
+  if (className) el.className = className;
+  if (text !== undefined) el.textContent = text;
+  return el;
+}
+
+async function init() {
+  const { data } = await client.auth.getUser();
+
+  isAdmin = data.user?.id === ADMIN_UID;
+
+  $('adminMenus').hidden = !isAdmin;
+  $('login').hidden = !!data.user;
+  $('logout').hidden = !data.user;
+
+  const bookResult = await client
+    .from('books')
+    .select('*')
+    .order('sort_order');
+
+  if (bookResult.error) {
+    throw bookResult.error;
+  }
+
+  books = bookResult.data;
+
+  const postResult = await client
+    .from('posts')
+    .select('id,title,book_key,is_public,created_at')
+    .order('created_at', { ascending: false });
+
+  if (postResult.error) {
+    throw postResult.error;
+  }
+
+  posts = postResult.data;
+
+  renderBooks();
+  renderPosts();
+}
+
+function renderBooks() {
+  $('bookList').replaceChildren();
+
+  $('allBooks').classList.toggle(
+    'active', selectedBook === null
+  );
+
+  books.forEach(book => {
+    const button = make('button', 'book-button');
+    const symbol = make('span', 'book-symbol', book.symbol);
+
+    symbol.style.backgroundColor = book.color;
+    symbol.style.color = book.text_color;
+
+    button.append(symbol, make('span', '', book.name));
+
+    button.classList.toggle(
+      'active', selectedBook === book.slug
+    );
+
+    button.onclick = () => {
+      selectedBook = book.slug;
+      renderBooks();
+      renderPosts();
+    };
+
+    $('bookList').append(button);
+  });
+}
+
+function renderPosts() {
+  $('postList').replaceChildren();
+
+  const currentBook = books.find(
+    b => b.slug === selectedBook
+  );
+
+  $('recordTitle').textContent = currentBook
+    ? currentBook.name + ' · 항해 기록'
+    : '전체 항해 기록';
+
+  const filtered = posts.filter(
+    p => !selectedBook || p.book_key === selectedBook
+  );
+
+  if (!filtered.length) {
+    $('postList').append(
+      make('p', 'notice', '아직 등록된 기록이 없습니다.')
+    );
+    return;
+  }
+
+  filtered.forEach(post => {
+    const book = books.find(
+      b => b.slug === post.book_key
+    );
+
+    const card = make('article', 'post');
+    const meta = make('div', 'post-meta');
+
+    meta.append(
+      make('span', '', book?.name || post.book_key),
+      make('span', '', post.is_public ? '🔓 공개' : '🔒 봉인')
+    );
+
+    const title = make('h3', '', post.title);
+    const date = make(
+      'p', '',
+      new Date(post.created_at).toLocaleDateString('ko-KR')
+    );
+
+    const read = make('button', 'action', '기록 열기');
+    const body = make('div', 'post-body');
+    body.hidden = true;
+
+    read.onclick = async () => {
+      if (!body.hidden) {
+        body.hidden = true;
+        body.textContent = '';
+        return;
+      }
+
+      body.hidden = false;
+
+      if (!post.is_public && !isAdmin) {
+        body.textContent = '🔒 봉인된 기록입니다.';
+        return;
+      }
+
+      body.textContent = '불러오는 중...';
+
+      const { data, error } = await client
+        .from('post_contents')
+        .select('content')
+        .eq('post_id', post.id)
+        .maybeSingle();
+
+      body.textContent = error
+        ? '기록을 불러오지 못했습니다.'
+        : data?.content ?? '열람할 수 없는 기록입니다.';
+    };
+
+    card.append(meta, title, date, read, body);
+    $('postList').append(card);
+  });
+}
+
+$('allBooks').onclick = () => {
+  selectedBook = null;
+  renderBooks();
+  renderPosts();
+};
+
+$('logout').onclick = async () => {
+  const { error } = await client.auth.signOut();
+  if (error) {
+    alert('로그아웃에 실패했습니다.');
+    return;
+  }
+  location.reload();
+};
+
+$('designMenu').onclick = () => {
+  alert('책 디자인 관리 기능은 다음 단계에서 연결됩니다.');
+};
+
+$('orderMenu').onclick = () => {
+  alert('목차 관리 기능은 다음 단계에서 연결됩니다.');
+};
+
+init().catch(error => {
+  $('postList').textContent =
+    '기록실 연결 오류: ' + error.message;
+});
+</script>
+</body>
+</html>
