@@ -38,13 +38,13 @@ permalink: /bookshelf/
 
     .background { position:absolute; inset:0; width:100%; height:100%; object-fit:fill; pointer-events:none; user-select:none; }
 
-    .background.night { opacity:0; transition:opacity .65s ease; }
+    .background.night { opacity:0; transition:opacity 2.4s ease; }
 
     .scene.is-night .background.night { opacity:1; }
 
     .scene.is-night .background.day { opacity:0; }
 
-    .background.day { opacity:1; transition:opacity .65s ease; }
+    .background.day { opacity:1; transition:opacity 2.4s ease; }
 
     .book { position:absolute; border:0; background:transparent; padding:0; cursor:pointer; z-index:4; transform-origin:bottom center; transition:transform .28s ease,filter .28s ease; }
 
@@ -54,7 +54,7 @@ permalink: /bookshelf/
 
     .book.selected { transform:translateY(-26px) scale(1.035); filter:brightness(1.2) drop-shadow(0 0 12px rgba(255,205,107,.5)); z-index:6; }
 
-    .lantern-hotspot { position:absolute; z-index:8; left:68%; top:11%; width:17%; height:29%; border:0; padding:0; background:transparent; cursor:pointer; }
+    .lantern-hotspot { position:absolute; z-index:8; left:70%; top:69%; width:9%; height:24%; border:0; padding:0; background:transparent; cursor:pointer; }
 
     .lantern-hotspot:focus-visible, .book:focus-visible { outline:3px solid #f1d18b; outline-offset:4px; }
 
@@ -159,6 +159,17 @@ permalink: /bookshelf/
     .spine-name { writing-mode:vertical-rl; font-size:clamp(10px, 1.1vw,18px); overflow:hidden; }
     .spine-symbol { font-size:20px; }
     .scene.editing .controls { display:none; }
+
+    .controls[hidden] { display:none; }
+    .controls { bottom:9%; gap:8px; padding:12px 24px; background:radial-gradient(ellipse,#100d09d9,transparent 75%); }
+    .selection-label { display:flex; align-items:center; gap:18px; font-family:'Noto Serif KR',Georgia,serif; font-size:26px; font-weight:500; letter-spacing:.12em; color:#f4dfb7; }
+    .selection-label::before,.selection-label::after { content:''; width:85px; height:1px; background:linear-gradient(90deg,transparent,#c6a875); }
+    .selection-label::after { transform:scaleX(-1); }
+    .open-button { background:none; border:0; border-bottom:1px solid #bca47788; border-radius:0; box-shadow:none; padding:5px 12px; font:400 16px Georgia,'Noto Serif KR',serif; letter-spacing:.14em; color:#e3cba2; text-shadow:0 2px 5px #000; }
+    .stage::after { content:''; position:absolute; inset:0; pointer-events:none; z-index:3; opacity:0; background:radial-gradient(ellipse 12% 17% at 74% 84%,#ffc36b35,transparent 95%); transition:opacity 2.4s; }
+    .scene.is-night .stage::after { opacity:1; animation:lantern-flicker 4.7s ease-in-out infinite; }
+    @keyframes lantern-flicker { 0%,100%{opacity:.65} 27%{opacity:1} 48%{opacity:.76} 74%{opacity:.92} }
+    @media(prefers-reduced-motion:reduce){ .scene.is-night .stage::after{animation:none} .background{transition:none} }
 </style>
 
 </head>
@@ -194,11 +205,11 @@ permalink: /bookshelf/
 
       <button class="lantern-hotspot" id="lantern" type="button" aria-label="랜턴으로 낮과 밤 전환" aria-pressed="false"></button>
 
-      <div class="controls">
+      <div class="controls" id="selectionControls" hidden>
 
-        <div class="selection-label" id="selectionLabel" aria-live="polite">책을 선택해 주세요</div>
+        <div class="selection-label" id="selectionLabel" aria-live="polite"></div>
 
-        <button class="open-button" id="openButton" type="button" disabled>책을 선택해 주세요</button>
+        <button class="open-button" id="openButton" type="button" disabled>책 펼치기 →</button>
 
       </div>
 
@@ -327,14 +338,7 @@ permalink: /bookshelf/
         Object.assign(tint.style,{position:'absolute',inset:'0',background:book.designColor,opacity:'.62',pointerEvents:'none',maskImage:`url("${img.src}")`,maskSize:'100% 100%',maskRepeat:'no-repeat',mixBlendMode:'color'});
         button.append(tint);
       }
-      const spine=document.createElement('div');
-      spine.className='book-spine';
-      spine.style.color=validColor(book.textColor)?book.textColor:'#e1cda4';
-      const symbol=document.createElement('span');
-      symbol.className='spine-symbol'; symbol.textContent=book.symbol||'';
-      const name=document.createElement('span');
-      name.className='spine-name'; name.textContent=book.name;
-      spine.append(symbol,name); button.append(spine);
+
       const handle=document.createElement('span');
       handle.className='resize-handle'; button.append(handle);
       button.addEventListener('pointerdown',e=>beginDrag(e,index,button,handle));
@@ -369,7 +373,8 @@ permalink: /bookshelf/
 
       label.textContent=book.name;
 
-      openButton.textContent=book.name+' 펼치기';
+      openButton.textContent='책 펼치기 →';
+      document.getElementById('selectionControls').hidden=false;
 
       openButton.disabled=false;
 
@@ -377,11 +382,13 @@ permalink: /bookshelf/
 
 
 
+    try { const night=localStorage.getItem('shelfNight')==='1'; scene.classList.toggle('is-night',night); lantern.setAttribute('aria-pressed',String(night)); } catch(_) {}
     lantern.addEventListener('click',()=>{
 
       const isNight=scene.classList.toggle('is-night');
 
       lantern.setAttribute('aria-pressed',String(isNight));
+      try { localStorage.setItem('shelfNight',isNight?'1':'0'); } catch(_) {}
 
     });
 
@@ -507,7 +514,7 @@ permalink: /bookshelf/
       $('editShelf').setAttribute('aria-expanded',String(on));
       $('editShelf').hidden=on; $('editTools').hidden=!on;
       selectedIndex=-1;
-      label.textContent='책을 선택해 주세요';openButton.textContent='책을 선택해 주세요';openButton.disabled=true;
+      label.textContent='';openButton.disabled=true;document.getElementById('selectionControls').hidden=true;
       drawBooks();
     }
     $('editShelf').onclick=()=>{
