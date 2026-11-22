@@ -675,24 +675,75 @@ permalink: /bookshelf/
       b.x=clamp(b.x,shelf.left,shelf.right-b.w);
       b.y=shelf.bottom-b.h;
     }
+    // Keep a tiny gap between book rectangles, including during dragging.
+    const gap = 0.08;
+    function rowOf(b) { return nearestShelf(b.y+b.h); }
+    function freeSlots(shelf, width, others) {
+      const slots=[];
+      let left=shelf.left;
+      for(const book of others.filter(b=>rowOf(b)===shelf).sort((a,b)=>a.x-b.x)) {
+        const right=book.x-gap-width;
+        if(right>=left) slots.push([left,right]);
+        left=Math.max(left,book.x+book.w+gap);
+      }
+      if(shelf.right-width>=left) slots.push([left,shelf.right-width]);
+      return slots;
+    }
+    function normalizeBooks() {
+      const placed=[];
+      // Repair old overlapping layouts; fall back to a compact two-row layout.
+      for(const b of bookData) {
+        snapBook(b);
+        const row=rowOf(b);
+        const options=[row,...shelves.filter(s=>s!==row)];
+        let found=false;
+        for(const shelf of options) {
+          const slots=freeSlots(shelf,b.w,placed);
+          if(!slots.length)continue;
+          const x=slots.map(([l,r])=>clamp(b.x,l,r)).sort((a,c)=>Math.abs(a-b.x)-Math.abs(c-b.x))[0];
+          b.x=x;snapBook(b,shelf);found=true;break;
+        }
+        if(!found) {
+          const perRow=Math.ceil(bookData.length/2);
+          bookData.forEach((v,i)=>{
+            const shelf=shelves[Math.min(1,Math.floor(i/perRow))];
+            const step=(shelf.right-shelf.left)/perRow;
+            v.w=Math.min(v.w,step-gap);v.x=shelf.left+(i%perRow)*step;
+            snapBook(v,shelf);
+          });
+          return;
+        }
+        placed.push(b);
+      }
+    }
     function beginDrag(e,index,el,handle){
-      if(!editing || saving || e.button!==0)return;
+      if(!editing || saving || e.button!==0 || !e.isPrimary)return;
       e.preventDefault();
       selectBook(index);
       const b=bookData[index], start=layout(b), rect=stage.getBoundingClientRect();
       const resizing=e.target===handle, sx=e.clientX, sy=e.clientY;
-      const originalShelf=nearestShelf(start.y+start.h);
+      const originalShelf=rowOf(start);
+      const others=bookData.filter(v=>v!==b);
       el.setPointerCapture(e.pointerId);
       const move=m=>{
+        if(m.pointerId!==e.pointerId || !editing || saving)return;
         const dx=(m.clientX-sx)/rect.width*100,dy=(m.clientY-sy)/rect.height*100;
         if(resizing){
-          b.w=clamp(start.w+dx,1,originalShelf.right-start.x);
+          const right=Math.min(originalShelf.right,...others.filter(v=>rowOf(v)===originalShelf && v.x>=start.x+start.w-1e-7).map(v=>v.x-gap));
+          b.w=clamp(start.w+dx,1,Math.max(start.w,right-start.x));
+          // The original width is valid; cap at the adjacent book.
+          b.w=Math.min(b.w,right-start.x);
           b.h=clamp(start.h-dy,4,originalShelf.bottom-originalShelf.top);
           snapBook(b,originalShelf);
         }else{
-          b.x=start.x+dx;
           const target=nearestShelf(originalShelf.bottom+dy);
-          snapBook(b,target);
+          const slots=freeSlots(target,b.w,others);
+          const same=rowOf(b)===target;
+          const available=same?slots.filter(([l,r])=>b.x>=l-1e-7&&b.x<=r+1e-7):slots;
+          if(available.length){
+            b.x=available.map(([l,r])=>clamp(start.x+dx,l,r)).sort((a,c)=>Math.abs(a-start.x-dx)-Math.abs(c-start.x-dx))[0];
+            snapBook(b,target);
+          }
         }
         place(el,b);
         $('editStatus').textContent='저장하지 않은 변경 사항';
@@ -712,7 +763,7 @@ permalink: /bookshelf/
     }
     $('editShelf').onclick=()=>{
       if(!admin||transitioning)return;
-      snapshot=bookData.map(b=>({...b}));bookData.forEach(b=>snapBook(b));setEditing(true);
+      snapshot=bookData.map(b=>({...b}));normalizeBooks();setEditing(true);
       $('editStatus').textContent='편집 모드';
     };
     $('cancelShelf').onclick=()=>{
@@ -722,13 +773,13 @@ permalink: /bookshelf/
     $('resetShelf').onclick=()=>{
       if(saving)return;
       bookData.forEach(b=>Object.assign(b,layout(defaults.find(d=>slug(d)===slug(b)))));
-      bookData.forEach(b=>snapBook(b));
+      normalizeBooks();
       drawBooks();$('editStatus').textContent='기본 배치 복원 (저장 필요)';
     };
     $('saveShelf').onclick=async()=>{
       if(!admin||!editing||saving)return;
-      // Reject newly overlapping rectangles, allowing the original tightly packed layout.
-      const overlaps=(a,b)=>Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x)>0.15 && Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y)>0.15;
+      // Final validation also rejects overlapping book rectangles.
+      const overlaps=(a,b)=>Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x)>1e-7 && Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y)>1e-7;
       if(bookData.some((a,i)=>bookData.slice(i+1).some(b=>overlaps(a,b)))){
         $('editStatus').textContent='책이 겹쳐 있습니다. 위치를 조정해 주세요.';return;
       }
@@ -758,7 +809,7 @@ permalink: /bookshelf/
             b.x=clamp(Number(row.x),0,100-b.w);b.y=clamp(Number(row.y),0,100-b.h);
           }
         });
-        bookData.forEach(b=>snapBook(b));
+        normalizeBooks();
         drawBooks();if(selectedIndex>=0)selectBook(selectedIndex);
         const auth=await client.auth.getUser();
         admin=auth.data?.user?.id==='6e6288e5-3612-4d2f-8d8b-fb08007d86a9';
@@ -770,6 +821,8 @@ permalink: /bookshelf/
         });
       }catch(e){console.warn('책장 데이터 연동 실패:',e.message);}
     }
+    normalizeBooks();
+    drawBooks();
     syncShelf();
 
   </script>
