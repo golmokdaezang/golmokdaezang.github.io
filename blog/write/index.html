@@ -6,6 +6,7 @@
     <title>⚓ 새 기록 작성</title>
     <link rel="stylesheet" href="/assets/css/marine-admin.css?v=1">
 <script defer src="/assets/js/marine-admin-theme.js?v=1"></script>
+<link rel="stylesheet" href="/assets/css/report-files.css">
 </head>
 <body class="marine-admin" data-app="write">
 <main>
@@ -22,6 +23,7 @@
                 <div><label for="content">작성</label><textarea id="content"></textarea></div>
                 <div><label>실시간 미리보기</label><div class="preview" id="preview"></div></div>
             </div>
+            <label>첨부파일</label><input id="report-files" type="file" multiple hidden style="display:none"><button type="button" id="report-drop">파일을 끌어다 놓거나 선택하세요 · 최대 20MB/파일</button><div id="report-list"></div>
             <label><input type="checkbox" id="published"> 공개 (체크하지 않으면 봉인)</label>
             <button type="submit">기록 저장</button>
             <a href="/blog/admin/">기존 기록 관리</a>
@@ -32,6 +34,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.3.1/dist/purify.min.js"></script>
+<script src="/assets/js/report-files.js"></script>
 <script>
 const $ = id => document.getElementById(id);
 const ADMIN_UID = '6e6288e5-3612-4d2f-8d8b-fb08007d86a9';
@@ -83,7 +86,9 @@ function preview() {
     const root = $('preview');
     if (!window.marked || !window.DOMPurify) { root.textContent = $('content').value; return; }
     root.innerHTML = DOMPurify.sanitize(marked.parse($('content').value), {USE_PROFILES: {html: true}});
+    files.preview(root);
 }
+const files = ReportFiles.editor(client,$('content'),preview,()=>editing,status);
 $('content').addEventListener('input', preview);
 const tools = [
     ['제목', '# 제목'], ['굵게', '**내용**'], ['기울임', '*내용*'],
@@ -114,6 +119,7 @@ async function setup() {
         $('book').value = post.book_key;
         $('content').value = body?.content ?? '';
         $('published').checked = post.is_public;
+        await files.load(editing);
         document.querySelector('h1').textContent = '기록 수정';
     }
     preview();
@@ -127,6 +133,8 @@ $('editor').onsubmit = e => {
         if (publish && !confirm('본문을 모든 방문자에게 공개할까요?')) return;
         const data = {title, book_key: $('book').value, is_public: false, updated_at: new Date().toISOString()};
         const content = $('content').value;
+        files.lock(true);
+        try {
         if (editing) {
             check(await client.from('posts').update(data).eq('id', editing).select('id').single());
         } else {
@@ -134,9 +142,12 @@ $('editor').onsubmit = e => {
             editing = row.id;
             history.replaceState(null, '', '?id=' + encodeURIComponent(editing));
         }
+        await files.save(editing);
         check(await client.from('post_contents').upsert({post_id: editing, content}));
+        await files.cleanup(editing);
         if (publish) check(await client.from('posts').update({is_public: true}).eq('id', editing).select('id').single());
         location.href = '/blog/admin/';
+        } finally { files.lock(false); }
     });
 };
 init().catch(e => status('오류: ' + e.message));

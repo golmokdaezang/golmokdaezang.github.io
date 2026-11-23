@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/assets/css/marine-scenarios.css?v=5">
     <link rel="stylesheet" href="/assets/css/marine-admin.css?v=1">
 <script defer src="/assets/js/marine-admin-theme.js?v=1"></script>
+<link rel="stylesheet" href="/assets/css/report-files.css">
 </head>
 <body class="marine-admin" data-app="admin">
 <main>
@@ -31,6 +32,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.3.1/dist/purify.min.js"></script>
+<script src="/assets/js/report-files.js"></script>
 <script>
 const $ = id => document.getElementById(id);
 const ADMIN_UID = '6e6288e5-3612-4d2f-8d8b-fb08007d86a9';
@@ -119,6 +121,8 @@ function render() {
             }),
             button('삭제', async () => {
                 if (!confirm('이 기록을 삭제할까요?')) return;
+                check(await client.from('posts').update({is_public:false}).eq('id',p.id).select('id').single());
+                await ReportFiles.removeAll(client,p.id);
                 check(await client.from('posts').delete().eq('id', p.id).select('id').single());
                 await load(); status('삭제 완료');
             })
