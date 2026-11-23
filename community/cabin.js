@@ -73,122 +73,10 @@ deleteButton.onclick=async()=>{
 const queue=[],seen=new Map();let active=null,newsFresh=false,newsNext=0,newsDelay=15000,radioNext=0,radioDelay=10000;
 const ticker=$('cc-ticker'), viewport=ticker.parentElement;
 let tickerMotion, holdUntil=0, lastAmbient='', deck=[];
-const ambient=[
-  "안녕하세요, 청취자 여러분. NEWS COO입니다.",
-  "지금 막 주파수를 맞추신 분들을 환영합니다.",
-  "오늘은 어떤 하루를 보내고 계신가요?",
-  "바다 위에서 듣고 계신 분들도, 육지에서 듣고 계신 분들도 반갑습니다.",
-  "오늘도 어김없이 NEWS COO의 방송은 계속됩니다.",
-  "청취자 여러분, 식사는 챙기셨나요?",
-  "바다 건너 새로운 소식들이 들어오고 있습니다.",
-  "먼바다에서도 저희 방송이 잘 들리고 있기를 바랍니다.",
-  "그랜드라인 곳곳의 크고 작은 이야기를 전해드리고 있습니다.",
-  "잠시 쉬어가는 시간입니다.",
-  "오늘도 전보벌레 상태는 아주 좋습니다.",
-  "어느덧 하루가 또 흘러가고 있네요.",
-  "따뜻한 차 한 잔과 함께 방송을 듣는 것도 좋겠네요.",
-  "어디에서 듣고 계시든 오늘도 함께해 주셔서 감사합니다.",
-  "오늘은 비교적 평온한 소식들이 이어지고 있습니다.",
-  "긴 항해 중이신 분들은 중간중간 휴식도 잊지 마세요.",
-  "오늘도 바쁜 하루를 보내고 계신 청취자 여러분, 수고 많으십니다.",
-  "새로운 소식이 확인되는 대로 전해드리겠습니다.",
-  "오늘도 안전하고 즐거운 항해 되시길 바랍니다.",
-  "바다를 건너 전해드리는 세상 이야기, NEWS COO입니다.",
-  "최근 전보벌레를 이용한 통신 사기가 증가하고 있습니다.",
-  "출처가 불분명한 전보에는 응답하지 않도록 주의하시기 바랍니다.",
-  "일부 항구에서 위조 신분증이 발견되었습니다.",
-  "해군은 수상한 선박 발견 시 가까운 지부에 신고할 것을 당부했습니다.",
-  "해상 거래 시 상대방의 신원을 반드시 확인하시기 바랍니다.",
-  "최근 위조된 현상수배서가 유통되고 있습니다.",
-  "일부 지역의 전보벌레 통신 장애가 복구되었습니다.",
-  "세계정부가 개인정보 보호에 관한 새로운 지침을 발표했습니다.",
-  "전보벌레 통신망의 정기 점검이 예정되어 있습니다.",
-  "최근 허위 보물 지도를 판매하는 사기 사건이 잇따르고 있습니다.",
-  "이번 주말 워터 세븐에서 선박 축제가 개최됩니다.",
-  "이스트 블루의 한 항구 마을에서 낚시 대회가 열렸습니다.",
-  "샤본디 제도의 놀이공원이 새롭게 단장을 마쳤습니다.",
-  "해상 요리 경연대회의 참가 신청이 시작되었습니다.",
-  "알라바스타에서 전통문화 축제가 개최될 예정입니다.",
-  "최근 항해 일지를 수집하는 취미가 인기를 끌고 있습니다.",
-  "워터 세븐의 조선 기술 전시회가 오늘 개막했습니다.",
-  "여러 섬의 특산품을 만나볼 수 있는 해상 박람회가 열렸습니다.",
-  "한 어부가 보기 드문 대형 물고기를 낚아 화제가 되고 있습니다.",
-  "그랜드라인의 작은 섬에서 새로운 관광 명소가 발견되었습니다.",
-  "최근 해상 운송비 상승으로 일부 지역의 물가가 올랐습니다.",
-  "워터 세븐의 선박 제작 주문량이 꾸준히 증가하고 있습니다.",
-  "전보벌레 통신 이용 요금이 다음 달부터 인하될 예정입니다.",
-  "이스트 블루의 어획량이 지난해보다 증가했습니다.",
-  "샤본디 제도를 찾는 관광객이 늘어나고 있습니다.",
-  "일부 항구의 선박 정박 요금이 조정되었습니다.",
-  "최근 항해용 나침반의 수요가 증가하고 있습니다.",
-  "주요 항구의 식료품 공급은 안정적으로 유지되고 있습니다.",
-  "해상 무역량이 지난달보다 증가한 것으로 나타났습니다.",
-  "새로운 여객선 노선이 개설될 예정입니다.",
-  "오늘 그랜드라인 동부 해역은 대체로 맑겠습니다.",
-  "북쪽 해역에서는 강한 바람이 예상됩니다.",
-  "워터 세븐행 여객선은 정상 운항 중입니다.",
-  "오늘 저녁 샤본디 제도 인근에 짙은 안개가 예상됩니다.",
-  "현재 이스트 블루의 주요 항로는 정상적으로 운영되고 있습니다.",
-  "일부 해역의 높은 파도로 여객선 운항이 지연되고 있습니다.",
-  "내일 오전부터 해상 기상 상황이 개선될 전망입니다.",
-  "오늘은 바람이 비교적 잔잔해 항해하기 좋은 날씨입니다.",
-  "신세계 일부 해역에 폭풍주의보가 발령되었습니다.",
-  "현재 주요 항구의 선박 입출항은 원활하게 이루어지고 있습니다.",
-  "오늘 오전 그랜드라인 서부 해역에서 두 해적단이 충돌했습니다.",
-  "해군 본부가 주요 항로의 순찰을 강화한다고 발표했습니다.",
-  "신세계에서 활동 중인 일부 해적들의 현상금이 조정되었습니다.",
-  "세계정부가 새로운 현상수배 명단을 발표했습니다.",
-  "해군과 해적단의 충돌로 일부 해역의 통행이 제한되고 있습니다.",
-  "해군 제7지부가 최근 해상 소탕 작전에서 승리를 거뒀습니다.",
-  "최근 두 해적단이 새로운 동맹을 체결한 것으로 알려졌습니다.",
-  "세계정부의 정기회의가 오늘 개최되었습니다.",
-  "해군 함대가 장기간의 원정을 마치고 귀환했습니다.",
-  "해군 본부는 최근 해상 충돌로 인한 민간 선박의 피해는 없다고 밝혔습니다."
-];
-function shuffle(values){const a=[...values];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function nextAmbient(){
- if(!deck.length){deck=shuffle(ambient);const first=deck.findIndex(m=>ambient.slice(0,20).includes(m)&&m!==lastAmbient);if(first>=0)[deck[0],deck[first]]=[deck[first],deck[0]];}
- lastAmbient=deck.shift();return lastAmbient;
-}
-function rollNews(message){
- tickerMotion?.cancel();ticker.textContent=message;
- if(matchMedia('(prefers-reduced-motion: reduce)').matches)return 8500;
- const distance=viewport.clientWidth+ticker.scrollWidth;
- const duration=Math.max(5000,distance/65*1000);
- tickerMotion=ticker.animate([{transform:`translateX(${viewport.clientWidth}px)`},{transform:`translateX(${-ticker.scrollWidth}px)`}],{duration,iterations:1,easing:'linear',fill:'both'});
- return duration;
-}
-function clearBroadcast(){active=null;holdUntil=0;tickerMotion?.cancel();ticker.textContent='';}
-viewport.setAttribute('aria-label','NEWS COO: 일반 방송은 가상의 세계관 뉴스입니다.');
-viewport.title='일반 방송은 가상의 세계관 뉴스입니다.';
+function clearBroadcast(){window.marineNews?.reset();}
 $('cc-toggle').onclick=()=>{open=!open;$('cc-panel').hidden=!open;$('cc-toggle').setAttribute('aria-expanded',String(open));if(open){radioNext=0;refreshRadio();}};
-async function refreshRadio(){if(!open||radioBusy||document.hidden||Date.now()<radioNext)return;radioBusy=true;try{const rows=await api('radio');const box=$('cc-messages');const bottom=box.scrollHeight-box.scrollTop-box.clientHeight<50;const nodes=rows.filter(m=>Date.parse(m.created_at)>Date.now()-1800000).map(m=>{const p=document.createElement('p');const name=document.createElement('strong');name.textContent=m.nickname+' · ';p.append(name,document.createTextNode(m.content));if(m.is_mine)p.className='cc-mine';else{const b=document.createElement('button');b.type='button';b.textContent='신고';b.onclick=async()=>{const reason=prompt('신고 사유 (개인정보 제외)');if(!reason?.trim())return;b.disabled=true;try{await api('report_radio',{target_id:m.id,content:reason},true);$('cc-status').textContent='신고 접수 완료';}catch(e){$('cc-status').textContent=e.message;}finally{b.disabled=false;}};p.append(b);}return p;});box.replaceChildren(...nodes);if(bottom)box.scrollTop=box.scrollHeight;radioDelay=10000;}catch(e){radioDelay=Math.min(radioDelay*2,120000);$('cc-status').textContent=e.message;}finally{radioNext=Date.now()+radioDelay;radioBusy=false;}}
-async function refreshNews(){
- if(newsBusy||document.hidden||Date.now()<newsNext)return;
- newsBusy=true;
- try{
-  const rows=await api('news',{since:new Date(Date.now()-300000).toISOString()});
-  if(!Array.isArray(rows))throw Error('Invalid news response');
-  if(document.hidden){newsFresh=false;return;}
-  const now=Date.now(), valid=new Map(rows.filter(m=>m.id&&Date.parse(m.expires_at)>now).map(m=>[m.id,m]));
-  for(const [id,expiry] of seen)if(expiry<=now)seen.delete(id);
-  for(let i=queue.length-1;i>=0;i--)if(!valid.has(queue[i].id))queue.splice(i,1);
-  if(active&&!valid.has(active.id))clearBroadcast();
-  for(const m of valid.values())if(!seen.has(m.id)){seen.set(m.id,Date.parse(m.expires_at));queue.push(m);if(m.event_type==='notice') enqueueNotice(m);}
-  queue.sort((a,b)=>Number(b.event_type==='notice')-Number(a.event_type==='notice'));newsFresh=true;newsDelay=15000;
- }catch{newsFresh=false;queue.length=0;if(active)clearBroadcast();newsDelay=Math.min(newsDelay*2,120000);}
- finally{newsNext=Date.now()+newsDelay;newsBusy=false;}
-}
-function tick(){
- if(document.hidden)return;
- const now=Date.now();
- if(active&&(!newsFresh||Date.parse(active.expires_at)<=now))clearBroadcast();
- if(now<holdUntil)return;
- active=null;
- while(queue.length&&Date.parse(queue[0].expires_at)<=now)queue.shift();
- if(newsFresh&&queue.length){active=queue.shift();holdUntil=Math.min(Date.parse(active.expires_at),now+rollNews(active.content));}
- else{holdUntil=now+rollNews(nextAmbient());}
-}
+async function refreshRadio(){if(!open||radioBusy||document.hidden||Date.now()<radioNext)return;radioBusy=true;try{const rows=await api('radio');const box=$('cc-messages');const bottom=box.scrollHeight-box.scrollTop-box.clientHeight<50;const nodes=rows.filter(m=>Date.parse(m.created_at)>Date.now()-1800000).sort((a,b)=>Date.parse(a.created_at)-Date.parse(b.created_at)).map(m=>{const p=document.createElement('div');p.className="cc-message";const name=document.createElement('strong');name.textContent=m.is_mine?'나':m.nickname;const bubble=document.createElement('span');bubble.className='cc-bubble';bubble.textContent=m.content;const time=document.createElement('small');time.textContent=new Date(m.created_at).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});p.append(name,bubble,time);if(m.is_mine)p.classList.add('cc-mine');else{const b=document.createElement('button');b.type='button';b.textContent='신고';b.onclick=async()=>{const reason=prompt('신고 사유 (개인정보 제외)');if(!reason?.trim())return;b.disabled=true;try{await api('report_radio',{target_id:m.id,content:reason},true);$('cc-status').textContent='신고 접수 완료';}catch(e){$('cc-status').textContent=e.message;}finally{b.disabled=false;}};p.append(b);}return p;});box.replaceChildren(...nodes);if(bottom)box.scrollTop=box.scrollHeight;radioDelay=10000;}catch(e){radioDelay=Math.min(radioDelay*2,120000);$('cc-status').textContent=e.message;}finally{radioNext=Date.now()+radioDelay;radioBusy=false;}}
+async function refreshNews(){window.marineNews?.refresh();}
 $('cc-form').onsubmit=async e=>{e.preventDefault();if(sending)return;const input=$('cc-input');if(!input.value.trim())return;if(!confirm('이 메시지는 공개 무전 및 NEWS COO에 표시될 수 있습니다. 송출할까요?'))return;sending=true;const button=e.currentTarget.querySelector('button');button.disabled=true;try{await api('send_radio',{content:input.value},true);input.value='';$('cc-status').textContent='송출 완료';radioNext=0;await refreshRadio();await refreshNews();}catch(err){$('cc-status').textContent=err.message;}finally{sending=false;button.disabled=false;}};
 (async()=>{try{const {data:{session}}=await client.auth.getSession();if(session&&Date.now()-Number(sessionStorage.getItem('cc-welcome')||0)>=1800000){await api('welcome',{},true);sessionStorage.setItem('cc-welcome',String(Date.now()));}}catch{}})();
 const alarm=document.createElement('dialog');alarm.id='cc-notice-alarm';alarm.innerHTML='<header><svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4L45 42H3Z" fill="#b93d32"/><path d="M24 15V29" stroke="white" stroke-width="4"/><circle cx="24" cy="35" r="2" fill="white"/></svg><h2>공지 알람!</h2></header><p class="alarm-label">CAPTAIN’S ANNOUNCEMENT</p><p id="cc-alarm-text"></p><label><input type="checkbox" id="cc-alarm-mute"> 알림음 끄기</label><button id="cc-alarm-ok">공지 확인</button>';document.body.append(alarm);
@@ -199,5 +87,5 @@ function showAlarm(){if(currentAlarm||!alarms.length)return;currentAlarm=alarms.
 function enqueueNotice(m){if(!acknowledged.has(m.id)){alarms.push(m);showAlarm();}}
 function acknowledge(){if(!currentAlarm)return;acknowledged.add(currentAlarm.id);try{localStorage.setItem('marine-notice-ack',JSON.stringify([...acknowledged].slice(-200)))}catch{};currentAlarm=null;alarm.close();showAlarm();}
 $('cc-alarm-ok').onclick=acknowledge;alarm.addEventListener('cancel',e=>{e.preventDefault();acknowledge();});
-tick();refreshNews();setInterval(refreshNews,1000);setInterval(refreshRadio,1000);setInterval(tick,100);document.addEventListener('visibilitychange',()=>{if(document.hidden){newsFresh=false;clearBroadcast();}else{newsNext=0;radioNext=0;refreshNews();refreshRadio();}});
+window.addEventListener("marine-notice",e=>enqueueNotice(e.detail));refreshNews();setInterval(refreshRadio,1000);document.addEventListener('visibilitychange',()=>{if(document.hidden){newsFresh=false;clearBroadcast();}else{newsNext=0;radioNext=0;refreshNews();refreshRadio();}});
 })();

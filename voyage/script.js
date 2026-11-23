@@ -119,7 +119,7 @@ function enterBlog(name, visitCount = null) {
       : `${name}님, 반가워요!`;
 
   greetingMessage.textContent = Number.isSafeInteger(visitCount) && visitCount > 0
-    ? `${greeting} 이번까지 총 ${visitCount}회 항해하셨습니다.`
+    ? `${greeting}\n이번까지 총 ${visitCount}회 항해하셨습니다.`
     : greeting;
 
   nameScreen.hidden = true;
