@@ -606,7 +606,7 @@ permalink: /bookshelf/
   let n=document.getElementById('seal-dialogue');
   if(!n){
     n=document.createElement('div');n.id='seal-dialogue';n.setAttribute('aria-hidden','true');
-    n.style.cssText="position:fixed;left:50%;bottom:15%;transform:translate(-50%,8px);z-index:2147483000;width:max-content;max-width:88vw;box-sizing:border-box;text-align:center;color:#fff0cf;font:700 clamp(17px,1.65vw,26px)/1.7 'Nanum Myeongjo',serif;text-shadow:0 2px 3px #000,0 0 7px #000,0 0 15px #241609;padding:4px 12px;pointer-events:none;opacity:0;transition:opacity .8s ease,transform .6s ease;overflow-wrap:break-word;white-space:pre-line";
+    n.style.cssText="position:fixed;left:50%;bottom:17%;transform:translate(-50%,8px);z-index:2147483000;width:max-content;max-width:88vw;box-sizing:border-box;text-align:center;color:#f3e6ce;font:700 clamp(17px,1.65vw,26px)/1.7 'Nanum Myeongjo',serif;background:rgba(28,21,16,.82);border:1px solid rgba(180,151,112,.32);backdrop-filter:blur(3px);text-shadow:0 1px 3px #0009;border-radius:12px;box-shadow:0 6px 24px #0006;padding:16px 30px;min-width:min(320px,88vw);pointer-events:none;opacity:0;transition:opacity .8s ease,transform .6s ease;overflow-wrap:break-word;white-space:pre-line";
     document.body.append(n);
     const live=document.createElement('div');live.id='seal-dialogue-live';live.setAttribute('role','status');live.style.cssText='position:fixed;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);pointer-events:none';document.body.append(live);
   }
@@ -618,7 +618,7 @@ permalink: /bookshelf/
     document.getElementById('seal-dialogue-live').textContent=message;
     n.textContent='';n.style.transition=reduced?'none':'opacity .8s ease,transform .6s ease';
     n.style.opacity='1';n.style.transform='translate(-50%,0)';
-    const finish=()=>{n.hideTimer=setTimeout(()=>{n.style.opacity='0';n.style.transform='translate(-50%, -4px)'},3000)};
+    const finish=()=>{n.hideTimer=setTimeout(()=>{n.style.opacity='0';n.style.transform='translate(-50%, -4px)'},4000)};
     if(reduced){n.textContent=chars.join('');finish();return;}
     let i=0;n.typeTimer=setInterval(()=>{n.textContent=chars.slice(0,++i).join('');if(i>=chars.length){clearInterval(n.typeTimer);finish()}},42);
   },400);
