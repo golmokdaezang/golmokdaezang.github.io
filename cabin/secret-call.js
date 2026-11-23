@@ -37,7 +37,7 @@ trigger.addEventListener('click',e=>{e.stopPropagation();page=0;render();if(!dia
   let n=document.getElementById('seal-dialogue');
   if(!n){
     n=document.createElement('div');n.id='seal-dialogue';n.setAttribute('aria-hidden','true');
-    n.style.cssText="position:fixed;left:50%;bottom:17%;transform:translate(-50%,8px);z-index:2147483000;width:max-content;max-width:88vw;box-sizing:border-box;text-align:center;color:#f3e6ce;font:700 clamp(17px,1.65vw,26px)/1.7 'Nanum Myeongjo',serif;background:rgba(28,21,16,.82);border:1px solid rgba(180,151,112,.32);backdrop-filter:blur(3px);text-shadow:0 1px 3px #0009;border-radius:12px;box-shadow:0 6px 24px #0006;padding:16px 30px;min-width:min(320px,88vw);pointer-events:none;opacity:0;transition:opacity .8s ease,transform .6s ease;overflow-wrap:break-word;white-space:pre-line";
+    n.style.cssText="position:fixed;left:50%;bottom:17%;transform:translate(-50%,8px);z-index:2147483000;width:min(760px,88vw);max-width:88vw;box-sizing:border-box;text-align:center;color:#f3e6ce;font:700 clamp(17px,1.65vw,26px)/1.7 'Nanum Myeongjo',serif;background:transparent url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20600%20100%22%20preserveAspectRatio%3D%22none%22%3E%3Cpath%20d%3D%22M12%201H588Q589%2010%20599%2012V88Q589%2090%20588%2099H12Q11%2090%201%2088V12Q11%2010%2012%201Z%22%20fill%3D%22%2314100d%22%20fill-opacity%3D%22.91%22%20stroke%3D%22%23a58a56%22%20stroke-width%3D%221%22%20vector-effect%3D%22non-scaling-stroke%22%2F%3E%3C%2Fsvg%3E') center/100% 100% no-repeat;border:0;border-radius:0;backdrop-filter:blur(3px);text-shadow:0 1px 3px #0009;box-shadow:none;padding:16px 30px;min-width:min(320px,88vw);pointer-events:none;opacity:0;transition:opacity .8s ease,transform .6s ease;overflow-wrap:break-word;white-space:pre-line";
     document.body.append(n);
     const live=document.createElement('div');live.id='seal-dialogue-live';live.setAttribute('role','status');live.style.cssText='position:fixed;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);pointer-events:none';document.body.append(live);
   }
@@ -54,3 +54,20 @@ trigger.addEventListener('click',e=>{e.stopPropagation();page=0;render();if(!dia
     let i=0;n.typeTimer=setInterval(()=>{n.textContent=chars.slice(0,++i).join('');if(i>=chars.length){clearInterval(n.typeTimer);finish()}},42);
   },400);
 };function showMoon(){const c=document.querySelector('#cabin');if(!c||Number(sessionStorage.getItem('marine-seal-step'))<1||Number(sessionStorage.getItem('marine-seal-step'))>2||c.querySelector('.marine-moon-seal'))return;const b=document.createElement('button');b.className='marine-moon-seal';b.type='button';b.setAttribute('aria-label','달 문장');b.innerHTML="<svg viewBox=\"-40 -40 80 80\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle r=\"32\" stroke-width=\"1\"/><circle r=\"28\" stroke-width=\".6\"/><path d=\"M0 -37L3 -32L0 -27L-3 -32Z M0 37L3 32L0 27L-3 32Z\"/><path d=\"M5 -23A24 24 0 1 0 17 17A23 23 0 0 1 5 -23Z\"/><path d=\"M15 -17v12M9 -11h12\"/></svg>";c.append(b);b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(!c.classList.contains('dark'))return;if(sessionStorage.getItem('marine-seal-step')==='1')sessionStorage.setItem('marine-seal-step','2');b.classList.add('is-activated');sealDialogue('찰칵. 어딘가에서 작은 기계음이 들렸다.');});}showMoon();window.addEventListener('pageshow',showMoon);})();
+// Final story encounter, only after all three seals.
+(()=>{
+ let offered=false, timer;
+ function offer(){
+  if(offered||sessionStorage.getItem('marine-seal-step')!=='3')return;
+  offered=true;
+  timer=setTimeout(()=>{
+   const d=document.createElement('dialog');d.className='marine-final-choice';d.innerHTML='<p>등 뒤에서 기시감이 느껴진다.</p><div><button type="button">뒤돌아본다</button><button type="button">무시한다</button></div>';
+   document.body.append(d);
+   const [turn,ignore]=d.querySelectorAll('button');
+   ignore.onclick=()=>{turn.disabled=true;ignore.disabled=true;d.querySelector("div").hidden=true;const p=d.querySelector("p");p.textContent="";const chars=Array.from("지금은 모르는 편이 나을지도 모르겠다.");let i=0;const t=setInterval(()=>{p.textContent=chars.slice(0,++i).join("");if(i>=chars.length){clearInterval(t);setTimeout(()=>{if(d.open)d.close()},4000)}},42);};d.addEventListener('close',()=>d.remove());
+   turn.onclick=()=>{turn.disabled=true;ignore.disabled=true;sessionStorage.setItem('marine-room-discovered','1');const fade=document.createElement('div');fade.className='marine-room-fade';d.append(fade);requestAnimationFrame(()=>requestAnimationFrame(()=>fade.classList.add('active')));setTimeout(()=>location.assign('../secret-room/'),950);};
+   d.showModal();
+  },2000);
+ }
+ window.addEventListener('pageshow',e=>{if(e.persisted){clearTimeout(timer);offered=false;}offer();});offer();
+})();
