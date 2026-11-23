@@ -2,10 +2,10 @@
 const base='https://zdgopdrehbphshdptjjr.supabase.co',key='sb_publishable_C59a539RlAeLYmLCmGuVng_IFno8y8s';
 const root=document.createElement('section');root.id='community-cabin';root.innerHTML=`<div class="cc-news"><strong>NEWS COO</strong><div class="cc-ticker-window"><span id="cc-ticker" aria-live="polite">오늘도 그랜드라인의 바람은 순조롭습니다.</span></div></div><button type="button" id="cc-toggle" aria-expanded="false" aria-controls="cc-panel">실시간 무전 ▾</button><aside id="cc-panel" hidden><div class="cc-radio-head"><div><span class="cc-device-label">MARINE · COMMUNICATIONS</span><h2>실시간 무전</h2></div><span class="cc-speaker" aria-hidden="true"></span></div><div class="cc-channel"><span>CH 01 · 공개 채널</span><span>RX / TX</span></div><p class="cc-hint">공개 채널입니다. 연락처나 개인정보를 남기지 마세요.</p><div id="cc-messages" role="log"></div><form id="cc-form"><label for="cc-input">무전 메시지 (100자 이내)</label><input id="cc-input" maxlength="100" required><button><span aria-hidden="true">●</span> 송출 <small>TX</small></button></form><p id="cc-status" role="status"></p></aside>`;document.body.append(root);
 const $=id=>document.getElementById(id);const client=window.supabase?.createClient(base,key,{auth:{storageKey:'marine-community-auth'}});if(!client){$('cc-status').textContent='인증 모듈을 불러오지 못했습니다.';return;}
-async function api(action,fields={},write=false){const {data:{session}}=await client.auth.getSession();if(write&&!session)throw Error('입장 화면에서 커뮤니티 인증을 먼저 진행하세요.');const r=await fetch(base+'/functions/v1/community-handler',{method:'POST',headers:{'Content-Type':'application/json',apikey:key,...(session?{Authorization:'Bearer '+session.access_token}:{})},body:JSON.stringify({action,...fields}),signal:AbortSignal.timeout(12000)});const j=await r.json();if(!r.ok||j.data?.success===false)throw Error(j.data?.error||j.error||'요청 실패');return j.data;}
+async function api(action,fields={},write=false){const {data:{session}}=await client.auth.getSession();if(write&&!session)throw Error('입장 화면에서 커뮤니티 인증을 먼저 진행하세요.');const r=await fetch(base+'/functions/v1/community-handler',{method:'POST',headers:{'Content-Type':'application/json',apikey:key,...(session?{Authorization:'Bearer '+session.access_token}:{})},body:JSON.stringify({action,...fields}),signal:AbortSignal.timeout(action==='delete_my_data'?60000:12000)});const j=await r.json();if(!r.ok||j.data?.success===false)throw Error(j.data?.error||j.error||'요청 실패');return j.data;}
 let open=false,sending=false,radioBusy=false,newsBusy=false;
 const privacyButton=document.createElement('button');privacyButton.type='button';privacyButton.className='captain-auth';privacyButton.id='cc-privacy-button';privacyButton.textContent='개인정보 설정';$('captain-logout').before(privacyButton);
-const privacy=document.createElement('dialog');privacy.id='cc-privacy';privacy.innerHTML=`<h2>항해자 개인정보 설정</h2><form method="dialog"><button class="cc-close" aria-label="닫기">×</button></form><p id="cc-privacy-status" role="status"></p><fieldset disabled><legend>나의 공개 설정</legend><label><input type="checkbox" id="cc-rank"> WANTED 순위표 공개</label><label><input type="checkbox" id="cc-nick"> 커뮤니티 닉네임 공개</label><label><input type="checkbox" id="cc-welcome"> 환영 방송 공개</label><button type="button" id="cc-save-privacy">변경 사항 저장</button><button type="button" id="cc-revoke-privacy">모든 공개 동의 철회</button></fieldset><button type="button" id="cc-my-data">내 개인정보 열람</button><div id="cc-my-data-result" hidden aria-live="polite"></div><a href="/">입장 화면에서 인증 및 이용 동의</a>`;document.body.append(privacy);
+const privacy=document.createElement('dialog');privacy.id='cc-privacy';privacy.innerHTML=`<header class="cc-privacy-head"><h2>항해자 개인정보 설정</h2><form method="dialog"><button class="cc-close" aria-label="닫기">×</button></form></header><p id="cc-privacy-status" role="status"></p><fieldset disabled><legend>나의 공개 설정</legend><label><input type="checkbox" id="cc-rank"> WANTED 순위표 공개</label><label><input type="checkbox" id="cc-nick"> 커뮤니티 닉네임 공개</label><label><input type="checkbox" id="cc-welcome"> 환영 방송 공개</label><button type="button" id="cc-save-privacy">변경 사항 저장</button><button type="button" id="cc-revoke-privacy">모든 공개 동의 철회</button></fieldset><button type="button" id="cc-my-data">내 개인정보 열람</button><div id="cc-my-data-result" hidden aria-live="polite"></div><section class="cc-delete-area"><h3>개인정보 및 계정 삭제</h3><p>방문 기록과 작성 기록, 익명 인증 계정이 삭제되며 복구할 수 없습니다. 다른 사용자의 답글·신고 및 일부 로그·백업은 남을 수 있습니다.</p><button type="button" id="cc-delete-data">개인정보 삭제</button></section><a href="/">입장 화면에서 인증 및 이용 동의</a>`;document.body.append(privacy);
 const rank=$('cc-rank'),nick=$('cc-nick'),welcome=$('cc-welcome'),status=$('cc-privacy-status'),fields=privacy.querySelector('fieldset'),save=$('cc-save-privacy');let visitorExists=false,communityExists=false,privacyBusy=false;
 async function loadPrivacy(){fields.disabled=true;status.textContent='설정을 불러오는 중입니다.';try{const data=await api('get_privacy',{},true);visitorExists=data.visitor?.success===true;communityExists=data.community?.success===true;rank.checked=visitorExists&&data.visitor.leaderboard_consent===true;nick.checked=communityExists&&data.community.nickname_public===true;welcome.checked=nick.checked&&data.community.welcome_consent===true;rank.disabled=!visitorExists;nick.disabled=!communityExists;welcome.disabled=!communityExists||!nick.checked;fields.disabled=!(visitorExists||communityExists);status.textContent=fields.disabled?'저장된 이용 설정이 없습니다. 입장 화면에서 동의할 수 있습니다.':'';}catch(e){status.textContent=e.message;}}
 privacyButton.onclick=()=>{if(!privacy.open&&!privacyBusy){privacy.showModal();loadPrivacy();}};
@@ -15,10 +15,11 @@ $('cc-revoke-privacy').onclick=async()=>{if(privacyBusy||fields.disabled)return;
 
 const myDataButton=$('cc-my-data'),myDataResult=$('cc-my-data-result');
 let dataGeneration=0;
-function clearMyData(){dataGeneration++;myDataResult.textContent='';myDataResult.hidden=true;myDataButton.disabled=false;}
+function clearMyData(){dataGeneration++;myDataResult.textContent='';myDataResult.hidden=true;myDataButton.disabled=false;myDataButton.textContent='내 개인정보 열람';}
 privacy.addEventListener('close',clearMyData);
 client.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT'||event==='SIGNED_IN')clearMyData();});
 myDataButton.onclick=async()=>{
+ if(privacyBusy)return;if(!myDataResult.hidden){clearMyData();return;}myDataButton.textContent='개인정보 열람 접기';
  const generation=++dataGeneration;myDataButton.disabled=true;myDataResult.hidden=false;myDataResult.textContent='개인정보를 불러오는 중입니다.';
  try{
  const before=(await client.auth.getSession()).data.session?.user.id;if(!before)throw Error('입장 화면에서 인증을 먼저 진행하세요.');
@@ -35,10 +36,38 @@ myDataButton.onclick=async()=>{
  const details=(title,rows)=>{const s=section(title);if(!rows){paragraph(s,'등록 기록 없음');return;}const dl=document.createElement('dl');for(const [label,value] of rows){const row=document.createElement('div');const dt=document.createElement('dt');const dd=document.createElement('dd');dt.textContent=label;dd.textContent=String(value??'없음');row.append(dt,dd);dl.append(row);}s.append(dl);};
  details('방문 기록',v?[['닉네임',v.nickname],['방문 횟수',v.visit_count],['최초 방문',date(v.first_visited_at)],['최근 방문',date(v.last_visited_at)],['순위표 공개',consent(v.leaderboard_consent)]]:null);
  details('커뮤니티',c?[['닉네임',c.nickname],['등록 일시',date(c.created_at)],['닉네임 공개',consent(c.nickname_public)],['환영 방송 공개',consent(c.welcome_consent)]]:null);
- for(const [label,records] of [['방명록',data.guestbook],['무전',data.radio]]){const s=section(label);if(!records?.length){paragraph(s,'기록 없음');continue;}for(const r of records){const article=document.createElement('article');paragraph(article,date(r.created_at)+(r.hidden?' (숨김)':''));paragraph(article,String(r.content??''));if(r.updated_at)paragraph(article,'수정: '+date(r.updated_at));s.append(article);}}
+
 
  }catch(e){if(generation===dataGeneration&&privacy.open)myDataResult.textContent=e.message;}
  finally{if(generation===dataGeneration)myDataButton.disabled=false;}
+};
+
+const deleteButton=$('cc-delete-data');
+privacy.addEventListener('cancel',e=>{if(privacyBusy)e.preventDefault();});
+privacy.querySelector('.cc-close').addEventListener('click',e=>{if(privacyBusy)e.preventDefault();});
+deleteButton.onclick=async()=>{
+ if(privacyBusy||!privacy.open)return;
+ const initial=(await client.auth.getSession()).data.session;
+ if(!initial){status.textContent='삭제할 방문자 인증 계정이 없습니다.';return;}
+ if(privacyBusy||!privacy.open)return;
+ if(prompt('방문 기록, 작성 기록 및 익명 계정을 삭제합니다. 복구할 수 없습니다. 계속하려면 개인정보삭제 를 입력하세요.')!=='개인정보삭제')return;
+ privacyBusy=true;fields.disabled=true;deleteButton.disabled=true;clearMyData();myDataButton.disabled=true;
+ status.textContent='개인정보를 삭제하는 중입니다. 창을 닫지 마세요.';
+ let confirmed=false;
+ try{
+ const current=(await client.auth.getSession()).data.session;
+ if(current?.user.id!==initial.user.id)throw Error('인증 계정이 변경되었습니다.');
+ const result=await api('delete_my_data',{confirmation:'개인정보삭제'},true);
+ if(result?.success!==true)throw Error('삭제 결과를 확인할 수 없습니다.');
+ confirmed=true;
+ const latest=(await client.auth.getSession()).data.session;
+ if(latest?.user.id===initial.user.id){
+ const {error}=await client.auth.signOut({scope:'local'});
+ if(error){const again=(await client.auth.getSession()).data.session;if(again?.user.id===initial.user.id){client.auth.stopAutoRefresh();localStorage.removeItem('marine-community-auth');localStorage.removeItem('marine-community-auth-code-verifier');}}
+ }
+ alert('개인정보 및 방문자 인증 계정이 삭제되었습니다.');location.replace('/');
+ }catch(e){status.textContent=confirmed?'서버 삭제는 완료되었으나 브라우저 세션 정리를 확인하지 못했습니다. 새로고침 후 확인해 주세요.':'삭제 완료를 확인하지 못했습니다. 같은 계정으로 다시 시도해 주세요. '+e.message;}
+ finally{privacyBusy=false;deleteButton.disabled=confirmed;myDataButton.disabled=confirmed;}
 };
 
 const queue=[],seen=new Map();let active=null,newsFresh=false,newsNext=0,newsDelay=15000,radioNext=0,radioDelay=10000;
