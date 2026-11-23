@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="/assets/css/marine-admin.css?v=1">
 <script defer src="/assets/js/marine-admin-theme.js?v=1"></script>
 <link rel="stylesheet" href="/assets/css/report-files.css">
+<style>
+#editor .report-expanded{grid-template-columns:minmax(0,1fr)}
+#editor .report-expanded #content,#editor .report-expanded #preview{min-height:max(75vh, calc((100% - 2px) * 1.414));box-sizing:border-box}
+#editor .report-expanded #content,#editor .report-expanded #preview{min-height:var(--report-page-height, 75vh)}
+#editor .report-expanded > [hidden]{display:none!important}
+#report-view-controls{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+</style>
 </head>
 <body class="marine-admin" data-app="write">
 <main>
@@ -19,10 +26,11 @@
             <label for="title">제목</label><input id="title" required maxlength="300">
             <label>본문 작성 (Markdown)</label>
             <div class="actions" id="toolbar"></div>
-            <div class="columns">
+            <div class="columns" id="report-editor-columns">
                 <div><label for="content">작성</label><textarea id="content"></textarea></div>
                 <div><label>실시간 미리보기</label><div class="preview" id="preview"></div></div>
             </div>
+            <div id="report-view-controls"><button type="button" id="report-expand" aria-expanded="false">⛶ 크게 보기</button><button type="button" id="report-write-tab" hidden>작성</button><button type="button" id="report-preview-tab" hidden>실시간 미리보기</button></div>
             <label>첨부파일</label><input id="report-files" type="file" multiple hidden style="display:none"><button type="button" id="report-drop">파일을 끌어다 놓거나 선택하세요 · 최대 20MB/파일</button><div id="report-list"></div>
             <label><input type="checkbox" id="published"> 공개 (체크하지 않으면 봉인)</label>
             <button type="submit">기록 저장</button>
@@ -151,6 +159,19 @@ $('editor').onsubmit = e => {
     });
 };
 init().catch(e => status('오류: ' + e.message));
+</script>
+<script>
+(() => {
+ const grid=document.getElementById('report-editor-columns'), [write,preview]=grid.children;
+ const toggle=document.getElementById('report-expand'), wt=document.getElementById('report-write-tab'), pt=document.getElementById('report-preview-tab');
+ let expanded=false, mode='write';
+ function layout(){ if(expanded) grid.style.setProperty('--report-page-height', Math.round(grid.clientWidth*297/210)+'px'); }
+ function render(){grid.classList.toggle('report-expanded',expanded);write.hidden=expanded&&mode==='preview';preview.hidden=expanded&&mode==='write';wt.hidden=pt.hidden=!expanded;wt.setAttribute('aria-pressed',String(mode==='write'));pt.setAttribute('aria-pressed',String(mode==='preview'));toggle.textContent=expanded?'원래 크기로 돌아가기':'⛶ 크게 보기';toggle.setAttribute('aria-expanded',String(expanded));layout();}
+ toggle.addEventListener('click',()=>{expanded=!expanded;mode='write';render();if(expanded) grid.scrollIntoView({block:'start'});});
+ wt.addEventListener('click',()=>{mode='write';render();grid.scrollIntoView({block:'start'});});
+ pt.addEventListener('click',()=>{mode='preview';render();grid.scrollIntoView({block:'start'});});
+ if(window.ResizeObserver) new ResizeObserver(layout).observe(grid); else window.addEventListener('resize',layout);
+})();
 </script>
 </body>
 </html>

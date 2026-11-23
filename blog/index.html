@@ -388,6 +388,18 @@
 
 <link rel="stylesheet" href="/assets/css/marine-ui.css">
 
+<style>
+#taskbar{position:relative}
+#marine-daily-motto{position:absolute;right:12px;bottom:calc(100% + 8px);width:max-content;max-width:calc(100vw - 24px);z-index:10;background:#1b2330;color:inherit;border-radius:5px;font:inherit;font-size:13px}
+#marine-daily-motto summary{padding:8px 12px;cursor:pointer;list-style:none;display:flex;align-items:center;gap:18px;color:inherit}
+#marine-daily-motto summary::-webkit-details-marker{display:none}
+#marine-daily-motto summary::after{content:"";display:block;width:7px;height:7px;border-right:1px solid currentColor;border-bottom:1px solid currentColor;transform:rotate(225deg);margin:4px 2px}
+#marine-daily-motto[open] summary::after{transform:rotate(45deg);margin-top:0}
+#marine-daily-motto:not([open]) summary span{display:none}
+#marine-daily-motto:not([open]){background:transparent}
+#marine-daily-motto p{margin:0;padding:9px 12px;border-top:1px solid #ffffff18}
+#desktop[data-normal-mode="true"] #marine-daily-motto{display:none}
+</style>
 </head>
 
 <body>
@@ -526,6 +538,7 @@
         <!-- 작업 표시줄 -->
 
         <footer id="taskbar">
+            <details id="marine-daily-motto" open><summary aria-label="오늘의 훈시 접기 및 펼치기"><span>오늘의 훈시</span></summary><p>모든 기록은 정의의 증거다.</p></details>
 
             <button id="home">
                 바탕화면
@@ -2322,6 +2335,9 @@ $("access").addEventListener(
 
     </script>
 
+<script>
+(() => {const motto=document.getElementById('marine-daily-motto');const key='marine-daily-motto-collapsed';try{motto.open=sessionStorage.getItem(key)!=='1';}catch(e){}motto.addEventListener('toggle',()=>{try{sessionStorage.setItem(key,motto.open?'0':'1');}catch(e){}});})();
+</script>
 </body>
 
 </html>
