@@ -81,12 +81,14 @@ window.addEventListener("pageshow", updateConsentState);
    방문 기록 저장
 ========================= */
 
-async function saveVisit(name, publicConsent) {
+async function saveVisit(name, publicConsent, session) {
   const response = await fetch(VISIT_API, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Accept": "application/json"
+      "Accept": "application/json",
+      "apikey": window.communityAuth.key,
+      "Authorization": "Bearer " + session.access_token
     },
     body: JSON.stringify({
       nickname: name,
@@ -160,6 +162,7 @@ nameForm.addEventListener("submit", async (event) => {
     await window.communityAuth.register(name);
   } catch (error) {
     saveStatus.textContent = "커뮤니티 인증 실패: " + error.message + " (선택 해제 후 입장 가능)";
+    unlock();
     enterButton.disabled = false;
     return;
   }
@@ -175,7 +178,7 @@ nameForm.addEventListener("submit", async (event) => {
     "항해 기록을 저장하는 중입니다...";
 
   try {
-    const result = await saveVisit(name, wantsToPublish);
+    const result = await saveVisit(name, wantsToPublish, session);
 
     saveStatus.textContent =
       "항해 기록이 저장되었습니다!";
@@ -188,6 +191,7 @@ nameForm.addEventListener("submit", async (event) => {
     saveStatus.textContent =
       "방문 기록을 저장하지 못했습니다. 블로그 입장은 가능합니다.";
 
+    unlock();
     enterButton.disabled = false;
 
     // 저장 실패를 숨기지 않고 화면에 표시.
