@@ -153,6 +153,10 @@ nameForm.addEventListener("submit", async (event) => {
   }
 
   enterButton.disabled = true;
+  const choices = [...nameForm.querySelectorAll("input")];
+  const states = choices.map(input => input.disabled);
+  choices.forEach(input => input.disabled = true);
+  const restore = () => choices.forEach((input, i) => input.disabled = states[i]);
 
   const wantsToSave = visitConsent.checked;
   const wantsToPublish =
@@ -161,8 +165,8 @@ nameForm.addEventListener("submit", async (event) => {
   try {
     await window.communityAuth.register(name);
   } catch (error) {
-    saveStatus.textContent = "커뮤니티 인증 실패: " + error.message + " (선택 해제 후 입장 가능)";
-    unlock();
+    saveStatus.textContent = "인증 또는 커뮤니티 등록 실패: " + error.message + " (선택 해제 후 입장 가능)";
+    restore();
     enterButton.disabled = false;
     return;
   }
@@ -191,7 +195,7 @@ nameForm.addEventListener("submit", async (event) => {
     saveStatus.textContent =
       "방문 기록을 저장하지 못했습니다. 블로그 입장은 가능합니다.";
 
-    unlock();
+    restore();
     enterButton.disabled = false;
 
     // 저장 실패를 숨기지 않고 화면에 표시.

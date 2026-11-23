@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="/voyage/style.css">
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script defer src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
-  <script defer src="/voyage/community-auth.js?v=2"></script>
-  <script defer src="/voyage/script.js?v=2"></script>
+  <script defer src="/voyage/community-auth.js?v=3"></script>
+  <script defer src="/voyage/script.js?v=3"></script>
 
   <style>
     /* 방문 기록 동의 영역 */
@@ -85,6 +85,16 @@
       cursor: wait;
       opacity: .65;
     }
+    .consent-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; width:min(860px, 100%); }
+    .consent-grid .consent-panel { width:100%; box-sizing:border-box; padding:18px; font-family:system-ui,"Malgun Gothic",sans-serif; }
+    .consent-panel h2 { font-size:19px; color:#ffe3a3; margin:0 0 12px; }
+    .consent-option { font-size:16px; line-height:1.5; }
+    .consent-description { font-size:14px; line-height:1.55; color:#e3edf9; }
+    .consent-note,#save-status { font:14px/1.5 system-ui,"Malgun Gothic",sans-serif; margin:0; }
+    #name-screen { width:min(900px,100%); box-sizing:border-box; }
+    #name-form { margin-top:12px; }
+    #community-captcha { max-width:100%; }
+    @media(max-width:680px) { .consent-grid { grid-template-columns:1fr; } .consent-grid .consent-panel { padding:14px; } }
   </style>
 </head>
 
@@ -120,14 +130,16 @@
           required
         >
 
+        <div class="consent-grid">
         <div class="consent-panel">
+          <h2>방문 기록</h2>
           <label class="consent-option">
             <input
               id="visit-consent"
               type="checkbox"
             >
             <span>
-              방문 기록 저장에 동의합니다. (선택)
+              방문 기록 저장 (선택)
             </span>
           </label>
 
@@ -152,7 +164,8 @@
           </p>
         </div>
 
-        <div class="consent-panel"><label class="consent-option"><input type="checkbox" id="community-consent">방명록 및 무전 이용 (선택, 인증 계정과 닉네임 저장)</label><label class="consent-option"><input type="checkbox" id="community-public" disabled>커뮤니티 닉네임 공개 (선택)</label><label class="consent-option"><input type="checkbox" id="community-welcome" disabled>환영 방송 공개 (선택)</label><p class="consent-description">공개에 동의하지 않으면 익명의 항해자로 표시됩니다. 개인 연락처나 실명은 입력하지 마세요.</p></div><div id="community-captcha" hidden></div>
+        <div class="consent-panel"><h2>커뮤니티</h2><label class="consent-option"><input type="checkbox" id="community-consent">방명록 및 무전 이용 (선택)</label><label class="consent-option"><input type="checkbox" id="community-public" disabled>커뮤니티 닉네임 공개 (선택)</label><label class="consent-option"><input type="checkbox" id="community-welcome" disabled>환영 방송 공개 (선택)</label><p class="consent-description">이용 동의 시 익명 계정과 닉네임을 저장합니다. 공개에 동의하지 않으면 익명의 항해자로 표시됩니다.</p></div></div><div id="community-captcha" hidden></div>
+        <p class="consent-note">모든 동의는 선택입니다. 실명이나 연락처는 입력하지 마세요.</p>
         <p id="save-status" role="status" aria-live="polite"></p>
 
         <button
