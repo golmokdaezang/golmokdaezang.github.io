@@ -101,20 +101,24 @@ async function saveVisit(name, publicConsent) {
     );
   }
 
-  return response;
+  const result = await response.json();
+  if (!result.success) throw new Error("방문 기록 저장 실패");
+  return result;
 }
 
 /* =========================
    환영 화면 및 이동
 ========================= */
 
-function enterBlog(name) {
+function enterBlog(name, visitCount = null) {
   const greeting =
     name.toLowerCase() === "golmokdaezang"
       ? "항해자님, 반가워요!"
       : `${name}님, 반가워요!`;
 
-  greetingMessage.textContent = greeting;
+  greetingMessage.textContent = Number.isSafeInteger(visitCount) && visitCount > 0
+    ? `${greeting} 이번까지 총 ${visitCount}회 항해하셨습니다.`
+    : greeting;
 
   nameScreen.hidden = true;
   greetingScreen.hidden = false;
@@ -152,6 +156,14 @@ nameForm.addEventListener("submit", async (event) => {
   const wantsToPublish =
     wantsToSave && leaderboardConsent.checked;
 
+  try {
+    await window.communityAuth.register(name);
+  } catch (error) {
+    saveStatus.textContent = "커뮤니티 인증 실패: " + error.message + " (선택 해제 후 입장 가능)";
+    enterButton.disabled = false;
+    return;
+  }
+
   /* 방문 기록 저장 동의하지 않은 경우 */
   if (!wantsToSave) {
     enterBlog(name);
@@ -163,12 +175,12 @@ nameForm.addEventListener("submit", async (event) => {
     "항해 기록을 저장하는 중입니다...";
 
   try {
-    await saveVisit(name, wantsToPublish);
+    const result = await saveVisit(name, wantsToPublish);
 
     saveStatus.textContent =
       "항해 기록이 저장되었습니다!";
 
-    enterBlog(name);
+    enterBlog(name, result.visit_count);
 
   } catch (error) {
     console.error("방문 기록 저장 오류:", error);

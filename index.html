@@ -7,6 +7,9 @@
   <title>Grand Security Line</title>
 
   <link rel="stylesheet" href="/voyage/style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script defer src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
+  <script defer src="/voyage/community-auth.js"></script>
   <script defer src="/voyage/script.js"></script>
 
   <style>
@@ -149,6 +152,7 @@
           </p>
         </div>
 
+        <div class="consent-panel"><label class="consent-option"><input type="checkbox" id="community-consent">방명록 및 무전 이용 (선택, 인증 계정과 닉네임 저장)</label><label class="consent-option"><input type="checkbox" id="community-public" disabled>커뮤니티 닉네임 공개 (선택)</label><label class="consent-option"><input type="checkbox" id="community-welcome" disabled>환영 방송 공개 (선택)</label><p class="consent-description">공개에 동의하지 않으면 익명의 항해자로 표시됩니다. 개인 연락처나 실명은 입력하지 마세요.</p><div id="community-captcha" hidden></div></div>
         <p id="save-status" role="status" aria-live="polite"></p>
 
         <button
