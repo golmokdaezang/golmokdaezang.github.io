@@ -5,13 +5,41 @@ const $=id=>document.getElementById(id);const client=window.supabase?.createClie
 async function api(action,fields={},write=false){const {data:{session}}=await client.auth.getSession();if(write&&!session)throw Error('입장 화면에서 커뮤니티 인증을 먼저 진행하세요.');const r=await fetch(base+'/functions/v1/community-handler',{method:'POST',headers:{'Content-Type':'application/json',apikey:key,...(session?{Authorization:'Bearer '+session.access_token}:{})},body:JSON.stringify({action,...fields}),signal:AbortSignal.timeout(12000)});const j=await r.json();if(!r.ok||j.data?.success===false)throw Error(j.data?.error||j.error||'요청 실패');return j.data;}
 let open=false,sending=false,radioBusy=false,newsBusy=false;
 const privacyButton=document.createElement('button');privacyButton.type='button';privacyButton.className='captain-auth';privacyButton.id='cc-privacy-button';privacyButton.textContent='개인정보 설정';$('captain-logout').before(privacyButton);
-const privacy=document.createElement('dialog');privacy.id='cc-privacy';privacy.innerHTML=`<h2>항해자 개인정보 설정</h2><form method="dialog"><button class="cc-close" aria-label="닫기">×</button></form><p id="cc-privacy-status" role="status"></p><fieldset disabled><legend>나의 공개 설정</legend><label><input type="checkbox" id="cc-rank"> WANTED 순위표 공개</label><label><input type="checkbox" id="cc-nick"> 커뮤니티 닉네임 공개</label><label><input type="checkbox" id="cc-welcome"> 환영 방송 공개</label><button type="button" id="cc-save-privacy">변경 사항 저장</button><button type="button" id="cc-revoke-privacy">모든 공개 동의 철회</button></fieldset><a href="/">입장 화면에서 인증 및 이용 동의</a>`;document.body.append(privacy);
+const privacy=document.createElement('dialog');privacy.id='cc-privacy';privacy.innerHTML=`<h2>항해자 개인정보 설정</h2><form method="dialog"><button class="cc-close" aria-label="닫기">×</button></form><p id="cc-privacy-status" role="status"></p><fieldset disabled><legend>나의 공개 설정</legend><label><input type="checkbox" id="cc-rank"> WANTED 순위표 공개</label><label><input type="checkbox" id="cc-nick"> 커뮤니티 닉네임 공개</label><label><input type="checkbox" id="cc-welcome"> 환영 방송 공개</label><button type="button" id="cc-save-privacy">변경 사항 저장</button><button type="button" id="cc-revoke-privacy">모든 공개 동의 철회</button></fieldset><button type="button" id="cc-my-data">내 개인정보 열람</button><div id="cc-my-data-result" hidden aria-live="polite"></div><a href="/">입장 화면에서 인증 및 이용 동의</a>`;document.body.append(privacy);
 const rank=$('cc-rank'),nick=$('cc-nick'),welcome=$('cc-welcome'),status=$('cc-privacy-status'),fields=privacy.querySelector('fieldset'),save=$('cc-save-privacy');let visitorExists=false,communityExists=false,privacyBusy=false;
 async function loadPrivacy(){fields.disabled=true;status.textContent='설정을 불러오는 중입니다.';try{const data=await api('get_privacy',{},true);visitorExists=data.visitor?.success===true;communityExists=data.community?.success===true;rank.checked=visitorExists&&data.visitor.leaderboard_consent===true;nick.checked=communityExists&&data.community.nickname_public===true;welcome.checked=nick.checked&&data.community.welcome_consent===true;rank.disabled=!visitorExists;nick.disabled=!communityExists;welcome.disabled=!communityExists||!nick.checked;fields.disabled=!(visitorExists||communityExists);status.textContent=fields.disabled?'저장된 이용 설정이 없습니다. 입장 화면에서 동의할 수 있습니다.':'';}catch(e){status.textContent=e.message;}}
 privacyButton.onclick=()=>{if(!privacy.open&&!privacyBusy){privacy.showModal();loadPrivacy();}};
 nick.onchange=()=>{if(!nick.checked)welcome.checked=false;welcome.disabled=!communityExists||!nick.checked;};
 save.onclick=async()=>{if(privacyBusy)return;privacyBusy=true;fields.disabled=true;try{if(visitorExists)await api('set_visitor_privacy',{leaderboard_consent:rank.checked},true);if(communityExists)await api('set_community_privacy',{nickname_public:nick.checked,welcome_consent:nick.checked&&welcome.checked},true);await loadPrivacy();status.textContent='변경 사항을 저장했습니다.';newsNext=0;radioNext=0;refreshNews();refreshRadio();}catch(e){await loadPrivacy();status.textContent='일부 설정이 저장되지 않았을 수 있습니다. '+e.message;}finally{privacyBusy=false;}};
 $('cc-revoke-privacy').onclick=async()=>{if(privacyBusy||fields.disabled)return;if(!confirm('세 가지 공개 동의를 모두 철회할까요? 방문 기록과 계정은 삭제되지 않습니다.'))return;privacyBusy=true;fields.disabled=true;status.textContent='공개 동의를 철회하는 중입니다.';try{const result=await api('revoke_publicity',{},true);if(result?.success!==true)throw Error('철회 결과를 확인할 수 없습니다.');await loadPrivacy();if(!fields.disabled&&!rank.checked&&!nick.checked&&!welcome.checked)status.textContent='모든 공개 동의를 철회했습니다.';else status.textContent='철회 요청은 완료됐지만 설정 재조회에 실패했거나 설정이 변경되었습니다. 다시 확인해 주세요.';queue.length=0;newsFresh=false;if(active)clearBroadcast();newsNext=0;radioNext=0;refreshNews();refreshRadio();}catch(e){await loadPrivacy();status.textContent='철회 결과를 확인하지 못했습니다. '+e.message;}finally{privacyBusy=false;}};
+
+const myDataButton=$('cc-my-data'),myDataResult=$('cc-my-data-result');
+let dataGeneration=0;
+function clearMyData(){dataGeneration++;myDataResult.textContent='';myDataResult.hidden=true;myDataButton.disabled=false;}
+privacy.addEventListener('close',clearMyData);
+client.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT'||event==='SIGNED_IN')clearMyData();});
+myDataButton.onclick=async()=>{
+ const generation=++dataGeneration;myDataButton.disabled=true;myDataResult.hidden=false;myDataResult.textContent='개인정보를 불러오는 중입니다.';
+ try{
+ const before=(await client.auth.getSession()).data.session?.user.id;if(!before)throw Error('입장 화면에서 인증을 먼저 진행하세요.');
+ const data=await api('get_my_data',{},true);
+ const after=(await client.auth.getSession()).data.session?.user.id;
+ if(generation!==dataGeneration||!privacy.open||before!==after)return;
+ if(data?.success!==true)throw Error('조회 결과를 확인할 수 없습니다.');
+ const date=v=>v?new Date(v).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'없음';
+ const consent=v=>v===true?'동의':'미동의';
+ const v=data.visitor,c=data.community;
+ myDataResult.textContent='';
+ const section=(title)=>{const s=document.createElement('section');const h=document.createElement('h3');h.textContent=title;s.append(h);myDataResult.append(s);return s;};
+ const paragraph=(parent,value)=>{const p=document.createElement('p');p.textContent=value;parent.append(p);};
+ const details=(title,rows)=>{const s=section(title);if(!rows){paragraph(s,'등록 기록 없음');return;}const dl=document.createElement('dl');for(const [label,value] of rows){const row=document.createElement('div');const dt=document.createElement('dt');const dd=document.createElement('dd');dt.textContent=label;dd.textContent=String(value??'없음');row.append(dt,dd);dl.append(row);}s.append(dl);};
+ details('방문 기록',v?[['닉네임',v.nickname],['방문 횟수',v.visit_count],['최초 방문',date(v.first_visited_at)],['최근 방문',date(v.last_visited_at)],['순위표 공개',consent(v.leaderboard_consent)]]:null);
+ details('커뮤니티',c?[['닉네임',c.nickname],['등록 일시',date(c.created_at)],['닉네임 공개',consent(c.nickname_public)],['환영 방송 공개',consent(c.welcome_consent)]]:null);
+ for(const [label,records] of [['방명록',data.guestbook],['무전',data.radio]]){const s=section(label);if(!records?.length){paragraph(s,'기록 없음');continue;}for(const r of records){const article=document.createElement('article');paragraph(article,date(r.created_at)+(r.hidden?' (숨김)':''));paragraph(article,String(r.content??''));if(r.updated_at)paragraph(article,'수정: '+date(r.updated_at));s.append(article);}}
+
+ }catch(e){if(generation===dataGeneration&&privacy.open)myDataResult.textContent=e.message;}
+ finally{if(generation===dataGeneration)myDataButton.disabled=false;}
+};
 
 const queue=[],seen=new Map();let active=null,newsFresh=false,newsNext=0,newsDelay=15000,radioNext=0,radioDelay=10000;
 const ticker=$('cc-ticker'), viewport=ticker.parentElement;
