@@ -170,7 +170,17 @@ permalink: /bookshelf/
     .scene.is-night .stage::after { opacity:1; animation:lantern-flicker 4.7s ease-in-out infinite; }
     @keyframes lantern-flicker { 0%,100%{opacity:.65} 27%{opacity:1} 48%{opacity:.76} 74%{opacity:.92} }
     @media(prefers-reduced-motion:reduce){ .scene.is-night .stage::after{animation:none} .background{transition:none} }
- .book{touch-action:none}.book.visitor-moving{transform:none;transition:none;z-index:7} #hidden-anchor,.shelf-seal-clue{display:none;color:#c3dbef} .cipher-unlocked.is-night #hidden-anchor,.cipher-unlocked.is-night .shelf-seal-clue{display:block} #hidden-anchor{position:absolute;transform:translate(-50%,-50%);z-index:3;background:none;border:0;padding:0;cursor:pointer;filter:drop-shadow(0 0 5px #a9d5ff);aspect-ratio:1} #hidden-anchor svg,.shelf-seal-clue svg{width:100%;display:block} #hidden-anchor.seal-lit{filter:drop-shadow(0 0 12px white);color:white} .shelf-seal-clue{position:absolute;left:39%;top:69%;width:28%;text-align:center;z-index:5;pointer-events:none;text-shadow:0 0 8px #a9d5ff;font-size:14px} .shelf-seal-clue span{display:inline-block;width:12%;margin:0 3%} .shelf-seal-clue small{display:block} .shelf-seal-clue p{margin:4px 0} </style>
+ .book{touch-action:none}.book.visitor-moving{transform:none;transition:none;z-index:7} #hidden-anchor,.shelf-seal-clue{opacity:0;visibility:hidden;color:#c3dbef;transition:opacity .6s ease,visibility 0s .6s} .cipher-unlocked.is-night.lantern-off #hidden-anchor,.cipher-unlocked.is-night.lantern-off .shelf-seal-clue{opacity:1;visibility:visible;transition:opacity 2s ease .35s,visibility 0s} #hidden-anchor{position:absolute;transform:translate(-50%,-50%);z-index:2;background:none;border:0;padding:0;cursor:pointer;filter:drop-shadow(0 0 3px #a9d5ff);aspect-ratio:1} #hidden-anchor svg,.shelf-seal-clue svg{width:100%;display:block} #hidden-anchor.seal-lit{filter:drop-shadow(0 0 12px white);color:white} .shelf-seal-clue{position:absolute;left:39%;top:47%;width:28%;text-align:center;z-index:5;pointer-events:none;text-shadow:0 0 8px #a9d5ff;font-size:14px} .shelf-seal-clue span{display:inline-block;width:12%;margin:0 3%} .shelf-seal-clue small{display:block} .shelf-seal-clue p{margin:4px 0}
+.scene.lantern-off .background.night{filter:brightness(.72) saturate(.75)}
+.background.night{transition:opacity 2.4s ease,filter 1.5s ease}
+.scene.lantern-off .stage::after{animation:none;opacity:1;background:radial-gradient(ellipse 9% 15% at 74% 84%,#0c1116d9 0%,#10151b90 45%,transparent 100%);transition:opacity 1.5s}
+#books{position:static}
+#hidden-anchor{pointer-events:none}
+.cipher-unlocked.is-night.lantern-off #hidden-anchor{pointer-events:auto}
+.shelf-seal-clue{font-family:'Noto Serif KR',Georgia,serif;letter-spacing:.05em;line-height:1.7;text-shadow:0 0 6px #8caac2,0 2px 5px #000}
+.shelf-seal-clue span{width:14%;margin:0 5%}
+@media(prefers-reduced-motion:reduce){#hidden-anchor,.shelf-seal-clue{transition:none!important}}
+ </style>
 
 </head>
 
@@ -383,9 +393,14 @@ permalink: /bookshelf/
 
 
     try { const night=localStorage.getItem('shelfNight')==='1'; scene.classList.toggle('is-night',night); lantern.setAttribute('aria-pressed',String(night)); } catch(_) {}
+    try{if(scene.classList.contains('is-night')&&unlocked()&&sessionStorage.getItem('shelf-lantern-off')==='1')scene.classList.add('lantern-off')}catch(_){}
     lantern.addEventListener('click',()=>{
-
+      if(unlocked()&&scene.classList.contains('is-night')&&!scene.classList.contains('lantern-off')){
+        scene.classList.add('lantern-off');sessionStorage.setItem('shelf-lantern-off','1');lantern.setAttribute('aria-label','랜턴 켜기');return;
+      }
+      scene.classList.remove('lantern-off');sessionStorage.removeItem('shelf-lantern-off');
       const isNight=scene.classList.toggle('is-night');
+      lantern.setAttribute('aria-label',isNight&&unlocked()?'랜턴 끄기':'랜턴으로 낮과 밤 전환');
 
       lantern.setAttribute('aria-pressed',String(isNight));
       try { localStorage.setItem('shelfNight',isNight?'1':'0'); } catch(_) {}
@@ -584,7 +599,7 @@ permalink: /bookshelf/
     const SEALS=["<svg viewBox=\"-40 -40 80 80\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle r=\"32\" stroke-width=\"1\"/><circle r=\"28\" stroke-width=\".6\"/><path d=\"M0 -37L3 -32L0 -27L-3 -32Z M0 37L3 32L0 27L-3 32Z\"/><circle cy=\"-17\" r=\"4\"/><path d=\"M0 -13V19M-13 -6H13M-20 2Q-20 20 0 20Q20 20 20 2M-24 8L-20 0L-15 8M15 8L20 0L24 8\"/></svg>", "<svg viewBox=\"-40 -40 80 80\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle r=\"32\" stroke-width=\"1\"/><circle r=\"28\" stroke-width=\".6\"/><path d=\"M0 -37L3 -32L0 -27L-3 -32Z M0 37L3 32L0 27L-3 32Z\"/><path d=\"M5 -23A24 24 0 1 0 17 17A23 23 0 0 1 5 -23Z\"/><path d=\"M15 -17v12M9 -11h12\"/></svg>", "<svg viewBox=\"-40 -40 80 80\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle r=\"32\" stroke-width=\"1\"/><circle r=\"28\" stroke-width=\".6\"/><path d=\"M0 -37L3 -32L0 -27L-3 -32Z M0 37L3 32L0 27L-3 32Z\"/><path d=\"M-18 -5Q-22 -23 0 -23Q22 -23 18 -5L10 4V15H-10V4Z M-5 8v7M5 8v7M-19 17L19 25M19 17L-19 25\"/><circle cx=\"-7\" cy=\"-5\" r=\"4\"/><circle cx=\"7\" cy=\"-5\" r=\"4\"/></svg>"];
 
     function restoreVisitor(){try{const saved=JSON.parse(sessionStorage.getItem('shelf-visitor-layout')||'[]');for(const b of bookData){const v=saved.find(v=>v.slug===slug(b));if(v&&Number.isFinite(v.x)&&Number.isFinite(v.y)){b.x=v.x;b.y=v.y;}}normalizeBooks()}catch{}}
-    function installSeal(){if(document.getElementById('hidden-anchor'))return;const b=serverLayout?.[0]||bookData[0];if(!b)return;const seal=document.createElement('button');seal.id='hidden-anchor';seal.type='button';seal.setAttribute('aria-label','닻 문장');seal.style.left=(b.x+b.w/2)+'%';seal.style.top=(b.y+b.h/2)+'%';seal.style.width=Math.min(2.5,b.w*.8)+'%';seal.innerHTML=SEALS[0];stage.insertBefore(seal,booksContainer);seal.onclick=()=>{if(!unlocked()||!scene.classList.contains('is-night'))return;sessionStorage.setItem('marine-seal-step','1');seal.classList.add('seal-lit');};const clue=document.createElement('div');clue.className='shelf-seal-clue';clue.innerHTML=SEALS.map((v,i)=>`<span>${v}<small>${['I','II','III'][i]}</small></span>`).join('')+'<p>기억을 간직한 곳에 닻을, 바다를 바라보는 곳에 달을,<br>세상의 끝을 그린 곳에 해골을.</p>';stage.append(clue);function refresh(){scene.classList.toggle('cipher-unlocked',unlocked())}refresh();window.addEventListener('pageshow',refresh);}
+    function installSeal(){if(document.getElementById('hidden-anchor'))return;const b=[...(serverLayout||bookData)].sort((a,b)=>a.y+a.h-(b.y+b.h)||a.x-b.x)[0];if(!b)return;const seal=document.createElement('button');seal.id='hidden-anchor';seal.type='button';seal.setAttribute('aria-label','닻 문장');seal.style.left=(b.x+b.w/2)+'%';seal.style.top=(b.y+b.h/2)+'%';seal.style.width=Math.min(2.5,b.w*.8)+'%';seal.innerHTML=SEALS[0];stage.insertBefore(seal,booksContainer);seal.onclick=()=>{if(!unlocked()||!scene.classList.contains('lantern-off'))return;if(Number(sessionStorage.getItem('marine-seal-step')||0)<1)sessionStorage.setItem('marine-seal-step','1');seal.classList.add('seal-lit');};const clue=document.createElement('div');clue.className='shelf-seal-clue';clue.innerHTML=SEALS.map((v,i)=>`<span>${v}<small>${['I','II','III'][i]}</small></span>`).join('')+'<p>기억을 간직한 곳에 닻을, 바다를 바라보는 곳에 달을,<br>세상의 끝을 그린 곳에 해골을.</p>';stage.append(clue);function refresh(){scene.classList.toggle('cipher-unlocked',unlocked())}refresh();window.addEventListener('pageshow',refresh);}
     function unlocked(){return sessionStorage.getItem('captain-secret-clue')==='1'&&sessionStorage.getItem('captain-cipher')==='1'}
 
     normalizeBooks();
