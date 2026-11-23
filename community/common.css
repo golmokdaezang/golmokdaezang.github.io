@@ -1,0 +1,2 @@
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap');
+:root{--marine-font:'Nanum Myeongjo', 'Batang', serif} body,body *:not(svg):not(svg *){font-family:var(--marine-font)!important}
