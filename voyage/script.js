@@ -162,8 +162,10 @@ nameForm.addEventListener("submit", async (event) => {
   const wantsToPublish =
     wantsToSave && leaderboardConsent.checked;
 
+  let session = null;
   try {
-    await window.communityAuth.register(name);
+    session = await window.communityAuth.ensureSession();
+    await window.communityAuth.register(name, session);
   } catch (error) {
     saveStatus.textContent = "인증 또는 커뮤니티 등록 실패: " + error.message + " (선택 해제 후 입장 가능)";
     restore();
