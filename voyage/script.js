@@ -113,7 +113,7 @@ async function saveVisit(name, publicConsent, session) {
 ========================= */
 
 function enterBlog(name, visitCount = null) {
-  for (const key of ['captain-secret-clue','captain-cipher','marine-seal-step','marine-room-discovered','marine-room-offered','marine-room-reveal-shown']) sessionStorage.removeItem(key);
+  for (const key of ['marine-call-progress','captain-secret-clue','captain-cipher','marine-seal-step','marine-room-discovered','marine-room-offered','marine-room-reveal-shown']) sessionStorage.removeItem(key);
   const greeting =
     name.toLowerCase() === "golmokdaezang"
       ? "항해자님, 반가워요!"

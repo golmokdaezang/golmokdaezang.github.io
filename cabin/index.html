@@ -380,13 +380,13 @@ body { overflow: hidden; }
 
   z-index: 12;
 
-  left: 28%;
+  left: 22%;
 
-  top: 48%;
+  top: 58%;
 
-  width: 48%;
+  width: 32%;
 
-  height: 28%;
+  height: 20%;
 
   display: block;
 
@@ -990,6 +990,7 @@ html, body, body *, body *::before, body *::after {
 </style>
 
 <link rel="stylesheet" href="./secret-call.css">
+<style>.cabin.secret-awake .cabin-map{pointer-events:none}.secret-inline .secret-bubble,.secret-inline .secret-choice{pointer-events:auto}</style>
 <link rel="stylesheet" href="/community/cabin.css?v=9">
 <link rel="stylesheet" href="/community/common.css?v=1"><style>.captain-topbar>div:last-child{display:flex;align-items:center;gap:8px}.captain-topbar .captain-auth{white-space:nowrap;margin:0}.captain-topbar [hidden]{display:none!important}@media(max-width:600px){.captain-topbar>div:last-child{gap:4px}.captain-topbar .captain-auth{padding:6px;font-size:11px}}</style><link rel="stylesheet" href="/community/news.css?v=9"><style>.marine-room-return{position:absolute;left:50%;bottom:5%;transform:translateX(-50%);z-index:55;padding:10px 24px;background:#24190fee;border:1px solid #ba9b61;border-radius:5px;color:#f0d7a4;font:700 clamp(14px,1.3vw,20px)/1.4 'Nanum Myeongjo',serif;text-decoration:none;box-shadow:0 3px 12px #0008;white-space:nowrap}.marine-room-return[hidden]{display:none!important}.marine-room-return:hover,.marine-room-return:focus-visible{background:#533b23;outline:2px solid #dab87a;outline-offset:3px}</style>
 </head>
@@ -1368,6 +1369,7 @@ cabinDoor.addEventListener("click", (event) => {
 cabinMap.addEventListener("click", (event) => {
 
   event.preventDefault();
+  if (cabin.classList.contains("secret-awake")) return;
 
   if (isLeaving) return;
 
@@ -1545,7 +1547,7 @@ if (window.matchMedia(
 
   }
 
-  const client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_PUBLISHABLE_KEY);
+  const client = window.MarineClient || (window.MarineClient = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_PUBLISHABLE_KEY));
 
   $("captain-logout").addEventListener("click", async () => {
 
@@ -2047,10 +2049,7 @@ if (window.matchMedia(
 
 <script src="/assets/js/marine-common.js"></script>
 
-<script src="./secret-call.js?v=10"></script>
+<script src="./secret-call.js?v=11"></script>
 <script src="/community/cabin.js?v=9" defer></script>
 <script defer src="/community/news.js?v=9"></script></body>
-</html>
-<script defer src="/community/news.js?v=9"></script></body>
-
 </html>
