@@ -3,3 +3,33 @@
 #community-cabin .cc-news strong{flex-shrink:0}#community-cabin .cc-ticker-window{flex:1;min-width:0;overflow:hidden}#community-cabin #cc-ticker{display:block;width:max-content;white-space:nowrap;overflow-wrap:normal}@media(prefers-reduced-motion:reduce){#community-cabin #cc-ticker{width:auto;white-space:normal;overflow-wrap:anywhere}}
 
 #cc-panel,#cc-panel *,#cc-privacy,#cc-privacy *{cursor:default!important}#cc-panel input,#cc-panel textarea{cursor:text!important}#cc-panel button,#cc-panel a,#cc-toggle,#cc-privacy-button,#cc-privacy button,#cc-privacy a,#cc-privacy input,#cc-privacy label{cursor:pointer!important}#cc-panel button:disabled,#cc-privacy button:disabled{cursor:not-allowed!important}#cc-privacy{position:fixed;z-index:9999;width:min(440px,calc(100vw - 32px));max-height:85dvh;overflow:auto;background:#241a11;color:#ebd9b5;border:1px solid #a88b52;border-radius:5px;padding:24px;font-family:'Nanum Myeongjo','Malgun Gothic',serif}#cc-privacy::backdrop{background:#0009}#cc-privacy h2{font-size:20px;margin:0 32px 16px 0}#cc-privacy fieldset{display:grid;gap:16px;border:1px solid #665438;padding:16px;margin:12px 0}#cc-privacy label{display:flex;gap:8px;align-items:center}#cc-privacy input{accent-color:#a88b52}#cc-privacy button{font:inherit;background:#302319;color:inherit;border:1px solid #a88b52;padding:8px}#cc-privacy .cc-close{position:absolute;top:12px;right:12px}#cc-privacy a{color:#e5c38b;font-size:13px}#cc-privacy-status{font-size:14px;overflow-wrap:anywhere}#cc-privacy-button{margin-right:6px}@media(max-width:600px){#cc-privacy-button{padding:6px;font-size:11px}}
+
+/* Marine communications: presentation only */
+#cc-panel,#cc-privacy,#cc-toggle,#cc-privacy-button{font-family:'Nanum Myeongjo','Malgun Gothic',serif!important;font-weight:400;font-size:14px;line-height:1.55}
+#cc-panel *,#cc-privacy *{font-family:inherit;box-sizing:border-box}
+#cc-toggle{background:linear-gradient(#39352b,#201c17);border:1px solid #a88b52;box-shadow:inset 0 1px #ffffff20,0 3px 8px #0007;padding:8px 14px}
+#cc-toggle::before{content:'◉';color:#c5a66b;margin-right:8px}
+#cc-panel{width:min(340px,calc(100vw - 24px));padding:16px;border:3px double #92794e;border-radius:12px;background:radial-gradient(circle at 7px 7px,#b49b70 1px,#423b2f 2px,transparent 3px),radial-gradient(circle at calc(100% - 7px) 7px,#b49b70 1px,#423b2f 2px,transparent 3px),linear-gradient(145deg,#3b3830,#211f1a 55%,#302b23);box-shadow:0 12px 28px #0009,inset 0 0 0 2px #171510;color:#ebd9b5}
+#cc-panel .cc-radio-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+#cc-panel .cc-device-label{font-size:9px;letter-spacing:1px;color:#c4b28f}
+#cc-panel h2{font-size:19px;margin:2px 0 0;font-weight:700}
+#cc-panel .cc-speaker{width:57px;height:35px;flex:none;border:1px solid #625a48;border-radius:5px;background:radial-gradient(circle,#0e0f0c 1.5px,#49473b 2px,transparent 2.5px) 0 0/7px 7px,#24251f;box-shadow:inset 0 2px 5px #0008}
+#cc-panel .cc-channel{display:flex;justify-content:space-between;gap:8px;padding:7px 9px;background:#171f19;border:1px solid #667458;border-radius:4px;color:#c3d5ae;font-size:11px;letter-spacing:.4px}
+#cc-panel .cc-hint{margin:9px 0;color:#d8c9ab;font-size:11px;line-height:1.6}
+#cc-messages{height:clamp(90px,27vh,230px);padding:8px 10px;background:linear-gradient(#121c17,#1b2820);border:2px solid #101510;border-radius:5px;box-shadow:inset 0 2px 9px #0008;color:#d3dfc2;font-size:13px;scrollbar-color:#68765c #18221b}
+#cc-messages:empty::before{content:'수신 메시지가 여기에 표시됩니다.';color:#a1b398;font-size:11px}
+#cc-messages p{padding-bottom:7px;border-bottom:1px solid #64745b44}
+#cc-messages strong{color:#e5d4a5}
+#cc-messages button{margin-left:6px;background:transparent;border:1px solid #75826e;border-radius:3px;color:#d3dfc2;font:inherit;font-size:10px}
+#cc-form{margin-top:12px;gap:8px}#cc-form label{font-size:12px}
+#cc-form input{background:#161d18;border:1px solid #65735b;border-radius:4px;color:#e4ead8;padding:10px}
+#cc-form button{background:linear-gradient(#65513b,#3a3025);border:1px solid #ae915e;border-radius:6px;box-shadow:0 3px 0 #14120f,inset 0 1px #b9a37b66;padding:10px;font-weight:700;letter-spacing:1px}
+#cc-form button span{color:#df9a69;font-size:10px;margin-right:6px}#cc-form button small{font-size:10px;color:#d3bb91;margin-left:6px}
+#cc-form button:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 #14120f}#cc-form button:disabled{opacity:.65}
+#cc-status:empty,#cc-privacy-status:empty{display:none}#cc-status{font-size:12px;margin:10px 0 0}
+#cc-privacy{background:linear-gradient(145deg,#30271c,#201a13);border:3px double #a88b52;border-radius:9px;box-shadow:0 18px 45px #0009;padding:23px}
+#cc-privacy h2{font-size:18px;padding-bottom:12px;border-bottom:1px solid #a88b5255}#cc-privacy fieldset{border:0;padding:0;margin:14px 0;gap:8px;min-width:0}#cc-privacy legend{font-size:12px;color:#ccb78e;margin-bottom:9px}
+#cc-privacy label{background:#15110d55;border:1px solid #9b80513b;border-radius:5px;padding:11px 10px;font-size:13px}#cc-privacy input{width:16px;height:16px;flex:none;margin:0}#cc-privacy label:has(input:disabled){opacity:.6}
+#cc-privacy button{border-radius:4px;background:linear-gradient(#50402c,#30271b)}#cc-save-privacy{margin-top:5px;padding:11px!important}#cc-privacy .cc-close{padding:3px 10px}#cc-privacy a{font-size:12px}
+#cc-panel button:focus-visible,#cc-panel input:focus-visible,#cc-privacy :focus-visible,#cc-toggle:focus-visible{outline:2px solid #e6c787;outline-offset:2px}
+@media(max-width:600px){#cc-privacy-button{font-size:11px}#cc-panel{padding:12px}}
