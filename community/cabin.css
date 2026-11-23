@@ -33,3 +33,5 @@
 #cc-privacy button{border-radius:4px;background:linear-gradient(#50402c,#30271b)}#cc-save-privacy{margin-top:5px;padding:11px!important}#cc-privacy .cc-close{padding:3px 10px}#cc-privacy a{font-size:12px}
 #cc-panel button:focus-visible,#cc-panel input:focus-visible,#cc-privacy :focus-visible,#cc-toggle:focus-visible{outline:2px solid #e6c787;outline-offset:2px}
 @media(max-width:600px){#cc-privacy-button{font-size:11px}#cc-panel{padding:12px}}
+
+#cc-privacy #cc-revoke-privacy{margin-top:4px;padding:11px;border-color:#a17b62;color:#e0baa1}#cc-revoke-privacy:disabled{opacity:.55}
