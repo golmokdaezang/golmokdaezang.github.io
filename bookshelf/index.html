@@ -182,6 +182,7 @@ permalink: /bookshelf/
 #hidden-anchor.covered{opacity:0!important;visibility:hidden!important;pointer-events:none!important;transition:none!important}
 </style>
 
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -392,13 +393,19 @@ permalink: /bookshelf/
 
 
 
-    try { const night=localStorage.getItem('shelfNight')==='1'; scene.classList.toggle('is-night',night); lantern.setAttribute('aria-pressed',String(night)); } catch(_) {}
+    function resetShelfDay(){
+      scene.classList.remove('is-night');
+      lantern.setAttribute('aria-pressed','false');
+      lantern.setAttribute('aria-label','밤으로 전환');
+      try { localStorage.removeItem('shelfNight'); } catch(_) {}
+    }
+    resetShelfDay();
     lantern.addEventListener('click',()=>{
       const isNight=scene.classList.toggle('is-night');
       lantern.setAttribute('aria-label',isNight?'낮으로 전환':'밤으로 전환');
 
       lantern.setAttribute('aria-pressed',String(isNight));
-      try { localStorage.setItem('shelfNight',isNight?'1':'0'); } catch(_) {}
+
 
     });
 
@@ -414,6 +421,7 @@ permalink: /bookshelf/
       setTimeout(()=>window.location.assign(destination),matchMedia('(prefers-reduced-motion: reduce)').matches?0:900);
     }
     window.addEventListener('pageshow',()=>{
+      resetShelfDay();
       transitioning=false;
       scene.classList.remove('book-departing');
       lantern.disabled=false;
@@ -594,7 +602,27 @@ permalink: /bookshelf/
     const SEALS=["<svg viewBox=\"-40 -40 80 80\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle r=\"32\" stroke-width=\"1\"/><circle r=\"28\" stroke-width=\".6\"/><path d=\"M0 -37L3 -32L0 -27L-3 -32Z M0 37L3 32L0 27L-3 32Z\"/><circle cy=\"-17\" r=\"4\"/><path d=\"M0 -13V19M-13 -6H13M-20 2Q-20 20 0 20Q20 20 20 2M-24 8L-20 0L-15 8M15 8L20 0L24 8\"/></svg>", "<svg viewBox=\"-40 -40 80 80\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle r=\"32\" stroke-width=\"1\"/><circle r=\"28\" stroke-width=\".6\"/><path d=\"M0 -37L3 -32L0 -27L-3 -32Z M0 37L3 32L0 27L-3 32Z\"/><path d=\"M5 -23A24 24 0 1 0 17 17A23 23 0 0 1 5 -23Z\"/><path d=\"M15 -17v12M9 -11h12\"/></svg>", "<svg viewBox=\"-40 -40 80 80\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle r=\"32\" stroke-width=\"1\"/><circle r=\"28\" stroke-width=\".6\"/><path d=\"M0 -37L3 -32L0 -27L-3 -32Z M0 37L3 32L0 27L-3 32Z\"/><path d=\"M-18 -5Q-22 -23 0 -23Q22 -23 18 -5L10 4V15H-10V4Z M-5 8v7M5 8v7M-19 17L19 25M19 17L-19 25\"/><circle cx=\"-7\" cy=\"-5\" r=\"4\"/><circle cx=\"7\" cy=\"-5\" r=\"4\"/></svg>"];
 
     function restoreVisitor(){try{const saved=JSON.parse(sessionStorage.getItem('shelf-visitor-layout')||'[]');for(const b of bookData){const v=saved.find(v=>v.slug===slug(b));if(v&&Number.isFinite(v.x)&&Number.isFinite(v.y)){b.x=v.x;b.y=v.y;}}normalizeBooks()}catch{}}
-    function sealDialogue(message){let n=document.getElementById('seal-dialogue');if(!n){n=document.createElement('div');n.id='seal-dialogue';n.setAttribute('role','status');n.style.cssText="position:fixed;left:50%;bottom:6%;transform:translateX(-50%);z-index:2147483000;width:max-content;max-width:85vw;text-align:center;color:#fff0cf;font:700 clamp(15px,1.5vw,22px) 'Nanum Myeongjo',serif;text-shadow:0 2px 4px black,0 0 9px black;background:linear-gradient(90deg,transparent,#160f0bdb,transparent);padding:14px 32px;pointer-events:none;transition:opacity .6s";document.body.append(n)}clearTimeout(n.hideTimer);n.textContent=message;n.style.opacity='1';n.hideTimer=setTimeout(()=>n.style.opacity='0',4500)}
+    function sealDialogue(message){
+  let n=document.getElementById('seal-dialogue');
+  if(!n){
+    n=document.createElement('div');n.id='seal-dialogue';n.setAttribute('aria-hidden','true');
+    n.style.cssText="position:fixed;left:50%;bottom:15%;transform:translate(-50%,8px);z-index:2147483000;width:max-content;max-width:88vw;box-sizing:border-box;text-align:center;color:#fff0cf;font:700 clamp(17px,1.65vw,26px)/1.7 'Nanum Myeongjo',serif;text-shadow:0 2px 3px #000,0 0 7px #000,0 0 15px #241609;padding:4px 12px;pointer-events:none;opacity:0;transition:opacity .8s ease,transform .6s ease;overflow-wrap:break-word;white-space:pre-line";
+    document.body.append(n);
+    const live=document.createElement('div');live.id='seal-dialogue-live';live.setAttribute('role','status');live.style.cssText='position:fixed;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);pointer-events:none';document.body.append(live);
+  }
+  clearTimeout(n.startTimer);clearTimeout(n.hideTimer);clearInterval(n.typeTimer);
+  n.style.opacity='0';n.style.transform='translate(-50%,8px)';
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const chars=Array.from(message.replace(/ /g,'\n'));
+  n.startTimer=setTimeout(()=>{
+    document.getElementById('seal-dialogue-live').textContent=message;
+    n.textContent='';n.style.transition=reduced?'none':'opacity .8s ease,transform .6s ease';
+    n.style.opacity='1';n.style.transform='translate(-50%,0)';
+    const finish=()=>{n.hideTimer=setTimeout(()=>{n.style.opacity='0';n.style.transform='translate(-50%, -4px)'},3000)};
+    if(reduced){n.textContent=chars.join('');finish();return;}
+    let i=0;n.typeTimer=setInterval(()=>{n.textContent=chars.slice(0,++i).join('');if(i>=chars.length){clearInterval(n.typeTimer);finish()}},42);
+  },400);
+}
 function updateAnchor(){const a=document.getElementById('hidden-anchor');if(!a)return;const r=a.getBoundingClientRect();const covered=[...booksContainer.querySelectorAll('.book')].some(e=>{const b=e.getBoundingClientRect();return r.left<b.right&&r.right>b.left&&r.top<b.bottom&&r.bottom>b.top});a.classList.toggle('covered',covered);a.disabled=covered;}
 function installSeal(){if(document.getElementById('hidden-anchor'))return;const b=[...(serverLayout||bookData)].sort((a,b)=>Math.abs(a.y+a.h-b.y-b.h)<1?a.x-b.x:a.y+a.h-b.y-b.h)[0];if(!b)return;const seal=document.createElement('button');seal.id='hidden-anchor';seal.type='button';seal.setAttribute('aria-label','닻 문장');seal.style.left=(b.x+b.w/2)+'%';seal.style.top=(b.y+b.h/2)+'%';seal.style.width=Math.min(2.2,b.w*.65)+'%';seal.innerHTML=SEALS[0];stage.insertBefore(seal,booksContainer);seal.onclick=()=>{if(!unlocked()||!scene.classList.contains('is-night'))return;if(Number(sessionStorage.getItem('marine-seal-step')||0)<1)sessionStorage.setItem('marine-seal-step','1');seal.classList.add('seal-lit');sealDialogue('……책 뒤에 이런 게 숨겨져 있었다니.');};const clue=document.createElement('div');clue.className='shelf-seal-clue';clue.innerHTML=SEALS.map((v,i)=>`<span>${v}<small>${['I','II','III'][i]}</small></span>`).join('')+'<p>기억을 간직한 곳에 닻을, 바다를 바라보는 곳에 달을,<br>세상의 끝을 그린 곳에 해골을.</p>';stage.append(clue);function refresh(){scene.classList.toggle('cipher-unlocked',unlocked())}refresh();updateAnchor();new MutationObserver(updateAnchor).observe(booksContainer,{subtree:true,childList:true,attributes:true,attributeFilter:['style','class']});window.addEventListener('resize',updateAnchor);window.addEventListener('pageshow',refresh);}
     function unlocked(){return sessionStorage.getItem('captain-secret-clue')==='1'&&sessionStorage.getItem('captain-cipher')==='1'}
