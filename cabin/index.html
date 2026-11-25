@@ -790,7 +790,8 @@ body { overflow: hidden; }
 
 .captain-top-left { display:flex; align-items:center; gap:12px; }
 
-.captain-profile-toggle { border:0; background:transparent; color:#f3d18b; font:inherit; font-size:15px; padding:14px 8px; cursor:pointer; }
+.captain-profile-toggle { position:absolute; left:5.2%; top:22%; width:8.6%; height:19.3%; border:0; background:transparent; padding:0; cursor:pointer; }
+.cabin.dark .captain-profile-toggle { left:6.1%; top:21.5%; width:8.1%; height:19.1%; }
 
 .captain-profile-toggle:hover { color:#fff0c7; }
 
@@ -1090,12 +1091,13 @@ html, body, body *, body *::before, body *::after {
   <!-- 선장 프로필 및 관리자 로그인 UI -->
 
   <div class="captain-ui is-collapsed" id="captain-ui">
+    <button class="captain-profile-toggle" id="captain-profile-toggle" type="button" aria-expanded="false" aria-controls="captain-profile" aria-label="벽에 붙은 수배서 보기"></button>
 
     <nav class="captain-topbar" aria-label="선장실 메뉴">
 
         <div class="captain-top-left">
 
-          <button class="captain-profile-toggle" id="captain-profile-toggle" type="button" aria-expanded="false" aria-controls="captain-profile" data-hint="선장 프로필 펼치기">선장 프로필</button>
+          
 
           <a class="captain-edit" id="captain-edit" href="/profile/settings/" hidden data-hint="프로필 수정하기">프로필 수정</a>
 
@@ -1503,7 +1505,7 @@ if (window.matchMedia(
 
   }
 
-  toggle.addEventListener("click", () => showPoster(true));
+  toggle.addEventListener("click", () => showPoster(panel.classList.contains("is-collapsed")));
 
   posterPanel.addEventListener("click", () => showPoster(false));
 
