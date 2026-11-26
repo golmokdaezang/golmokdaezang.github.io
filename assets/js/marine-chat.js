@@ -471,6 +471,9 @@
 
         await auth();
 
+        let templates = [];
+        async function loadTemplates(){templates=ok(await client.from("marine_dialogue_templates").select("*"));}
+        await loadTemplates();
         styles();
 
         root.replaceChildren();
@@ -566,7 +569,9 @@
             if (!window.MarineWindows?.open) return alert("창 관리 기능을 불러오지 못했습니다.");
             window.MarineWindows.open({id:"marine-scenario-manager", title:"해군 통신 시나리오 관리", url:"/blog/admin/?scenario=1&v=6", width:900, height:650});
         };
-        header.append(scenarioButton, reset);
+        const editorButton = node("button", "통합 대사 관리");
+        editorButton.type="button"; editorButton.onclick=()=>action(openDialogueEditor);
+        header.append(editorButton, scenarioButton, reset);
         reset.onclick = async () => {
             if (busy || stopped || reset.disabled) return;
             if (!confirm("모든 대화방의 메시지를 삭제할까요? 직접 보낸 메시지와 캐릭터 메시지, 예약 메시지도 삭제되며 복구할 수 없습니다.")) return;
@@ -787,6 +792,7 @@
         let timer;
 
         let last = "";
+        let quickChoice=null;
 
         let replying = null;
 
@@ -1132,6 +1138,27 @@
         // 12. 채팅 기록 화면 표시
         // =====================================
 
+async function openDialogueEditor(){
+ const dialog=document.createElement("dialog"); dialog.style.cssText="width:min(850px,90vw);max-height:85vh;overflow:auto;padding:20px;border:1px solid #a5afbc;border-radius:8px;background:#fff;color:#243247;z-index:99999";
+ document.body.append(dialog); dialog.addEventListener("close",()=>dialog.remove());
+ const title=node("h2","통합 대사 관리"); dialog.append(title);
+ const close=node("button","닫기"); close.onclick=()=>dialog.close(); dialog.append(close);
+ const tabs=document.createElement("select"); const scopes=document.createElement("select"); const list=node("div"); const msg=node("p");
+ for(const [v,l] of [["templates","먼저 연락 / 자동 연락 / 보고서 / 진급"],["dialogues","캐릭터 기본 답장"],["scenarios","개인·단체 시나리오"]])tabs.add(new Option(l,v));
+ scopes.add(new Option("공통","*")); for(const c of chars)scopes.add(new Option(c.name,c.character_key)); dialog.append(tabs,scopes,msg,list);
+ const events={quick:"먼저 연락하기",lunch:"점심",dinner:"저녁",work:"업무 확인",daily:"일상",post_create:"보고서 작성",post_update:"보고서 수정",promotion:"진급 축하",promotion_notice:"인사 발령"};
+ const field=(label,value,multi=false)=>{const wrap=node("label",label);wrap.style.cssText="display:block;margin:8px 0";const input=document.createElement(multi?"textarea":"input");input.value=value??"";input.style.cssText="display:block;width:100%;box-sizing:border-box";if(multi)input.rows=5;wrap.append(input);return [wrap,input];};
+ function validateChoices(a,depth=0){if(!Array.isArray(a)||depth>12)throw Error("선택지 배열 형식 오류");for(const x of a){if(typeof x==="string")continue;if(!x||typeof x.label!=="string"||!x.label.trim()||(x.response!==undefined&&typeof x.response!=="string"))throw Error("선택지에는 label과 response 문자열을 사용하세요");if(x.choices!==undefined)validateChoices(x.choices,depth+1);}return a;}
+ async function draw(){list.replaceChildren();msg.textContent="";try{
+ const mode=tabs.value; const key=scopes.value; scopes.disabled=mode==="scenarios";
+ if(mode==="scenarios"){const b=node("button","기존 시나리오 편집기 열기");b.onclick=()=>{dialog.close();scenarioButton.click();};list.append(b);return;}
+ if(mode==="templates"){await loadTemplates();for(const [event,label] of Object.entries(events)){const own=templates.find(t=>t.character_key===key&&t.event_key===event);const base=own||templates.find(t=>t.character_key==="*"&&t.event_key===event);if(base)card(base,label,mode,key,!!own);} }
+ else {if(key==="*"){list.append(node("p","캐릭터를 선택하세요."));return;}const rows=ok(await client.from("marine_dialogues").select("*").eq("character_key",key).order("category"));for(const r of rows)card(r,r.category,mode,key,true);const b=node("button","기본 대사 추가");b.onclick=()=>card({category:"default",content:"",choices:[],enabled:true},"새 대사",mode,key,false);list.append(b);}
+ }catch(e){msg.textContent=e.message;}}
+ function card(r,label,mode,key,own){const box=node("section");box.style.cssText="border:1px solid #c4ccd5;border-radius:6px;padding:12px;margin:12px 0";box.append(node("h3",label+(own?"":" · 공통값 상속")));const [cw,content]=field("대사 ({title}: 보고서 제목, {original}: 기존 알림)",r.content,true);const [jw,choices]=field("선택지 JSON (label, response, choices)",JSON.stringify(r.choices||[],null,2),true);const [kw,category]=field("분류",r.category||"default");const enabled=document.createElement("input");enabled.type="checkbox";enabled.checked=r.enabled!==false;const el=node("label","활성화 ");el.append(enabled);if(mode==="dialogues")box.append(kw);box.append(cw,jw,el);const save=node("button","저장");save.onclick=async()=>{try{const data={content:content.value,choices:validateChoices(JSON.parse(choices.value)),enabled:enabled.checked};if(mode==="templates")ok(await client.from("marine_dialogue_templates").upsert({...data,character_key:key,event_key:r.event_key}));else if(r.id)ok(await client.from("marine_dialogues").update({...data,category:category.value}).eq("id",r.id));else ok(await client.from("marine_dialogues").insert({...data,character_key:key,category:category.value}));await draw();last="";render();msg.textContent="저장 완료";}catch(e){msg.textContent=e.message;}};box.append(save);if(own&&(mode==="dialogues"||key!=="*")){const del=node("button",mode==="templates"?"공통 설정으로 복원":"삭제");del.onclick=async()=>{if(!confirm("이 설정을 삭제할까요?"))return;try{if(mode==="templates")ok(await client.from("marine_dialogue_templates").delete().eq("character_key",key).eq("event_key",r.event_key));else if(r.id)ok(await client.from("marine_dialogues").delete().eq("id",r.id));await draw();last="";render();}catch(e){msg.textContent=e.message;}};box.append(del);}list.append(box);}
+ tabs.onchange=draw;scopes.onchange=draw;dialog.showModal();await draw();
+}
+
 function renderQuickReplies(shown) {
 
     let panel = root.querySelector(
@@ -1181,7 +1208,8 @@ function renderQuickReplies(shown) {
             panel.hidden=false;
             panel.append(node("small","먼저 연락하기","mc-quick-title"));
             const buttons=node("div",null,"mc-quick-buttons");
-            for(const label of ["안부를 묻습니다.","업무 진행 상황을 보고드립니다.","조언을 요청드립니다."]) {const b=node("button",label);b.type="button";b.onclick=()=>{replyTo(null);input.value=label;form.requestSubmit();};buttons.append(b);}
+            const template=templates.find(t=>t.event_key==="quick"&&t.character_key===active.key)||templates.find(t=>t.event_key==="quick"&&t.character_key==="*");
+            for(const choice of template?.enabled ? template.choices : []) {const label=choice.label; if(!label)continue; const b=node("button",label);b.type="button";b.onclick=()=>{replyTo(null);quickChoice=choice;input.value=label;form.requestSubmit();};buttons.append(b);}
             panel.append(buttons);
         } else panel.hidden=true;
         return;
@@ -2037,6 +2065,7 @@ renderQuickReplies(shown);
             const c = active;
 
             const parent = replying;
+            const chosenQuick=quickChoice; quickChoice=null;
 
 
             if (
@@ -2121,9 +2150,9 @@ renderQuickReplies(shown);
 
                 try {
 
-                    const selected = Array.isArray(parent?.choices) && parent.choices.find(x=>typeof x === "object" && (x.label || x.text)===content && x.response);
+                    const selected = (chosenQuick?.label===content && chosenQuick.response ? chosenQuick : null) || (Array.isArray(parent?.choices) && parent.choices.find(x=>typeof x === "object" && (x.label || x.text)===content && x.response));
                     if(selected) {
-                        ok(await client.from("marine_messages").insert({user_id:uid,room_id:c.room?c.key:null,sender:parent.sender,direction:"incoming",content:selected.response,choices:Array.isArray(selected.choices)?selected.choices:[],reply_to:m.id,metadata:parent.metadata||{},deliver_at:new Date(Date.now()+3000).toISOString()}));
+                        ok(await client.from("marine_messages").insert({user_id:uid,room_id:c.room?c.key:null,sender:parent?.sender || chars.find(x=>x.character_key===c.key)?.name || c.name,direction:"incoming",content:selected.response,choices:Array.isArray(selected.choices)?selected.choices:[],reply_to:m.id,metadata:parent?.metadata||{character_key:c.key},deliver_at:new Date(Date.now()+3000).toISOString()}));
                     } else
                     // 단체 채팅방 메시지
 
