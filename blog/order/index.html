@@ -82,7 +82,7 @@
         });
     }
     async function load(book) {
-        const data = check(await client.from('posts').select('id,title,is_public,sort_order,created_at').eq('book_key', book));
+        const data = check(await client.from('posts').select('id,title,is_public,sort_order,created_at').eq('book_key', book).is('island_key', null));
         data.sort((a, b) => (a.sort_order || Infinity) - (b.sort_order || Infinity) || a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id));
         activeBook = book;
         rows = data;

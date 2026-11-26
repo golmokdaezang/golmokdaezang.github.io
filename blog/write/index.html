@@ -21,11 +21,11 @@
     <span class="app-kicker">EDITOR · 01</span><h1>보고서 작성</h1><p class="app-subtitle">새 기록 작성</p>
     <p id="status" role="status">로그인 확인 중...</p>
     <section id="workspace" hidden>
-        <form id="editor">
-            <label for="book">책 선택</label><select id="book" required></select>
-            <label for="island">지도 분류 (선택)</label><select id="island"><option value="">지도에 표시하지 않음</option><option value="web">웹해킹</option><option value="ad">A&D</option><option value="pwn">시스템 해킹</option><option value="forensics">디지털 포렌식</option><option value="reversing">리버싱</option><option value="embedded">임베디드</option><option value="crypto">암호학</option><option value="misc">Misc</option><option value="network">네트워크</option><option value="iot">IoT</option><option value="ctf">CTF</option></select>
+        <div id="destination" hidden><p>기록물을 보관할 장소를 선택하세요.</p><div class="actions"><button type="button" id="to-book">책장</button><button type="button" id="to-map">세계 지도</button></div></div><form id="editor" hidden>
+            <div id="book-fields"><label for="book">책 선택</label><select id="book" required></select></div>
+            <div id="map-fields"><label for="island">지도 분류</label><select id="island"><option value="">섬을 선택하세요</option><option value="web">웹해킹</option><option value="ad">A&D</option><option value="pwn">시스템 해킹</option><option value="forensics">디지털 포렌식</option><option value="reversing">리버싱</option><option value="embedded">임베디드</option><option value="crypto">암호학</option><option value="misc">Misc</option><option value="network">네트워크</option><option value="iot">IoT</option><option value="ctf">CTF</option></select>
             <label for="island-summary">지도 목록 요약</label><input id="island-summary" maxlength="300">
-            <label for="island-tag">지도 태그</label><input id="island-tag" maxlength="100">
+            <label for="island-tag">지도 태그</label><input id="island-tag" maxlength="100"></div>
             <label for="title">제목</label><input id="title" required maxlength="300">
             <label>본문 작성 (Markdown)</label>
             <div class="actions" id="toolbar"></div>
@@ -117,6 +117,9 @@ for (const [label, snippet] of tools) {
     };
     $('toolbar').append(b);
 }
+let destination;
+function choose(place){destination=place; $('destination').hidden=true; $('editor').hidden=false; $('book-fields').hidden=place!=='book'; $('map-fields').hidden=place!=='map'; $('book').required=place==='book'; $('island').required=place==='map';}
+$('to-book').onclick=()=>choose('book'); $('to-map').onclick=()=>choose('map');
 async function setup() {
     for (const book of books) {
         const option = element('option', book.name);
@@ -126,6 +129,7 @@ async function setup() {
     if (editing) {
         const post = check(await client.from('posts').select('*').eq('id', editing).single());
         const body = check(await client.from('post_contents').select('content').eq('post_id', editing).maybeSingle());
+        choose(post.island_key ? 'map' : 'book');
         $('title').value = post.title;
         $('island').value = post.island_key || '';
         $('island-summary').value = post.island_summary || '';
@@ -135,7 +139,7 @@ async function setup() {
         $('published').checked = post.is_public;
         await files.load(editing);
         document.querySelector('h1').textContent = '기록 수정';
-    }
+    } else { $('destination').hidden=false; }
     preview();
 }
 $('editor').onsubmit = e => {
@@ -145,7 +149,7 @@ $('editor').onsubmit = e => {
         if (!title) throw new Error('제목을 입력하세요.');
         const publish = $('published').checked;
         if (publish && !confirm('본문을 모든 방문자에게 공개할까요?')) return;
-        const data = {title, island_key: $('island').value || null, island_summary: $('island-summary').value.trim(), island_tag: $('island-tag').value.trim(), book_key: $('book').value, is_public: false, updated_at: new Date().toISOString()};
+        const data = {title, island_key: destination==='map' ? $('island').value : null, island_summary: destination==='map' ? $('island-summary').value.trim() : '', island_tag: destination==='map' ? $('island-tag').value.trim() : '', book_key: destination==='book' ? $('book').value : null, is_public: false, updated_at: new Date().toISOString()};
         const content = $('content').value;
         files.lock(true);
         try {

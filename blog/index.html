@@ -1743,7 +1743,7 @@ $("access").addEventListener(
 
                         .select(
 
-                            "id,title,book_key,is_public,created_at,sort_order"
+                            "id,title,book_key,is_public,created_at,sort_order,island_key"
 
                         )
 
@@ -1893,7 +1893,7 @@ $("access").addEventListener(
 
                                     book.slug === post.book_key
 
-                            )?.name || post.book_key;
+                            )?.name || (post.island_key ? "지도 · " + post.island_key : "");
 
 
                         const classification =

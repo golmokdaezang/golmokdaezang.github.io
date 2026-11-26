@@ -22,7 +22,7 @@
         </div>
         <label for="search">제목 검색</label><input id="search" placeholder="검색할 제목">
         <div class="columns">
-            <div><label for="book">책 분류</label><select id="book"><option value="">전체 책</option></select></div>
+            <div><label for="book">책 분류</label><select id="book"><option value="">전체 기록</option><option value="@map">세계 지도</option></select></div>
             <div><label for="visibility">공개 여부</label><select id="visibility"><option value="">전체 기록</option><option value="public">공개 기록</option><option value="private">봉인 기록</option></select></div>
         </div>
         <div id="records"></div>
@@ -102,11 +102,11 @@ function render() {
     const q = $('search').value.trim().toLowerCase();
     const book = $('book').value;
     const visibility = $('visibility').value;
-    const rows = posts.filter(p => p.title.toLowerCase().includes(q) && (!book || p.book_key === book) && (!visibility || p.is_public === (visibility === 'public')));
+    const rows = posts.filter(p => p.title.toLowerCase().includes(q) && (!book || (book === '@map' ? !!p.island_key : p.book_key === book)) && (!visibility || p.is_public === (visibility === 'public')));
     if (!rows.length) root.textContent = '해당 기록이 없습니다.';
     for (const p of rows) {
         const card = element('article', '');
-        const name = books.find(b => b.slug === p.book_key)?.name || p.book_key;
+        const name = p.island_key ? '지도 · '+p.island_key : (books.find(b => b.slug === p.book_key)?.name || p.book_key);
         const actions = element('div', '');
         actions.className = 'actions';
         actions.append(

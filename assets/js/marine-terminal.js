@@ -935,7 +935,7 @@
 
                             .select(
 
-                                "title,book_key,is_public,updated_at"
+                                "title,book_key,is_public,updated_at,island_key"
 
                             )
 
@@ -963,7 +963,7 @@
 
                             "["
 
-                            + row.book_key.toUpperCase()
+                            + (row.book_key || row.island_key || "MAP").toUpperCase()
 
                             + "] "
 

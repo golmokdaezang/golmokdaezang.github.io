@@ -303,7 +303,7 @@ body { background:var(--bg-deep); }
     let admin = false;
     const auth = await client.auth.getUser();
     admin = !auth.error && auth.data.user?.id === adminId;
-    const rows = checked(await client.from('posts').select('id,title,is_public,created_at,sort_order').eq('book_key', key));
+    const rows = checked(await client.from('posts').select('id,title,is_public,created_at,sort_order').eq('book_key', key).is('island_key', null));
     rows.sort((a,b) => (a.sort_order || Infinity) - (b.sort_order || Infinity) || a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id));
     const dynamic = [];
     if (rows.length) paper.querySelector('.empty')?.remove();
