@@ -611,10 +611,10 @@
             delayRow
         );
 
-        const choices = document.createElement("textarea");
-        choices.placeholder = "선택지 | 응답 (한 줄에 하나)";
-        choices.value = (line.choices || []).map(c => typeof c === "string" ? c : `${c.label || c.text || ""} | ${c.response || ""}`).join("\n");
-        choices.oninput = () => { line.choices = choices.value.split("\n").filter(x => x.trim()).map(x => {const [label,...response]=x.split("|"); return {label:label.trim(),response:response.join("|").trim()};}); changed(); };
+        const choices = el("div");
+        if(!Array.isArray(line.choices)) line.choices=[];
+        function drawChoices(host,arr,depth=0){host.replaceChildren();arr.forEach((raw,i)=>{const c=typeof raw==="string"?{label:raw}:raw;arr[i]=c;const box=el("fieldset");box.style.cssText="border:1px solid #c4ccd5;margin:8px 0;padding:8px;min-width:0";box.append(el("legend",`선택지 ${i+1}`));const label=document.createElement("input");label.value=c.label||c.text||"";label.placeholder="내 답장";label.oninput=()=>{c.label=label.value;changed();};const reply=document.createElement("textarea");reply.value=c.response||"";reply.placeholder="캐릭터 후속 답장";reply.oninput=()=>{c.response=reply.value;changed();};box.append(label,reply);const del=el("button","삭제");del.type="button";del.onclick=()=>{if(confirm("후속 선택지도 삭제할까요?")){arr.splice(i,1);changed();drawChoices(host,arr,depth);}};box.append(del);if(depth<12){const sub=el("div");if(!Array.isArray(c.choices))c.choices=[];drawChoices(sub,c.choices,depth+1);box.append(sub);}host.append(box);});const add=el("button",depth?"후속 선택지 추가":"선택지 추가");add.type="button";add.onclick=()=>{arr.push({label:"",response:"",choices:[]});changed();drawChoices(host,arr,depth);};host.append(add);}
+        drawChoices(choices,line.choices);
         card.append(el("label","추천 답장 및 응답"),choices);
         return card;
     }
