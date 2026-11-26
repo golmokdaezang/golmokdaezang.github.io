@@ -127,7 +127,8 @@ async function setup() {
         $('book').append(option);
     }
     if (editing) {
-        const post = check(await client.from('posts').select('*').eq('id', editing).single());
+        const post = check(await client.from('posts').select('*').eq('id', editing).maybeSingle());
+        if (!post) throw new Error('삭제되었거나 접근할 수 없는 기록입니다. 관리자 목록에서 다시 선택하세요.');
         const body = check(await client.from('post_contents').select('content').eq('post_id', editing).maybeSingle());
         choose(post.island_key ? 'map' : 'book');
         $('title').value = post.title;
@@ -165,7 +166,9 @@ $('editor').onsubmit = e => {
         check(await client.from('post_contents').upsert({post_id: editing, content}));
         await files.cleanup(editing);
         if (publish) check(await client.from('posts').update({is_public: true}).eq('id', editing).select('id').single());
-        check(await client.rpc('marine_record_post', {p_post_id:editing,p_new:wasNew,p_saved_at:data.updated_at}));
+        const saved = check(await client.from('posts').select('updated_at').eq('id',editing).single());
+        const reward = await client.rpc('marine_record_post', {p_post_id:editing,p_new:wasNew,p_saved_at:saved.updated_at});
+        if(reward.error){ alert('게시글 저장 완료. 공적 점수 반영 실패: '+reward.error.message); }
         location.href = '/blog/admin/';
         } finally { files.lock(false); }
     });
