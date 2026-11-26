@@ -994,6 +994,47 @@ html, body, body *, body *::before, body *::after {
 <style>.cabin.secret-awake .cabin-map{pointer-events:none}.secret-inline .secret-bubble,.secret-inline .secret-choice{pointer-events:auto}</style>
 <link rel="stylesheet" href="/community/cabin.css?v=9">
 <link rel="stylesheet" href="/community/common.css?v=1"><style>.captain-topbar>div:last-child{display:flex;align-items:center;gap:8px}.captain-topbar .captain-auth{white-space:nowrap;margin:0}.captain-topbar [hidden]{display:none!important}@media(max-width:600px){.captain-topbar>div:last-child{gap:4px}.captain-topbar .captain-auth{padding:6px;font-size:11px}}</style><link rel="stylesheet" href="/community/news.css?v=9"><style>.marine-room-return{position:absolute;left:50%;bottom:5%;transform:translateX(-50%);z-index:55;padding:10px 24px;background:#24190fee;border:1px solid #ba9b61;border-radius:5px;color:#f0d7a4;font:700 clamp(14px,1.3vw,20px)/1.4 'Nanum Myeongjo',serif;text-decoration:none;box-shadow:0 3px 12px #0008;white-space:nowrap}.marine-room-return[hidden]{display:none!important}.marine-room-return:hover,.marine-room-return:focus-visible{background:#533b23;outline:2px solid #dab87a;outline-offset:3px}</style>
+<style id="wanted-popout-style">
+
+.captain-ui .captain-profile {
+    top: 22%;
+    left: 5.2%;
+    z-index: 50;
+
+    transform-origin: top left;
+    transform: scale(0.3);
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        transform .35s cubic-bezier(.2,.8,.2,1),
+        opacity .25s ease,
+        visibility 0s linear .35s;
+}
+
+.cabin.dark .captain-profile {
+    top: 21.5%;
+    left: 6.1%;
+}
+
+.captain-ui.is-ready:not(.is-collapsed) .captain-profile {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+
+    transition:
+        transform .35s cubic-bezier(.2,.8,.2,1),
+        opacity .25s ease,
+        visibility 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .captain-ui .captain-profile {
+        transition: none !important;
+    }
+}
+
+</style>
 </head>
 
 <body>
