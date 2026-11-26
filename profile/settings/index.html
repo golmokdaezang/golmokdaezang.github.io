@@ -353,14 +353,40 @@
         padding: 30px 22px;
       }
     }
-  </style>
+  
+:root{--gold:#b99c61;--light-gold:#dec68f;--dark-gold:#80683f;--text:#d5c19a}
+body{background:radial-gradient(ellipse at center,#302518,#14100b 70%,#110e09);color:var(--text);font-family:'Nanum Myeongjo',serif;text-shadow:none}
+body::before{display:none}
+.vault-background{position:fixed;left:50%;top:50%;width:max(100vw,100vh);height:max(100vw,100vh);transform:translate(-50%,-50%);color:#aa8b55;opacity:.22;pointer-events:none;z-index:0}
+.login-card,.record{position:relative;background:#1c170f;border:1px solid #b99c61;border-radius:5px;box-shadow:0 16px 48px #0005;isolation:isolate}
+.login-card::before,.record::before{content:'';position:absolute;inset:8px;border:1px solid #776039;border-radius:3px;pointer-events:none}
+.corner{position:absolute;width:29px;height:29px;color:#b99c61;pointer-events:none}
+.tl{top:16px;left:16px}.tr{top:16px;right:16px;transform:rotate(90deg)}.br{bottom:16px;right:16px;transform:rotate(180deg)}.bl{bottom:16px;left:16px;transform:rotate(270deg)}
+.crest{display:block;width:88px;height:88px;margin:0 auto;color:#b99c61}
+h1{font-size:26px;line-height:1.35;margin:20px 0 8px;color:#dec68f;text-shadow:none}
+.subtitle,.heading p{font-size:11px;letter-spacing:3px;color:#ad9260;margin:0}
+.ornament{display:flex;align-items:center;gap:12px;color:#b49a64;margin:24px 0}
+.ornament::before,.ornament::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,#80683f)}
+.ornament::after{transform:rotate(180deg)}
+.mini-icon{width:19px;height:19px;flex:none;vertical-align:middle;color:inherit}
+.field input,.field textarea{background:#120f0a;color:#e2cda6;border:1px solid #79613b;border-radius:4px;font:inherit;font-size:15px}
+input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus{-webkit-box-shadow:0 0 0 1000px #120f0a inset;-webkit-text-fill-color:#e2cda6;caret-color:#e2cda6}
+#loginButton,.save-button{background:linear-gradient(155deg,#c9b17c,#967a46 55%,#bda36e);border:1px solid #b99c61;border-radius:3px;color:#241a0e;font-family:'Nanum Myeongjo',serif;font-size:16px;font-weight:400;letter-spacing:3px;text-shadow:none;box-shadow:none}
+.footer-mark{margin:16px 0 0;color:#9a845d;font-size:9px;letter-spacing:2px;text-align:center}
+.back{color:#b49a64}
+@media(prefers-reduced-motion:reduce){.container{animation:none}}
+
+body{padding:88px 20px 36px}.container{max-width:620px;width:100%;margin:0 auto;animation:appear .4s ease both}.record{padding:36px 40px}.heading{margin:0}.heading .crest{width:66px;height:66px}.heading h1{font-size:26px;font-weight:700;margin:20px 0 8px}.eyebrow{display:none}.avatar-frame{width:130px;height:130px;border:2px solid #b99c61;padding:5px;background:#201910;box-shadow:0 0 0 3px #79613b}.photo-button{display:inline-flex;align-items:center;gap:8px;border-radius:3px;background:#251e13}.avatar-area{gap:12px;margin-bottom:24px}.field{margin-bottom:18px}.field textarea{min-height:100px}.save-button{margin-top:22px}.topbar{background:#19140e;border-bottom-color:#776039}.brand{display:flex;align-items:center;gap:8px}.status{margin:12px 0 0}.record .back{display:block;text-align:center;margin:12px auto 0;text-decoration:none;font-size:13px}
+@media(max-width:600px){body{padding:88px 12px 30px}.record{padding:30px 24px}.topbar{padding:0 10px}.top-actions{gap:5px}.top-actions a,.top-actions button{padding:7px}.brand{font-size:10px;letter-spacing:.5px}}
+</style>
 <link rel="stylesheet" href="/community/common.css?v=1"></head>
 
 <body>
+<svg class="vault-background" viewBox="0 0 1000 1000" aria-hidden="true" fill="none" stroke="currentColor"><circle cx="500" cy="500" r="340" opacity=".55"/><circle cx="500" cy="500" r="375" opacity=".55"/><circle cx="500" cy="500" r="420" opacity=".55"/><circle cx="500" cy="500" r="480" opacity=".55"/><path d="M500 80V94" transform="rotate(0.0 500 500)"/><path d="M500 80V94" transform="rotate(7.5 500 500)"/><path d="M500 80V94" transform="rotate(15.0 500 500)"/><path d="M500 80V94" transform="rotate(22.5 500 500)"/><path d="M500 80V94" transform="rotate(30.0 500 500)"/><path d="M500 80V94" transform="rotate(37.5 500 500)"/><path d="M500 80V94" transform="rotate(45.0 500 500)"/><path d="M500 80V94" transform="rotate(52.5 500 500)"/><path d="M500 80V94" transform="rotate(60.0 500 500)"/><path d="M500 80V94" transform="rotate(67.5 500 500)"/><path d="M500 80V94" transform="rotate(75.0 500 500)"/><path d="M500 80V94" transform="rotate(82.5 500 500)"/><path d="M500 80V94" transform="rotate(90.0 500 500)"/><path d="M500 80V94" transform="rotate(97.5 500 500)"/><path d="M500 80V94" transform="rotate(105.0 500 500)"/><path d="M500 80V94" transform="rotate(112.5 500 500)"/><path d="M500 80V94" transform="rotate(120.0 500 500)"/><path d="M500 80V94" transform="rotate(127.5 500 500)"/><path d="M500 80V94" transform="rotate(135.0 500 500)"/><path d="M500 80V94" transform="rotate(142.5 500 500)"/><path d="M500 80V94" transform="rotate(150.0 500 500)"/><path d="M500 80V94" transform="rotate(157.5 500 500)"/><path d="M500 80V94" transform="rotate(165.0 500 500)"/><path d="M500 80V94" transform="rotate(172.5 500 500)"/><path d="M500 80V94" transform="rotate(180.0 500 500)"/><path d="M500 80V94" transform="rotate(187.5 500 500)"/><path d="M500 80V94" transform="rotate(195.0 500 500)"/><path d="M500 80V94" transform="rotate(202.5 500 500)"/><path d="M500 80V94" transform="rotate(210.0 500 500)"/><path d="M500 80V94" transform="rotate(217.5 500 500)"/><path d="M500 80V94" transform="rotate(225.0 500 500)"/><path d="M500 80V94" transform="rotate(232.5 500 500)"/><path d="M500 80V94" transform="rotate(240.0 500 500)"/><path d="M500 80V94" transform="rotate(247.5 500 500)"/><path d="M500 80V94" transform="rotate(255.0 500 500)"/><path d="M500 80V94" transform="rotate(262.5 500 500)"/><path d="M500 80V94" transform="rotate(270.0 500 500)"/><path d="M500 80V94" transform="rotate(277.5 500 500)"/><path d="M500 80V94" transform="rotate(285.0 500 500)"/><path d="M500 80V94" transform="rotate(292.5 500 500)"/><path d="M500 80V94" transform="rotate(300.0 500 500)"/><path d="M500 80V94" transform="rotate(307.5 500 500)"/><path d="M500 80V94" transform="rotate(315.0 500 500)"/><path d="M500 80V94" transform="rotate(322.5 500 500)"/><path d="M500 80V94" transform="rotate(330.0 500 500)"/><path d="M500 80V94" transform="rotate(337.5 500 500)"/><path d="M500 80V94" transform="rotate(345.0 500 500)"/><path d="M500 80V94" transform="rotate(352.5 500 500)"/><path d="M0 500H1000M500 0V1000M0 0L1000 1000M1000 0L0 1000" opacity=".4"/></svg>
 
   <header class="topbar">
     <a class="brand" href="/cabin/">
-      ⚓ GRAND SECURITY LINE
+      <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="5" r="2"/><path d="M12 7V21M7 10H17M3 13Q3 21 12 21Q21 21 21 13"/></svg> GRAND SECURITY LINE
     </a>
 
     <div class="top-actions">
@@ -372,19 +398,19 @@
   </header>
 
   <main class="container">
-    <section class="record">
+    <section class="record"><svg class="corner tl" viewBox="0 0 34 34" aria-hidden="true" fill="none" stroke="currentColor"><path d="M2 32V2H32M8 24V8H24M2 2L17 17"/></svg><svg class="corner tr" viewBox="0 0 34 34" aria-hidden="true" fill="none" stroke="currentColor"><path d="M2 32V2H32M8 24V8H24M2 2L17 17"/></svg><svg class="corner br" viewBox="0 0 34 34" aria-hidden="true" fill="none" stroke="currentColor"><path d="M2 32V2H32M8 24V8H24M2 2L17 17"/></svg><svg class="corner bl" viewBox="0 0 34 34" aria-hidden="true" fill="none" stroke="currentColor"><path d="M2 32V2H32M8 24V8H24M2 2L17 17"/></svg>
 
       <div class="heading">
         <div class="eyebrow">
           GRAND SECURITY LINE
         </div>
 
-        <h1>⚜ 선장 프로필 ⚜</h1>
+        <svg class="crest" viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="currentColor"><circle cx="50" cy="50" r="38" stroke-width="1.5"/><circle cx="50" cy="50" r="32" stroke-dasharray="1 3"/><path d="M50 2L56 12H44ZM50 98L44 88H56ZM2 50L12 44V56ZM98 50L88 56V44Z" fill="currentColor"/><circle cx="50" cy="32" r="5" stroke-width="2.5"/><path d="M50 37V73M38 44H62M26 56Q26 77 50 77Q74 77 74 56M20 64L26 56 32 64M68 64L74 56 80 64" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><h1>선장 프로필</h1>
 
         <p>CAPTAIN PROFILE</p>
       </div>
 
-      <div class="ornament">✦</div>
+      <div class="ornament" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14"><path d="M10 2L18 10 10 18 2 10Z" fill="currentColor"/></svg></div>
 
       <form id="profileForm" class="hidden">
 
@@ -398,7 +424,7 @@
           </div>
 
           <label class="photo-button" for="avatarFile">
-            📷 초상화 변경
+            <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3 7H7L9 4H15L17 7H21V20H3Z"/><circle cx="12" cy="13" r="4"/></svg> 초상화 변경
           </label>
 
           <input
@@ -452,7 +478,7 @@
           id="saveButton"
           type="submit"
         >
-          ⚜ 선장 프로필 저장
+          선장 프로필 저장
         </button>
 
       </form>
@@ -461,7 +487,8 @@
         관리자 계정 확인 중...
       </p>
 
-    </section>
+    <a class="back" href="/cabin/">← 선장실로 돌아가기</a><p class="footer-mark">GRAND SECURITY LINE</p>
+</section>
   </main>
 
   <script src="/assets/js/supabase-config.js?v=11"></script>
@@ -507,7 +534,7 @@
       saveButton.disabled = saving;
       saveButton.textContent = saving
         ? "기록 저장 중..."
-        : "⚜ 선장 프로필 저장";
+        : "선장 프로필 저장";
     }
 
     function releasePreview() {
