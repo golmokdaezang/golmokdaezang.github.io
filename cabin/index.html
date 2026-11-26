@@ -1035,6 +1035,7 @@ html, body, body *, body *::before, body *::after {
 }
 
 </style>
+<link rel="stylesheet" href="/assets/css/captain-about.css?v=1">
 </head>
 
 <body>
@@ -1097,6 +1098,7 @@ html, body, body *, body *::before, body *::after {
 
    data-hint="랜턴 켜기"></button>
 
+  <button type="button" class="cabin-about-trigger" id="cabin-about-trigger" aria-label="항해 기록 보기" aria-haspopup="dialog"></button>
   <!-- 기존 갑판 이동 -->
 
   <a
@@ -1809,6 +1811,7 @@ if (window.matchMedia(
 
   const targets = [
 
+    { selector: ".cabin-about-trigger", label: "항해 기록 보기" },
     { selector: ".cabin-map", label: "항해 지도 펼치기" },
 
     { selector: ".cabin-bookshelf-link", label: "책장 살펴보기" },
@@ -1869,7 +1872,7 @@ if (window.matchMedia(
 
     return element.closest(
 
-      ".lantern, .cabin-map, .cabin-bookshelf-link, .cabin-door, .captain-ui [data-hint]"
+      ".cabin-about-trigger, .lantern, .cabin-map, .cabin-bookshelf-link, .cabin-door, .captain-ui [data-hint]"
 
     );
 
@@ -2088,5 +2091,6 @@ if (window.matchMedia(
 
 <script src="./secret-call.js?v=11"></script>
 <script src="/community/cabin.js?v=11" defer></script>
-<script defer src="/community/news.js?v=9"></script></body>
+<script defer src="/community/news.js?v=9"></script><script defer src="/assets/js/captain-about.js?v=1"></script>
+</body>
 </html>

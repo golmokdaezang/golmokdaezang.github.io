@@ -1,0 +1,49 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css');
+.cabin-about-trigger{position:absolute;left:11.5%;top:35.5%;width:12.4%;height:29.5%;z-index:14;border:0;background:transparent;padding:0}
+.cabin-about-trigger:focus-visible{outline:2px solid #d8b778;outline-offset:3px;border-radius:8px}
+#captain-about{--bg:#faf9f6;--main:#202321;--sub:#454944;--gold:#847149;--line:#d9d9d0;--tag:#eeede7;position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;border:0;padding:0;background:var(--bg);color:var(--main);font:500 16px/1.75 Pretendard,'Malgun Gothic',sans-serif;overflow:auto;overscroll-behavior:contain;text-shadow:none;box-shadow:none}
+#captain-about[data-theme=dark]{--bg:#1b160e;--main:#e5cb95;--sub:#cdbb97;--gold:#c0a570;--line:#79643e;--tag:#302619;color-scheme:dark}
+#captain-about[open]{animation:about-in .4s ease both}
+@keyframes about-in{from{opacity:0}to{opacity:1}}
+#captain-about *,#captain-about *::before,#captain-about *::after{cursor:auto!important;text-shadow:none!important;box-shadow:none!important;box-sizing:border-box}
+#captain-about button,#captain-about a{cursor:pointer!important}
+#captain-about input,#captain-about textarea{cursor:text!important}
+#captain-about [hidden]{display:none!important}
+#captain-about .about-wrap{max-width:1000px;margin:0 auto;padding:28px 48px 70px}
+#captain-about .about-bar,#captain-about .about-header,#captain-about .about-actions{display:flex;align-items:center;gap:14px}
+#captain-about .about-bar{justify-content:space-between;margin-bottom:38px}
+#captain-about button{font:inherit;color:var(--gold);background:transparent;border:1px solid var(--line);border-radius:7px;padding:7px 12px;display:inline-flex;align-items:center;gap:7px}
+#captain-about button:hover{background:var(--tag)}
+#captain-about button:focus-visible,#captain-about input:focus-visible,#captain-about textarea:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+#captain-about .about-back{border:0;padding-left:0}
+#captain-about svg{flex:none;vertical-align:middle}
+#captain-about .about-emblem{width:64px;height:72px;color:var(--gold)}
+#captain-about .about-kicker{font-size:12px;letter-spacing:.09em;color:var(--gold)}
+#captain-about .about-header h1{font-size:20px;font-weight:700;line-height:1.35;margin:4px 0}
+#captain-about .about-header p{margin:0;color:var(--sub);font-size:14px}
+#captain-about section{border-top:1px solid var(--line);padding:28px 0;margin-top:24px}
+#captain-about h2{font-size:20px;font-weight:700;margin:0 0 14px;line-height:1.4}
+#captain-about h2.about-name{font-size:28px;margin-bottom:12px}
+#captain-about p{margin:6px 0;color:var(--sub);white-space:pre-wrap;overflow-wrap:anywhere}
+#captain-about .about-major{color:var(--main)}
+#captain-about .about-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+#captain-about .about-tags span{background:var(--tag);color:var(--sub);padding:4px 10px;border-radius:6px;font-size:13px}
+#captain-about .about-timeline{list-style:none;margin:22px 0 0;padding:0}
+#captain-about .about-timeline li{position:relative;padding:0 0 26px 25px;display:grid;grid-template-columns:155px minmax(0,1fr);gap:12px}
+#captain-about .about-timeline li::before{content:'';position:absolute;left:4px;top:9px;width:8px;height:8px;background:var(--gold);transform:rotate(45deg)}
+#captain-about .about-timeline li:not(:last-child)::after{content:'';position:absolute;left:7.5px;top:20px;bottom:3px;width:1px;background:var(--line)}
+#captain-about .about-date{color:var(--gold);font-size:14px}
+#captain-about .about-timeline strong{font-weight:600;overflow-wrap:anywhere}
+#captain-about .about-timeline p{margin:3px 0}
+#captain-about .about-tools{display:grid;grid-template-columns:145px minmax(0,1fr);gap:10px 16px}
+#captain-about .about-tools dt{color:var(--gold)}
+#captain-about .about-tools dd{margin:0;overflow-wrap:anywhere}
+#captain-about a{color:var(--gold);overflow-wrap:anywhere}
+#captain-about .about-editor label{display:block;margin:10px 0;color:var(--sub)}
+#captain-about input,#captain-about textarea{display:block;width:100%;background:var(--bg);color:var(--main);border:1px solid var(--line);border-radius:5px;font:inherit;padding:8px}
+#captain-about textarea{min-height:85px;resize:vertical}
+#captain-about fieldset{border:1px solid var(--line);margin:12px 0;padding:14px;min-width:0}
+#captain-about .about-actions{flex-wrap:wrap;margin:12px 0}
+#captain-about .about-status{font-size:14px;color:var(--gold)}
+@media(max-width:600px){#captain-about .about-wrap{padding:18px 22px 40px}#captain-about .about-timeline li{grid-template-columns:1fr;gap:2px}#captain-about .about-tools{grid-template-columns:105px minmax(0,1fr)}#captain-about .about-bar{margin-bottom:24px}}
+@media(prefers-reduced-motion:reduce){#captain-about[open]{animation:none}}
