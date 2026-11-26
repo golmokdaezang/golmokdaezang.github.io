@@ -195,6 +195,37 @@
         // 기본 화면
         // =====================================
 
+        function renderCreate() {
+            root.replaceChildren(node("h2", "새 캐릭터 등록"));
+            const form = node("div", null, "mch-body");
+            const fields = {};
+            for (const [key, label] of Object.entries({character_key:"캐릭터 키 (영문 소문자)",name:"이름",alias:"별칭",rank:"계급",department:"소속",academy_class:"사관학교 기수",justice:"정의관",personality:"성격",speech_style:"말투",status:"현재 상태",avatar_url:"프로필 이미지 HTTPS 주소"})) {
+                const wrap = node("label", null, "mch-field");
+                const input = node(["personality","speech_style"].includes(key)?"textarea":"input");
+                fields[key] = input;
+                wrap.append(node("span", label), input); form.append(wrap);
+            }
+            const status = node("p"); status.setAttribute("role","status");
+            const back = node("button", "취소"); back.onclick = () => render("organization");
+            const save = node("button", "등록", "ui-primary");
+            save.onclick = async () => {
+                save.disabled = true;
+                try {
+                    const v = Object.fromEntries(Object.entries(fields).map(([k,i])=>[k,i.value.trim()]));
+                    if (!/^[a-z][a-z0-9_]{1,39}$/.test(v.character_key)) throw new Error("캐릭터 키는 영문 소문자로 시작하는 2~40자여야 합니다.");
+                    if (!v.name || !v.rank || !v.department) throw new Error("이름, 계급, 소속을 입력하세요.");
+                    if (characters.some(c=>c.character_key===v.character_key || [c.name,c.alias].filter(Boolean).some(n=>n===v.name || n===v.alias))) throw new Error("이미 등록된 키 또는 이름입니다.");
+                    if (v.academy_class && (!/^\d+$/.test(v.academy_class) || Number(v.academy_class)<1)) throw new Error("기수를 확인하세요.");
+                    v.academy_class = v.academy_class ? Number(v.academy_class) : null;
+                    if(v.avatar_url && !safeImage(v.avatar_url)) throw new Error("HTTPS 이미지 주소를 입력하세요.");
+                    v.avatar_url = v.avatar_url || null;
+                    check(await client.from("marine_characters").insert(v).select("character_key").single());
+                    await load();
+                } catch(e) { status.textContent = "등록 실패: " + e.message; } finally { save.disabled = false; }
+            };
+            root.append(form, save, back, status);
+        }
+
         function render(tab) {
 
             root.replaceChildren();
@@ -260,6 +291,9 @@
             }
 
 
+            const add = node("button", "캐릭터 추가", "ui-primary");
+            add.onclick = renderCreate;
+            toolbar.append(add);
             root.append(toolbar);
 
 

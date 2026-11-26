@@ -727,6 +727,8 @@
 
                     c.name,
 
+                    c.character_key,
+
                     c.alias
 
                 ].filter(Boolean),
