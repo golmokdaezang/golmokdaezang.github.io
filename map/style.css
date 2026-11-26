@@ -386,3 +386,12 @@ body.lens-active .map-viewport,body.lens-active .map-viewport * {cursor:none!imp
 .back-link *,.chart-mini * {cursor:pointer!important;}
 @media(max-width:600px){.back-link{height:34px;min-width:72px;padding:0 8px;font-size:11px;}}
 @media(pointer:coarse){body.lens-active .map-viewport,body.lens-active .map-viewport *{cursor:auto!important;}}
+
+/* Map performance and lens control */
+.magnifier-toggle{position:fixed;top:4vh;right:4vw;z-index:30;display:flex;align-items:center;gap:7px;padding:9px 12px;color:#e0c99d;background:#281e16;border:1px solid #a58a56;border-radius:5px;font:700 13px "Nanum Myeongjo",serif;cursor:pointer}
+.magnifier-toggle[aria-pressed="false"]{color:#aa997c;opacity:.85}.magnifier-toggle:focus-visible{outline:2px solid #e0c99d}
+.magnifier-disabled .magnifier{display:none}.magnifier-lens img{left:0;top:0;will-change:transform}
+.map-page::before{animation:none;opacity:.85;transform:none}
+body:has(dialog[open]) .map-page{visibility:hidden}
+@media(max-width:600px){.magnifier-toggle{top:9vh;right:3vw;font-size:11px;padding:6px}}
+@media(pointer:coarse){.magnifier-toggle{display:none}}

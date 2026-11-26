@@ -142,123 +142,49 @@ function createIslands() {
    마우스 추적
 ========================== */
 
-let mouseX = 0;
-let mouseY = 0;
-let pointerVisible = false;
-
-function updateMagnifier(x, y) {
-  mouseX = x;
-  mouseY = y;
-
-  const width = magnifier.offsetWidth;
-  const height = magnifier.offsetHeight;
-
-  const centerX = width * LENS_X;
-  const centerY = height * LENS_Y;
-
-  /* 지연 없이 마우스를 따라 이동 */
-  magnifier.style.transform =
-    `translate3d(${x - centerX}px, ${y - centerY}px, 0)`;
-
-  magnifier.classList.add("visible");
-
-  updateZoom();
-  updateIslandLabel();
+let mouseX = 0, mouseY = 0, pointerVisible = false;
+let frame = 0, geometry = null;
+const toggle = document.getElementById('magnifierToggle');
+let enabled = true;
+try { enabled = localStorage.getItem('map-magnifier') !== 'off'; } catch {}
+function hideLens() {
+  magnifier.classList.remove('visible');
+  document.body.classList.remove('lens-active');
 }
-
-/* ==========================
-   지도 확대
-========================== */
-
-function updateZoom() {
-  const rect = mapImage.getBoundingClientRect();
-
-  const visibleRect = viewport.getBoundingClientRect();
-  const target = document.elementFromPoint(mouseX, mouseY);
-  const overControl = Boolean(target?.closest(".back-link, .chart-mini"));
-  const insideMap = !overControl &&
-    mouseX >= visibleRect.left && mouseX <= visibleRect.right &&
-    mouseY >= visibleRect.top && mouseY <= visibleRect.bottom &&
-    mouseX >= rect.left &&
-    mouseX <= rect.right &&
-    mouseY >= rect.top &&
-    mouseY <= rect.bottom;
-
-  magnifier.classList.toggle("over-map", insideMap);
-  magnifier.classList.toggle("over-control", overControl);
-  document.body.classList.toggle("lens-active", insideMap && pointerVisible);
-
-  if (!insideMap) return;
-
-  const relativeX = mouseX - rect.left;
-  const relativeY = mouseY - rect.top;
-
-  const lensSize = lens.offsetWidth;
-
-  const zoomWidth = rect.width * ZOOM;
-  const zoomHeight = rect.height * ZOOM;
-
-  zoomImage.style.width = zoomWidth + "px";
-  zoomImage.style.height = zoomHeight + "px";
-
-  zoomImage.style.left =
-    (lensSize / 2 - relativeX * ZOOM) + "px";
-
-  zoomImage.style.top =
-    (lensSize / 2 - relativeY * ZOOM) + "px";
+function blocked() { return !enabled || dragging || document.hidden || !!document.querySelector('dialog[open]'); }
+function schedule() {
+  if (!pointerVisible || blocked()) { hideLens(); return; }
+  if (!frame) frame = requestAnimationFrame(renderLens);
 }
-
-/* ==========================
-   섬 이름 표시
-========================== */
-
-function updateIslandLabel() {
-  const rect = mapImage.getBoundingClientRect();
-
-  const x = ((mouseX - rect.left) / rect.width) * 100;
-  const y = ((mouseY - rect.top) / rect.height) * 100;
-
-  const island = ISLANDS.find((item) => {
-    return (
-      x >= item.x &&
-      x <= item.x + item.width &&
-      y >= item.y &&
-      y <= item.y + item.height
-    );
-  });
-
-  if (island) {
-    label.textContent = island.name;
-    label.classList.add("show");
-  } else {
-    label.textContent = "";
-    label.classList.remove("show");
+function renderLens() {
+  frame = 0;
+  if (!pointerVisible || blocked()) { hideLens(); return; }
+  if (!geometry) {
+    const r = mapImage.getBoundingClientRect(), v = viewport.getBoundingClientRect();
+    geometry = {left:r.left+viewport.scrollLeft, top:r.top, width:r.width,height:r.height,v,w:magnifier.offsetWidth,h:magnifier.offsetHeight,l:lens.offsetWidth};
+    zoomImage.style.width = r.width*ZOOM+'px';
+    zoomImage.style.height = r.height*ZOOM+'px';
   }
+  const g=geometry, x=mouseX-g.left+viewport.scrollLeft, y=mouseY-g.top;
+  const target=document.elementFromPoint(mouseX,mouseY);
+  const control=!!target?.closest('.back-link,.chart-mini,.magnifier-toggle');
+  const inside=!control && mouseX>=g.v.left && mouseX<=g.v.right && mouseY>=g.v.top && mouseY<=g.v.bottom && x>=0 && x<=g.width && y>=0 && y<=g.height;
+  magnifier.classList.toggle('over-map',inside);
+  magnifier.classList.toggle('over-control',control);
+  if(control){hideLens();return;}
+  magnifier.style.transform=`translate3d(${mouseX-g.w*LENS_X}px,${mouseY-g.h*LENS_Y}px,0)`;
+  magnifier.classList.add('visible');
+  document.body.classList.toggle('lens-active',inside);
+  if(inside) zoomImage.style.transform=`translate3d(${g.l/2-x*ZOOM}px,${g.l/2-y*ZOOM}px,0)`;
 }
-
-/* ==========================
-   마우스 이동 이벤트
-========================== */
-
-document.addEventListener("pointermove", (event) => {
-  if (event.pointerType === "touch") return;
-
-  pointerVisible = true;
-
-  updateMagnifier(event.clientX, event.clientY);
-}, { passive: true });
-
-document.addEventListener("pointerleave", () => {
-  pointerVisible = false;
-  magnifier.classList.remove("visible");
-  document.body.classList.remove("lens-active");
-});
-
-window.addEventListener("blur", () => {
-  pointerVisible = false;
-  magnifier.classList.remove("visible");
-  document.body.classList.remove("lens-active");
-});
+function syncToggle(){toggle.setAttribute('aria-pressed',String(enabled));toggle.querySelector('span').textContent=enabled?'돋보기 ON':'돋보기 OFF';document.body.classList.toggle('magnifier-disabled',!enabled);if(!enabled){if(frame)cancelAnimationFrame(frame);frame=0;hideLens();geometry=null;}else schedule();}
+toggle.addEventListener('click',()=>{enabled=!enabled;try{localStorage.setItem('map-magnifier',enabled?'on':'off')}catch{}syncToggle();});
+document.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;mouseX=e.clientX;mouseY=e.clientY;pointerVisible=true;schedule();},{passive:true});
+function leave(){pointerVisible=false;hideLens();if(frame)cancelAnimationFrame(frame);frame=0;}
+document.addEventListener('pointerleave',leave);window.addEventListener('blur',leave);document.addEventListener('visibilitychange',leave);
+new ResizeObserver(()=>{geometry=null;schedule()}).observe(viewport);
+new ResizeObserver(()=>{geometry=null;schedule()}).observe(mapImage);
+new MutationObserver(()=>{if(blocked())hideLens();else schedule();}).observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
 
 /* ==========================
    지도 드래그
@@ -277,6 +203,7 @@ viewport.addEventListener("pointerdown", (event) => {
   }
 
   dragging = true;
+  hideLens();
   moved = false;
 
   activePointerId = event.pointerId;
@@ -303,10 +230,7 @@ viewport.addEventListener("pointermove", (event) => {
   if (moved) {
     viewport.scrollLeft = startScroll - distance;
 
-    if (pointerVisible) {
-      updateZoom();
-      updateIslandLabel();
-    }
+    hideLens();
   }
 });
 
@@ -323,6 +247,7 @@ function finishDrag(event) {
   }
 
   activePointerId = null;
+  schedule();
 }
 
 viewport.addEventListener("pointerup", finishDrag);
@@ -348,12 +273,11 @@ function centerMap() {
 
   viewport.scrollLeft = Math.max(0, maxScroll / 2);
 
-  if (pointerVisible) {
-    updateZoom();
-    updateIslandLabel();
-  }
+  geometry = null;
+  schedule();
 }
 
+syncToggle();
 createIslands();
 
 if (mapImage.complete && mapImage.naturalWidth > 0) {
@@ -367,10 +291,7 @@ if (mapImage.complete && mapImage.naturalWidth > 0) {
 window.addEventListener("resize", centerMap);
 
 viewport.addEventListener("scroll", () => {
-  if (pointerVisible) {
-    updateZoom();
-    updateIslandLabel();
-  }
+  schedule();
 }, { passive: true });
 
 const mini=document.getElementById('mini'); const marker=document.getElementById('marker'); function syncMini(){marker.style.width=100*viewport.clientWidth/viewport.scrollWidth+'%';marker.style.left=100*viewport.scrollLeft/viewport.scrollWidth+'%';mini.value=100*viewport.scrollLeft/Math.max(1,viewport.scrollWidth-viewport.clientWidth);} viewport.addEventListener('scroll',syncMini); window.addEventListener('resize',syncMini); mapImage.addEventListener('load',syncMini); mini.addEventListener('input',()=>{viewport.scrollLeft=Number(mini.value)/100*(viewport.scrollWidth-viewport.clientWidth)});syncMini();
