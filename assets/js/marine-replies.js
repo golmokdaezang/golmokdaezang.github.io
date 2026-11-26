@@ -251,6 +251,18 @@ async function loadCustomReply(client, characterKey, type) {
 
 }
 
+    async function keywordReply(client, key, message) {
+        const normalize = x => String(x).normalize("NFKC").toLowerCase().replace(/\s+/g, "");
+        const text = normalize(message);
+        const rows = check(await client.from("marine_keyword_rules").select("*").in("character_key", [key, "*"]).eq("enabled", true));
+        const matches = rows.filter(r => r.keywords.some(k => normalize(k) && text.includes(normalize(k))) && Array.isArray(r.responses) && r.responses.some(x => typeof x.content === "string" && x.content.trim()));
+        matches.sort((a,b) => Number(b.character_key === key)-Number(a.character_key === key) || a.priority-b.priority || a.id.localeCompare(b.id));
+        if (!matches.length) return null;
+        const candidates = matches[0].responses.filter(x => typeof x.content === "string" && x.content.trim());
+        const content = await chooseReply(client,key,candidates.map(x=>x.content));
+        return randomItem(candidates.filter(x=>x.content===content));
+    }
+
     async function reply(
         client,
         characterKey,
@@ -301,7 +313,10 @@ let custom = null;
 
 try {
 
-    custom = await loadCustomReply(client, characterKey, type);
+    if (!["submitted", "missing"].includes(type)) {
+        try { custom = await keywordReply(client, characterKey, message); } catch (e) { console.warn("키워드 규칙 조회 실패", e); }
+    }
+    if (!custom) custom = await loadCustomReply(client, characterKey, type);
     if (!custom && type !== "default") custom = await loadCustomReply(client, characterKey, "default");
 
 } catch (error) {
