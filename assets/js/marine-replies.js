@@ -610,11 +610,8 @@ let custom = null;
 
 try {
 
-    custom = await loadCustomReply(
-        client,
-        characterKey,
-        type
-    );
+    custom = await loadCustomReply(client, characterKey, type);
+    if (!custom && type !== "default") custom = await loadCustomReply(client, characterKey, "default");
 
 } catch (error) {
 

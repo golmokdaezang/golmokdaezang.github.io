@@ -9,6 +9,7 @@
     let scenarios = [];
     let rooms = [];
     let characters = [];
+    let members = [];
     let draft = null;
     let originalKey = null;
     let dirty = false;
@@ -221,17 +222,21 @@
                 .order("title"),
 
             db.from("marine_rooms")
-                .select("room_key, name")
+                .select("id, room_key, name")
+                .eq("archived", false)
+                .eq("room_type", "group")
                 .order("name"),
 
             db.from("marine_characters")
                 .select("character_key, name, alias")
-                .order("name")
+                .order("name"),
+            db.from("marine_room_members").select("room_id,character_key")
         ]);
 
         scenarios = check(results[0]);
         rooms = check(results[1]);
         characters = check(results[2]);
+        members = check(results[3]);
 
         loaded = true;
 
@@ -449,7 +454,7 @@
             const previous = draft.dialogue.at(-1);
 
             draft.dialogue.push({
-                sender: characters[0]?.character_key || "",
+                sender: availableCharacters()[0]?.character_key || "",
                 text: "",
                 delay: previous
                     ? Math.min(Number(previous.delay) + 5, 59)
@@ -548,7 +553,7 @@
 
         fillOptions(
             senderSelect,
-            characters,
+            availableCharacters(),
             "character_key",
             line.sender
         );
@@ -642,6 +647,12 @@
        8. 입력값 검증
        ======================================== */
 
+    function availableCharacters() {
+        if (!draft?.room_key) return characters;
+        const room = rooms.find(r=>r.room_key===draft.room_key);
+        return characters.filter(c=>members.some(m=>m.room_id===room?.id && m.character_key===c.character_key));
+    }
+
     function validateScenario() {
         if (!draft) {
             throw new Error("선택된 시나리오가 없습니다.");
@@ -664,7 +675,7 @@
         draft.dialogue.forEach((line, index) => {
             const number = index + 1;
 
-            if (!characters.some(
+            if (!availableCharacters().some(
                 c => c.character_key === line.sender
             )) {
                 throw new Error(

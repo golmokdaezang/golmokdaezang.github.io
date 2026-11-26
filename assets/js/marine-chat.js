@@ -2123,7 +2123,7 @@ renderQuickReplies(shown);
 
                     const selected = Array.isArray(parent?.choices) && parent.choices.find(x=>typeof x === "object" && (x.label || x.text)===content && x.response);
                     if(selected) {
-                        ok(await client.from("marine_messages").insert({user_id:uid,room_id:c.room?c.key:null,sender:parent.sender,direction:"incoming",content:selected.response,reply_to:m.id,metadata:parent.metadata||{},deliver_at:new Date(Date.now()+3000).toISOString()}));
+                        ok(await client.from("marine_messages").insert({user_id:uid,room_id:c.room?c.key:null,sender:parent.sender,direction:"incoming",content:selected.response,choices:Array.isArray(selected.choices)?selected.choices:[],reply_to:m.id,metadata:parent.metadata||{},deliver_at:new Date(Date.now()+3000).toISOString()}));
                     } else
                     // 단체 채팅방 메시지
 

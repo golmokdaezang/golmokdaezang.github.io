@@ -269,7 +269,8 @@
 
                 ["relations", "인물 관계"],
 
-                ["personnel", "나의 소속"]
+                ["personnel", "나의 소속"],
+                ["rooms", "대화방 관리"]
 
             ];
 
@@ -312,6 +313,10 @@
                 case "relations":
 
                     renderRelationships();
+                    break;
+
+                case "rooms":
+                    renderRooms();
                     break;
 
                 case "personnel":
@@ -659,6 +664,80 @@
         // 인물 관계
         // =====================================
 
+        function characterSelect(value = "") {
+            const select = node("select");
+            for (const c of characters) {
+                const o = node("option", c.name + (c.alias ? " (" + c.alias + ")" : ""));
+                o.value = c.character_key; select.append(o);
+            }
+            if (value) select.value = value;
+            return select;
+        }
+
+        async function renderRooms() {
+            const panel = node("section", null, "mch-body");
+            root.append(panel);
+            try {
+                const [rooms, members] = await Promise.all([
+                    client.from("marine_rooms").select("*").order("name").then(check),
+                    client.from("marine_room_members").select("*").then(check)
+                ]);
+                if (!panel.isConnected) return;
+                const picker = node("select");
+                const fresh = node("option", "새 단체 통신방"); fresh.value = ""; picker.append(fresh);
+                for (const r of rooms.filter(r => r.room_type === "group")) {
+                    const o = node("option", r.name + (r.archived ? " (보관됨)" : "")); o.value=r.id; picker.append(o);
+                }
+                const editor = node("div", null, "mch-body");
+                panel.append(node("h3", "단체 통신방 관리"), picker, editor);
+                function edit() {
+                    editor.replaceChildren();
+                    const r = rooms.find(r => r.id === picker.value);
+                    const name = node("input"); name.value = r?.name || ""; name.placeholder = "대화방 이름";
+                    const desc = node("textarea"); desc.value = r?.description || ""; desc.placeholder = "대화방 설명";
+                    const archived = node("input"); archived.type = "checkbox"; archived.checked = !!r?.archived;
+                    const archiveLabel = node("label"); archiveLabel.append(archived, document.createTextNode(" 대화방 보관 (기존 메시지 유지)"));
+                    editor.append(node("p", "이름"), name, node("p", "설명"), desc, archiveLabel, node("h3", "참여 인물"));
+                    const picks = characters.map(c => {
+                        const input = node("input"); input.type = "checkbox";
+                        input.checked = members.some(m => m.room_id === r?.id && m.character_key === c.character_key);
+                        const label = node("label"); label.style.display = "block"; label.append(input, document.createTextNode(" " + c.name)); editor.append(label);
+                        return [c.character_key, input];
+                    });
+                    const save = node("button", "변경 사항 저장", "ui-primary"); const status = node("p");
+                    save.onclick = async () => {
+                        save.disabled = true;
+                        try {
+                            check(await client.rpc("marine_manage_room", {p_room_id:r?.id || null,p_name:name.value.trim(),p_description:desc.value.trim(),p_members:picks.filter(x=>x[1].checked).map(x=>x[0]),p_archived:archived.checked}));
+                            panel.remove(); await renderRooms();
+                        } catch(e) {status.textContent="저장 실패: "+e.message;} finally {save.disabled=false;}
+                    };
+                    editor.append(save,status);
+                }
+                picker.onchange=edit; edit();
+            } catch(e) {panel.textContent="대화방 조회 실패: "+e.message;}
+        }
+
+        function relationshipEditor(parent, relation = null) {
+            const a=characterSelect(relation?.character_a), b=characterSelect(relation?.character_b);
+            const type=node("input"), desc=node("textarea"), status=node("p");
+            type.value=relation?.relationship || ""; type.placeholder="관계 (예: 동기)";
+            desc.value=relation?.description || ""; desc.placeholder="관계 설명";
+            const save=node("button",relation?"관계 수정":"관계 추가","ui-primary");
+            save.onclick=async()=>{
+                save.disabled=true;
+                try {
+                    if(a.value===b.value || !type.value.trim()) throw new Error("서로 다른 인물과 관계를 입력하세요.");
+                    const values={character_a:a.value,character_b:b.value,relationship:type.value.trim(),description:desc.value.trim()};
+                    if(relationships.some(x=>x.id!==relation?.id && ((x.character_a===a.value&&x.character_b===b.value)||(x.character_a===b.value&&x.character_b===a.value)))) throw new Error("이미 등록된 관계입니다.");
+                    check(await (relation?client.from("marine_relationships").update(values).eq("id",relation.id):client.from("marine_relationships").insert(values)).select("id").single());
+                    await load(); render("relations");
+                }catch(e){status.textContent="저장 실패: "+e.message;}finally{save.disabled=false;}
+            };
+            parent.append(a,b,type,desc,save,status);
+            if(relation){const del=node("button","관계 삭제");del.onclick=async()=>{if(!confirm("이 관계를 삭제할까요?"))return;try{check(await client.from("marine_relationships").delete().eq("id",relation.id).select("id").single());await load();render("relations");}catch(e){status.textContent=e.message;}};parent.append(del);}
+        }
+
         function renderRelationships() {
 
             root.append(
@@ -666,6 +745,7 @@
             );
 
 
+            const addRelation=node("section",null,"mch-body"); relationshipEditor(addRelation); root.append(addRelation);
             for (const relation of relationships) {
 
                 const a = characters.find(
@@ -731,6 +811,7 @@
                 );
 
 
+                relationshipEditor(row, relation);
                 root.append(row);
 
             }
@@ -785,6 +866,11 @@
             );
 
 
+            const select = characterSelect(person.commander);
+            const save = node("button", "담당 상관 변경", "ui-primary");
+            const status = node("p");
+            save.onclick = async () => { try { check(await client.from("marine_personnel").update({commander:select.value}).eq("user_id",ADMIN_UID).select("user_id").single()); await load(); render("personnel"); } catch(e) {status.textContent=e.message;} };
+            root.append(select,save,status);
             const index = rankOrder.indexOf(
 
                 person.rank

@@ -30,6 +30,8 @@
         running = true;
 
         try {
+            const contact = await client.rpc("marine_auto_contact");
+            if (contact.error) console.error(contact.error.message);
 
             const { data: auth, error: authError } =
                 await client.auth.getUser();
