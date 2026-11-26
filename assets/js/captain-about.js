@@ -41,8 +41,10 @@ async function load(){
  data={...structuredClone(defaults),...record.data.content};render();ready=true;admin=!auth.error&&auth.data?.user?.id===ADMIN;edit.hidden=!admin;message("");
  }catch(e){if(g!==generation)return;console.warn("About load",e);message("저장된 기록을 불러오지 못했습니다. 기본 시안을 표시합니다.");}
 }
-trigger.onclick=()=>{if(dlg.open)return;dlg.showModal();dlg.scrollTop=0;data=structuredClone(defaults);render();endEdit();load();};
-function close(){if(busy)return;if(draft&&!confirm("저장하지 않은 변경사항을 버릴까요?"))return;++generation;endEdit();dlg.close();trigger.focus()}
+function setOrigin(){const r=trigger.getBoundingClientRect();dlg.style.setProperty("--about-x",`${r.left+r.width/2}px`);dlg.style.setProperty("--about-y",`${r.top+r.height/2}px`);}
+let closing=false;
+trigger.onclick=()=>{if(dlg.open)return;setOrigin();dlg.classList.remove("about-closing");dlg.showModal();dlg.scrollTop=0;data=structuredClone(defaults);render();endEdit();load();};
+function close(){if(busy||closing)return;if(draft&&!confirm("저장하지 않은 변경사항을 버릴까요?"))return;++generation;closing=true;setOrigin();const finish=()=>{dlg.removeEventListener("animationend",onEnd);clearTimeout(timer);endEdit();dlg.close();dlg.classList.remove("about-closing");closing=false;trigger.focus()};const onEnd=e=>{if(e.target===dlg&&e.animationName==="about-contract")finish()};if(matchMedia("(prefers-reduced-motion: reduce)").matches){endEdit();dlg.close();closing=false;trigger.focus();return}dlg.addEventListener("animationend",onEnd);const timer=setTimeout(finish,450);dlg.classList.add("about-closing")}
 q(".about-back").onclick=close;dlg.addEventListener("cancel",e=>{e.preventDefault();close()});
 function button(label,fn,parent){const b=el("button",label);b.type="button";b.onclick=fn;parent.append(b);return b}
 function field(parent,label,value,change,multi=false){const l=el("label",label),i=el(multi?"textarea":"input");i.value=value??"";i.maxLength=multi?5000:500;i.oninput=()=>change(i.value);l.append(i);parent.append(l)}

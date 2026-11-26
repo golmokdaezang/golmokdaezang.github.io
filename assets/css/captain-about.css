@@ -47,3 +47,23 @@
 #captain-about .about-status{font-size:14px;color:var(--gold)}
 @media(max-width:600px){#captain-about .about-wrap{padding:18px 22px 40px}#captain-about .about-timeline li{grid-template-columns:1fr;gap:2px}#captain-about .about-tools{grid-template-columns:105px minmax(0,1fr)}#captain-about .about-bar{margin-bottom:24px}}
 @media(prefers-reduced-motion:reduce){#captain-about[open]{animation:none}}
+
+/* Keep About typography independent of the cabin theme. */
+#captain-about, #captain-about *:not(svg):not(svg *) {font-family: Pretendard, 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', system-ui, sans-serif !important;}
+#captain-about {font-size:18px!important;font-weight:500!important;line-height:1.75; transform-origin:var(--about-x,50%) var(--about-y,50%);}
+#captain-about p,#captain-about .about-major {font-size:18px!important;font-weight:500!important;}
+#captain-about .about-header h1{font-size:24px!important;font-weight:700!important;}
+#captain-about .about-header p{font-size:16px!important;}
+#captain-about h2{font-size:24px!important;font-weight:700!important;}
+#captain-about h2.about-name{font-size:30px!important;}
+#captain-about .about-timeline strong{font-size:19px!important;font-weight:600!important;}
+#captain-about .about-date,#captain-about .about-kicker{font-size:16px!important;font-weight:500!important;}
+#captain-about .about-tags span{font-size:15px!important;font-weight:500!important;}
+#captain-about button{font-size:16px!important;font-weight:500!important;}
+#captain-about[open]{animation:about-expand .46s cubic-bezier(.2,.75,.25,1) both;}
+#captain-about[open].about-closing{animation:about-contract .36s cubic-bezier(.55,0,.8,.4) both;pointer-events:none;}
+@keyframes about-expand{from{transform:scale(.06);opacity:.2;border-radius:32px}to{transform:scale(1);opacity:1;border-radius:0}}
+@keyframes about-contract{from{transform:scale(1);opacity:1;border-radius:0}to{transform:scale(.06);opacity:0;border-radius:32px}}
+#captain-about::backdrop{background:transparent;}
+@media(max-width:600px){#captain-about .about-header h1{font-size:20px!important;}#captain-about h2{font-size:22px!important;}#captain-about p{font-size:16px!important;}#captain-about .about-timeline strong{font-size:17px!important;}}
+@media(prefers-reduced-motion:reduce){#captain-about[open],#captain-about[open].about-closing{animation:none!important;}}
