@@ -1175,8 +1175,13 @@ function renderQuickReplies(shown) {
 
     if (!latest || !choices.length || answered) {
 
-        panel.hidden = true;
-
+        if(active?.character && !active.room) {
+            panel.hidden=false;
+            panel.append(node("small","먼저 연락하기","mc-quick-title"));
+            const buttons=node("div",null,"mc-quick-buttons");
+            for(const label of ["안부를 묻습니다.","업무 진행 상황을 보고드립니다.","조언을 요청드립니다."]) {const b=node("button",label);b.type="button";b.onclick=()=>{replyTo(null);input.value=label;form.requestSubmit();};buttons.append(b);}
+            panel.append(buttons);
+        } else panel.hidden=true;
         return;
 
     }
@@ -1228,7 +1233,7 @@ function renderQuickReplies(shown) {
 
             input.value = label;
 
-            input.focus();
+            form.requestSubmit();
 
         };
 
@@ -2114,6 +2119,10 @@ renderQuickReplies(shown);
 
                 try {
 
+                    const selected = Array.isArray(parent?.choices) && parent.choices.find(x=>typeof x === "object" && (x.label || x.text)===content && x.response);
+                    if(selected) {
+                        ok(await client.from("marine_messages").insert({user_id:uid,room_id:c.room?c.key:null,sender:parent.sender,direction:"incoming",content:selected.response,reply_to:m.id,metadata:parent.metadata||{},deliver_at:new Date(Date.now()+3000).toISOString()}));
+                    } else
                     // 단체 채팅방 메시지
 
                     if (c.room) {

@@ -386,8 +386,9 @@
             draft.room_key
         );
 
+        roomSelect.options[0].textContent = "개인 통신 (대사 발신 캐릭터)";
         roomSelect.onchange = () => {
-            draft.room_key = roomSelect.value;
+            draft.room_key = roomSelect.value || null;
             changed();
         };
 
@@ -413,6 +414,10 @@
         );
 
         root.appendChild(enabledLabel);
+        const trigger = document.createElement("select");
+        for (const [value,label] of [["random","자동 연락"],["manual","수동 실행"]]) {const o=el("option",label);o.value=value;trigger.append(o);}
+        trigger.value=draft.trigger_type; trigger.onchange=()=>{draft.trigger_type=trigger.value;changed();}; root.append(el("label","실행 방식"),trigger);
+        if(originalKey) root.append(btn("실행 기록 초기화",()=>act(async()=>{if(!confirm("이 시나리오 실행 기록만 초기화할까요?"))return; const user=check(await db.auth.getUser()).user;check(await db.from("marine_simulation_log").delete().eq("user_id",user.id).eq("scenario_key",originalKey));status("초기화 완료");})));
 
         // 대화 순서
 
@@ -601,6 +606,11 @@
             delayRow
         );
 
+        const choices = document.createElement("textarea");
+        choices.placeholder = "선택지 | 응답 (한 줄에 하나)";
+        choices.value = (line.choices || []).map(c => typeof c === "string" ? c : `${c.label || c.text || ""} | ${c.response || ""}`).join("\n");
+        choices.oninput = () => { line.choices = choices.value.split("\n").filter(x => x.trim()).map(x => {const [label,...response]=x.split("|"); return {label:label.trim(),response:response.join("|").trim()};}); changed(); };
+        card.append(el("label","추천 답장 및 응답"),choices);
         return card;
     }
 
@@ -641,7 +651,7 @@
             throw new Error("시나리오 제목을 입력하세요.");
         }
 
-        if (!rooms.some(r => r.room_key === draft.room_key)) {
+        if (draft.room_key && !rooms.some(r => r.room_key === draft.room_key)) {
             throw new Error("올바른 대화방을 선택하세요.");
         }
 
@@ -698,7 +708,7 @@
         const payload = {
             scenario_key: draft.scenario_key,
             title: draft.title.trim(),
-            room_key: draft.room_key,
+            room_key: draft.room_key || null,
             trigger_type: draft.trigger_type,
             dialogue: draft.dialogue,
             enabled: draft.enabled

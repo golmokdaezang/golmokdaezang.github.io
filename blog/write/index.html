@@ -149,6 +149,7 @@ $('editor').onsubmit = e => {
         if (!title) throw new Error('제목을 입력하세요.');
         const publish = $('published').checked;
         if (publish && !confirm('본문을 모든 방문자에게 공개할까요?')) return;
+        const wasNew = !editing;
         const data = {title, island_key: destination==='map' ? $('island').value : null, island_summary: destination==='map' ? $('island-summary').value.trim() : '', island_tag: destination==='map' ? $('island-tag').value.trim() : '', book_key: destination==='book' ? $('book').value : null, is_public: false, updated_at: new Date().toISOString()};
         const content = $('content').value;
         files.lock(true);
@@ -164,6 +165,7 @@ $('editor').onsubmit = e => {
         check(await client.from('post_contents').upsert({post_id: editing, content}));
         await files.cleanup(editing);
         if (publish) check(await client.from('posts').update({is_public: true}).eq('id', editing).select('id').single());
+        check(await client.rpc('marine_record_post', {p_post_id:editing,p_new:wasNew,p_saved_at:data.updated_at}));
         location.href = '/blog/admin/';
         } finally { files.lock(false); }
     });
