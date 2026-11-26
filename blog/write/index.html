@@ -23,6 +23,9 @@
     <section id="workspace" hidden>
         <form id="editor">
             <label for="book">책 선택</label><select id="book" required></select>
+            <label for="island">지도 분류 (선택)</label><select id="island"><option value="">지도에 표시하지 않음</option><option value="web">웹해킹</option><option value="ad">A&D</option><option value="pwn">시스템 해킹</option><option value="forensics">디지털 포렌식</option><option value="reversing">리버싱</option><option value="embedded">임베디드</option><option value="crypto">암호학</option><option value="misc">Misc</option><option value="network">네트워크</option><option value="iot">IoT</option><option value="ctf">CTF</option></select>
+            <label for="island-summary">지도 목록 요약</label><input id="island-summary" maxlength="300">
+            <label for="island-tag">지도 태그</label><input id="island-tag" maxlength="100">
             <label for="title">제목</label><input id="title" required maxlength="300">
             <label>본문 작성 (Markdown)</label>
             <div class="actions" id="toolbar"></div>
@@ -124,6 +127,9 @@ async function setup() {
         const post = check(await client.from('posts').select('*').eq('id', editing).single());
         const body = check(await client.from('post_contents').select('content').eq('post_id', editing).maybeSingle());
         $('title').value = post.title;
+        $('island').value = post.island_key || '';
+        $('island-summary').value = post.island_summary || '';
+        $('island-tag').value = post.island_tag || '';
         $('book').value = post.book_key;
         $('content').value = body?.content ?? '';
         $('published').checked = post.is_public;
@@ -139,7 +145,7 @@ $('editor').onsubmit = e => {
         if (!title) throw new Error('제목을 입력하세요.');
         const publish = $('published').checked;
         if (publish && !confirm('본문을 모든 방문자에게 공개할까요?')) return;
-        const data = {title, book_key: $('book').value, is_public: false, updated_at: new Date().toISOString()};
+        const data = {title, island_key: $('island').value || null, island_summary: $('island-summary').value.trim(), island_tag: $('island-tag').value.trim(), book_key: $('book').value, is_public: false, updated_at: new Date().toISOString()};
         const content = $('content').value;
         files.lock(true);
         try {
