@@ -464,7 +464,7 @@
     </section>
   </main>
 
-  <script src="/assets/js/supabase-config.js"></script>
+  <script src="/assets/js/supabase-config.js?v=11"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
   <script>
@@ -710,7 +710,7 @@
     logoutButton.addEventListener("click", async () => {
       if (!client) return;
 
-      const { error } = await client.auth.signOut();
+      const { error } = await window.marineSignOut(client);
 
       if (error) {
         showStatus("로그아웃 실패: " + error.message, "error");

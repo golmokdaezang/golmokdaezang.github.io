@@ -575,7 +575,7 @@
          03. 외부 라이브러리
          ===================================== -->
 
-    <script src="/assets/js/supabase-config.js"></script>
+    <script src="/assets/js/supabase-config.js?v=11"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
@@ -2273,7 +2273,7 @@ $("access").addEventListener(
 
                 check(
 
-                    await client.auth.signOut()
+                    await window.marineSignOut(client)
 
                 );
 

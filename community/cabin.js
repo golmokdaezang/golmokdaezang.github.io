@@ -1,7 +1,7 @@
 (()=>{'use strict';
 const base='https://zdgopdrehbphshdptjjr.supabase.co',key='sb_publishable_C59a539RlAeLYmLCmGuVng_IFno8y8s';
 const root=document.createElement('section');root.id='community-cabin';root.innerHTML=`<div class="cc-news"><strong>NEWS COO</strong><div class="cc-ticker-window"><span id="cc-ticker" aria-live="polite">오늘도 그랜드라인의 바람은 순조롭습니다.</span></div></div><button type="button" id="cc-toggle" aria-expanded="false" aria-controls="cc-panel">실시간 무전 ▾</button><aside id="cc-panel" hidden><div class="cc-radio-head"><div><span class="cc-device-label">MARINE · COMMUNICATIONS</span><h2>실시간 무전</h2></div><span class="cc-speaker" aria-hidden="true"></span></div><div class="cc-channel"><span>CH 01 · 공개 채널</span><span>RX / TX</span></div><p class="cc-hint">공개 채널입니다. 연락처나 개인정보를 남기지 마세요.</p><div id="cc-messages" role="log"></div><form id="cc-form"><label for="cc-input">무전 메시지 (100자 이내)</label><input id="cc-input" maxlength="100" required><button><span aria-hidden="true">●</span> 송출 <small>TX</small></button></form><p id="cc-status" role="status"></p></aside>`;document.body.append(root);
-const $=id=>document.getElementById(id);const client=window.supabase?.createClient(base,key,{auth:{storageKey:'marine-community-auth'}});if(!client){$('cc-status').textContent='인증 모듈을 불러오지 못했습니다.';return;}
+const $=id=>document.getElementById(id);const client=window.getMarineCommunityClient();if(!client){$('cc-status').textContent='인증 모듈을 불러오지 못했습니다.';return;}
 const captainClient=window.MarineClient||(window.MarineClient=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_PUBLISHABLE_KEY));
 async function communitySession(action){
   if(['radio','send_radio','report_radio'].includes(action)){

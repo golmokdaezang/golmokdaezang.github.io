@@ -1,6 +1,6 @@
 'use strict';
 const base='https://zdgopdrehbphshdptjjr.supabase.co', key='sb_publishable_C59a539RlAeLYmLCmGuVng_IFno8y8s';
-const client=window.supabase.createClient(base,key,{auth:{storageKey:'marine-community-auth'}});
+const client=window.getMarineCommunityClient();
 const $=id=>document.getElementById(id), status=$('status');let sort='recent',offset=0,busy=false;
 const captainClient=window.MarineClient||(window.MarineClient=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_PUBLISHABLE_KEY));
 async function communitySession(action){

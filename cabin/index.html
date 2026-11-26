@@ -1504,7 +1504,7 @@ if (window.matchMedia(
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
-<script src="/assets/js/supabase-config.js"></script>
+<script src="/assets/js/supabase-config.js?v=11"></script>
 
 <script>
 
@@ -1594,7 +1594,7 @@ if (window.matchMedia(
 
   $("captain-logout").addEventListener("click", async () => {
 
-    const { error } = await client.auth.signOut();
+    const { error } = await window.marineSignOut(client);
 
     if (error) { alert("로그아웃에 실패했습니다: " + error.message); return; }
 
@@ -2087,6 +2087,6 @@ if (window.matchMedia(
 <script src="/assets/js/marine-common.js"></script>
 
 <script src="./secret-call.js?v=11"></script>
-<script src="/community/cabin.js?v=10" defer></script>
+<script src="/community/cabin.js?v=11" defer></script>
 <script defer src="/community/news.js?v=9"></script></body>
 </html>
