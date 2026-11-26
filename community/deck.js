@@ -2,7 +2,15 @@
 const base='https://zdgopdrehbphshdptjjr.supabase.co', key='sb_publishable_C59a539RlAeLYmLCmGuVng_IFno8y8s';
 const client=window.supabase.createClient(base,key,{auth:{storageKey:'marine-community-auth'}});
 const $=id=>document.getElementById(id), status=$('status');let sort='recent',offset=0,busy=false;
-async function api(action,fields={},write=false){const {data:{session}}=await client.auth.getSession();if(write&&!session)throw Error('입장 화면에서 커뮤니티 인증을 먼저 진행하세요.');const r=await fetch(base+'/functions/v1/community-handler',{method:'POST',headers:{'Content-Type':'application/json',apikey:key,...(session?{Authorization:'Bearer '+session.access_token}:{})},body:JSON.stringify({action,...fields})});const j=await r.json();if(!r.ok||j.data?.success===false)throw Error(j.data?.error||j.error||'요청 실패');return j.data;}
+const captainClient=window.MarineClient||(window.MarineClient=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_PUBLISHABLE_KEY));
+async function communitySession(action){
+  if(['guestbook','write_guestbook','like','report','edit','delete'].includes(action)){
+    const {data:{session}}=await captainClient.auth.getSession();
+    if(session?.user?.id==='6e6288e5-3612-4d2f-8d8b-fb08007d86a9') return session;
+  }
+  return (await client.auth.getSession()).data.session;
+}
+async function api(action,fields={},write=false){const session=await communitySession(action);if(write&&!session)throw Error('입장 화면에서 커뮤니티 인증을 먼저 진행하세요.');const r=await fetch(base+'/functions/v1/community-handler',{method:'POST',headers:{'Content-Type':'application/json',apikey:key,...(session?{Authorization:'Bearer '+session.access_token}:{})},body:JSON.stringify({action,...fields})});const j=await r.json();if(!r.ok||j.data?.success===false)throw Error(j.data?.error||j.error||'요청 실패');return j.data;}
 function el(tag,text){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;return n;}
 async function run(fn){if(busy)return;busy=true;status.textContent='처리 중…';try{await fn();status.textContent='';}catch(e){status.textContent=e.message;}finally{busy=false;}}
 function btn(label,fn){const b=el('button',label);b.type='button';b.onclick=()=>run(fn);return b;}

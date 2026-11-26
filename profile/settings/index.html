@@ -424,17 +424,7 @@
           >
         </div>
 
-        <div class="field">
-          <label for="major">소속 · 전공</label>
-          <input
-            id="major"
-            type="text"
-            maxlength="120"
-            placeholder="컴퓨터공학과"
-          >
-        </div>
-
-        <div class="field">
+<div class="field">
           <label for="bounty">현상금 (BOUNTY)</label>
           <input
             id="bounty"
@@ -457,16 +447,7 @@
           ></textarea>
         </div>
 
-        <div class="field">
-          <label for="github">GitHub 주소</label>
-          <input
-            id="github"
-            type="url"
-            placeholder="https://github.com/..."
-          >
-        </div>
-
-        <button
+<button
           class="save-button"
           id="saveButton"
           type="submit"
@@ -497,10 +478,8 @@
     const avatarPreview = document.getElementById("avatarPreview");
 
     const nicknameInput = document.getElementById("nickname");
-    const majorInput = document.getElementById("major");
     const bioInput = document.getElementById("bio");
     const bountyInput = document.getElementById("bounty");
-    const githubInput = document.getElementById("github");
 
     const BUCKET = "profile-images";
     const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -596,17 +575,15 @@
     async function loadProfile() {
       const { data, error } = await client
         .from("profiles")
-        .select("nickname,major,bio,avatar_url,github_url,bounty")
+        .select("nickname,bio,avatar_url,bounty")
         .eq("id", currentUser.id)
         .maybeSingle();
 
       if (error) throw error;
 
       nicknameInput.value = data?.nickname || "골목대장";
-      majorInput.value = data?.major || "";
       bioInput.value = data?.bio || "";
       bountyInput.value = data?.bounty ?? 0;
-      githubInput.value = data?.github_url || "";
 
       currentAvatarUrl = data?.avatar_url || "";
       showAvatar(currentAvatarUrl);
@@ -700,28 +677,13 @@
           throw new Error("현상금은 0 이상의 정수로 입력해 줘.");
         }
 
-        const githubUrl = githubInput.value.trim();
-
-        if (githubUrl) {
-          const parsed = new URL(githubUrl);
-
-          if (
-            parsed.protocol !== "https:" ||
-            parsed.hostname !== "github.com"
-          ) {
-            throw new Error("GitHub 주소는 https://github.com/ 형식이어야 해.");
-          }
-        }
-
         const { error } = await client
           .from("profiles")
           .upsert({
             id: currentUser.id,
             nickname: nickname,
-            major: majorInput.value.trim(),
             bio: bioInput.value.trim(),
             bounty: bountyNumber,
-            github_url: githubUrl,
             avatar_url: avatarUrl,
             updated_at: new Date().toISOString()
           }, {

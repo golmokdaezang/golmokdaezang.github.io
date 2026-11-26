@@ -10,7 +10,7 @@
   style.textContent = `
     #parchment-arrival-cover { position:fixed; inset:0; z-index:2147483647;
       background:#e8c99b url('/assets/images/parchment-bg.webp') center/cover no-repeat;
-      opacity:1; pointer-events:none; transition:opacity 1.15s ease; }
+      opacity:1; pointer-events:none; transition:opacity .35s ease; }
     #parchment-arrival-cover.done {opacity:0}
     @media(prefers-reduced-motion:reduce){#parchment-arrival-cover{transition-duration:.01s}}
   `;
@@ -19,13 +19,16 @@
   cover.id='parchment-arrival-cover';
   const show = () => {
     document.body.appendChild(cover);
+    let revealed = false;
     const reveal = () => {
+      if (revealed) return;
+      revealed = true;
       requestAnimationFrame(() => requestAnimationFrame(() => cover.classList.add('done')));
-      setTimeout(() => {cover.remove();style.remove();}, 1500);
+      setTimeout(() => {cover.remove();style.remove();}, 450);
     };
     if (document.readyState === 'complete') reveal();
     else window.addEventListener('load', reveal, {once:true});
-    setTimeout(reveal, 5000);
+    setTimeout(reveal, 900);
   };
   if (document.body) show();
   else document.addEventListener('DOMContentLoaded',show,{once:true});

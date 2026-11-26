@@ -440,7 +440,7 @@ body { overflow: hidden; }
 
   pointer-events: none;
 
-  animation: entranceFade 3.4s ease-in-out forwards;
+  animation: entranceFade 1.3s ease-in-out forwards;
 
 }
 
@@ -520,7 +520,7 @@ body { overflow: hidden; }
 
 .entrance-title {
 
-  animation: titleAppear 2.5s ease-in-out forwards;
+  animation: titleAppear 1s ease-in-out forwards;
 
 }
 
@@ -622,7 +622,7 @@ body { overflow: hidden; }
 
 .deck-transition.active .deck-title {
 
-  animation: titleAppear 2.5s ease-in-out forwards;
+  animation: titleAppear 1s ease-in-out forwards;
 
 }
 
@@ -740,7 +740,7 @@ body { overflow: hidden; }
 
 .map-transition.active .map-title {
 
-  animation: titleAppear 2.5s ease-in-out forwards;
+  animation: titleAppear 1s ease-in-out forwards;
 
 }
 
@@ -925,7 +925,7 @@ body { overflow: hidden; }
 
 .bookshelf-approach.active .approach-cabin {
 
-  animation: walkToShelf 2s cubic-bezier(.18,.72,.24,1) forwards;
+  animation: walkToShelf 1s cubic-bezier(.18,.72,.24,1) forwards;
 
 }
 
@@ -939,7 +939,7 @@ body { overflow: hidden; }
 
 .bookshelf-approach.active .approach-shelf {
 
-  animation: revealShelf 1.45s ease-out 1.05s forwards;
+  animation: revealShelf .65s ease-out .55s forwards;
 
 }
 
@@ -1383,7 +1383,7 @@ cabinDoor.addEventListener("click", (event) => {
 
     deckTransition.classList.add("show-images");
 
-  }, 2500);
+  }, 1000);
 
   setTimeout(() => {
 
@@ -1393,19 +1393,19 @@ cabinDoor.addEventListener("click", (event) => {
 
     deckImages[1].classList.add("visible");
 
-  }, 2900);
+  }, 1300);
 
   setTimeout(() => {
 
     deckTransition.classList.add("blackout");
 
-  }, 3400);
+  }, 1600);
 
   setTimeout(() => {
 
     window.location.href = destination;
 
-  }, 3800);
+  }, 1850);
 
 });
 
@@ -1436,7 +1436,7 @@ cabinMap.addEventListener("click", (event) => {
 
     window.location.href = destination;
 
-  }, 2500);
+  }, 1000);
 
 });
 
@@ -1480,7 +1480,7 @@ bookshelfLink.addEventListener("click", (event) => {
 
   bookshelfApproach.setAttribute("aria-hidden", "false");
 
-  window.setTimeout(() => window.location.assign(destination), 2650);
+  window.setTimeout(() => window.location.assign(destination), 1400);
 
 });
 
@@ -1542,7 +1542,7 @@ if (window.matchMedia(
 
   } else {
 
-    window.setTimeout(() => panel.classList.add("is-ready"), 3400);
+    window.setTimeout(() => panel.classList.add("is-ready"), 1300);
 
   }
 
@@ -1635,7 +1635,7 @@ if (window.matchMedia(
 
       .from("profiles")
 
-      .select("nickname, major, bio, avatar_url, bounty")
+      .select("nickname, bio, avatar_url, bounty")
 
       .limit(1)
 
@@ -1659,13 +1659,7 @@ if (window.matchMedia(
 
     $("captain-major").hidden = true;
 
-    if (profile.major) {
 
-      $("captain-major").textContent = profile.major;
-
-      $("captain-major").hidden = false;
-
-    }
 
     if (profile.avatar_url && /^https?:\/\//i.test(profile.avatar_url)) {
 
@@ -2093,6 +2087,6 @@ if (window.matchMedia(
 <script src="/assets/js/marine-common.js"></script>
 
 <script src="./secret-call.js?v=11"></script>
-<script src="/community/cabin.js?v=9" defer></script>
+<script src="/community/cabin.js?v=10" defer></script>
 <script defer src="/community/news.js?v=9"></script></body>
 </html>
